@@ -1,0 +1,13 @@
+build.mak
+cc-auto.mak
+os-auto.mak
+config.log
+config.status
+bin/
+build/
+lib/
+output/
+*_auto.h
+config_site.h
+sip_autoconf.h
+*~
