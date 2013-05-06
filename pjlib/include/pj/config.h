@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #ifndef __PJ_CONFIG_H__
 #define __PJ_CONFIG_H__
@@ -451,7 +451,7 @@
  * in the application.
  *
  * This will slow down pool creation and destruction and will add
- * few bytes of overhead, so application would normally want to 
+ * few bytes of overhead, so application would normally want to
  * disable this feature on release build.
  *
  * Default: 0
@@ -501,14 +501,14 @@
  *
  * Default: 8192
  */
-#ifndef PJ_THREAD_DEFAULT_STACK_SIZE 
+#ifndef PJ_THREAD_DEFAULT_STACK_SIZE
 #  define PJ_THREAD_DEFAULT_STACK_SIZE    8192
 #endif
 
 
 /**
- * Specify if PJ_CHECK_STACK() macro is enabled to check the sanity of 
- * the stack. The OS implementation may check that no stack overflow 
+ * Specify if PJ_CHECK_STACK() macro is enabled to check the sanity of
+ * the stack. The OS implementation may check that no stack overflow
  * occurs, and it also may collect statistic about stack usage. Note
  * that this will increase the footprint of the libraries since it
  * tracks the filename and line number of each functions.
@@ -538,7 +538,7 @@
 #endif
 
 /**
- * Support IPv6 in the library. If this support is disabled, some IPv6 
+ * Support IPv6 in the library. If this support is disabled, some IPv6
  * related functions will return PJ_EIPV6NOTSUP.
  *
  * Default: 0 (disabled, for now)
@@ -570,8 +570,8 @@
 
 /**
  * Constants for declaring the maximum handles that can be supported by
- * a single IOQ framework. This constant might not be relevant to the 
- * underlying I/O queue impelementation, but still, developers should be 
+ * a single IOQ framework. This constant might not be relevant to the
+ * underlying I/O queue impelementation, but still, developers should be
  * aware of this constant, to make sure that the program will not break when
  * the underlying implementation changes.
  */
@@ -585,8 +585,8 @@
  * things to ensure thread safety of handle unregistration operation by
  * employing reference counter to each handle.
  *
- * In addition, the ioqueue will preallocate memory for the handles, 
- * according to the maximum number of handles that is specified during 
+ * In addition, the ioqueue will preallocate memory for the handles,
+ * according to the maximum number of handles that is specified during
  * ioqueue creation.
  *
  * All applications would normally want this enabled, but you may disable
@@ -607,7 +607,7 @@
  * concurrently/in parallel. The default is yes, which means that if there
  * are more than one pending operations complete simultaneously, more
  * than one threads may call the key's callback at the same time. This
- * generally would promote good scalability for application, at the 
+ * generally would promote good scalability for application, at the
  * expense of more complexity to manage the concurrent accesses.
  *
  * Please see the ioqueue documentation for more info.
@@ -667,6 +667,7 @@
 #	define FD_SETSIZE		PJ_IOQUEUE_MAX_HANDLES
 #   endif
 #else
+#if 0
     /* When FD_SETSIZE is not changeable, check if PJ_IOQUEUE_MAX_HANDLES
      * is lower than FD_SETSIZE value.
      */
@@ -675,6 +676,7 @@
 #	    error "PJ_IOQUEUE_MAX_HANDLES is greater than FD_SETSIZE"
 #	endif
 #   endif
+#endif
 #endif
 
 
@@ -786,7 +788,7 @@
 #ifndef PJ_NATIVE_ERR_POSITIVE
 #   define PJ_NATIVE_ERR_POSITIVE   1
 #endif
- 
+
 /**
  * Include error message string in the library (pj_strerror()).
  * This is very much desirable!
@@ -803,7 +805,7 @@
  * functions to compare alnum strings. On some systems, they're faster
  * then stricmp/strcasecmp, but they can be slower on other systems.
  * When disabled, pjlib will fallback to stricmp/strnicmp.
- * 
+ *
  * Default: 0
  */
 #ifndef PJ_HAS_STRICMP_ALNUM
@@ -815,7 +817,7 @@
  * Types of QoS backend implementation.
  */
 
-/** 
+/**
  * Dummy QoS backend implementation, will always return error on all
  * the APIs.
  */
@@ -877,7 +879,7 @@
  *
  * The libraries support generation of dynamic link libraries for
  * Symbian ABIv2 target (.dso/Dynamic Shared Object files, in Symbian
- * terms). Similar procedures may be applied for Win32 DLL with some 
+ * terms). Similar procedures may be applied for Win32 DLL with some
  * modification.
  *
  * Depending on the platforms, these steps may be necessary in order to
@@ -885,7 +887,7 @@
  *  - Create the (Visual Studio) projects to produce DLL output. PJLIB
  *    does not provide ready to use project files to produce DLL, so
  *    you need to create these projects yourself. For Symbian, the MMP
- *    files have been setup to produce DSO files for targets that 
+ *    files have been setup to produce DSO files for targets that
  *    require them.
  *  - In the (Visual Studio) projects, some macros need to be declared
  *    so that appropriate modifiers are added to symbol declarations
@@ -894,49 +896,49 @@
  *    MMP files.
  *  - Some build systems require .DEF file to be specified when creating
  *    the DLL. For Symbian, .DEF files are included in pjlib distribution,
- *    in <tt>pjlib/build.symbian</tt> directory. These DEF files are 
+ *    in <tt>pjlib/build.symbian</tt> directory. These DEF files are
  *    created by running <tt>./makedef.sh all</tt> from this directory,
  *    inside Mingw.
  *
  * Macros related for building DLL/DSO files:
  *  - For platforms that supports dynamic link libraries generation,
  *    it must declare <tt>PJ_EXPORT_SPECIFIER</tt> macro which value contains
- *    the prefix to be added to symbol definition, to export this 
+ *    the prefix to be added to symbol definition, to export this
  *    symbol in the DLL/DSO. For example, on Win32/Visual Studio, the
- *    value of this macro is \a __declspec(dllexport), and for ARM 
- *    ABIv2/Symbian, the value is \a EXPORT_C. 
+ *    value of this macro is \a __declspec(dllexport), and for ARM
+ *    ABIv2/Symbian, the value is \a EXPORT_C.
  *  - For platforms that supports linking with dynamic link libraries,
  *    it must declare <tt>PJ_IMPORT_SPECIFIER</tt> macro which value contains
- *    the prefix to be added to symbol declaration, to import this 
+ *    the prefix to be added to symbol declaration, to import this
  *    symbol from a DLL/DSO. For example, on Win32/Visual Studio, the
- *    value of this macro is \a __declspec(dllimport), and for ARM 
- *    ABIv2/Symbian, the value is \a IMPORT_C. 
- *  - Both <tt>PJ_EXPORT_SPECIFIER</tt> and <tt>PJ_IMPORT_SPECIFIER</tt> 
+ *    value of this macro is \a __declspec(dllimport), and for ARM
+ *    ABIv2/Symbian, the value is \a IMPORT_C.
+ *  - Both <tt>PJ_EXPORT_SPECIFIER</tt> and <tt>PJ_IMPORT_SPECIFIER</tt>
  *    macros above can be declared in your \a config_site.h if they are not
  *    declared by pjlib.
- *  - When PJLIB is built as DLL/DSO, both <tt>PJ_DLL</tt> and 
- *    <tt>PJ_EXPORTING</tt> macros must be declared, so that 
+ *  - When PJLIB is built as DLL/DSO, both <tt>PJ_DLL</tt> and
+ *    <tt>PJ_EXPORTING</tt> macros must be declared, so that
  *     <tt>PJ_EXPORT_SPECIFIER</tt> modifier will be added into function
  *    definition.
  *  - When application wants to link dynamically with PJLIB, then it
  *    must declare <tt>PJ_DLL</tt> macro when using/including PJLIB header,
- *    so that <tt>PJ_IMPORT_SPECIFIER</tt> modifier is properly added into 
+ *    so that <tt>PJ_IMPORT_SPECIFIER</tt> modifier is properly added into
  *    symbol declarations.
  *
  * When <b>PJ_DLL</b> macro is not declared, static linking is assumed.
  *
  * For example, here are some settings to produce DLLs with Visual Studio
  * on Windows/Win32:
- *  - Create Visual Studio projects to produce DLL. Add the appropriate 
+ *  - Create Visual Studio projects to produce DLL. Add the appropriate
  *    project dependencies to avoid link errors.
- *  - In the projects, declare <tt>PJ_DLL</tt> and <tt>PJ_EXPORTING</tt> 
+ *  - In the projects, declare <tt>PJ_DLL</tt> and <tt>PJ_EXPORTING</tt>
  *    macros.
  *  - Declare these macros in your <tt>config_site.h</tt>:
  \verbatim
 	#define PJ_EXPORT_SPECIFIER  __declspec(dllexport)
 	#define PJ_IMPORT_SPECIFIER  __declspec(dllimport)
  \endverbatim
- *  - And in the application (that links with the DLL) project, add 
+ *  - And in the application (that links with the DLL) project, add
  *    <tt>PJ_DLL</tt> in the macro declarations.
  */
 
@@ -960,7 +962,7 @@
  * is built as dynamic library.
  *
  * This macro should have been added by platform specific headers,
- * if the platform supports building dynamic library target. 
+ * if the platform supports building dynamic library target.
  */
 #ifndef PJ_EXPORT_DECL_SPECIFIER
 #   define PJ_EXPORT_DECL_SPECIFIER
@@ -973,7 +975,7 @@
  * is built as dynamic library.
  *
  * This macro should have been added by platform specific headers,
- * if the platform supports building dynamic library target. 
+ * if the platform supports building dynamic library target.
  */
 #ifndef PJ_EXPORT_DEF_SPECIFIER
 #   define PJ_EXPORT_DEF_SPECIFIER
@@ -1068,7 +1070,7 @@
  * @def PJ_DECL_DATA(type)
  * @param type The data type.
  * Declare a global data.
- */ 
+ */
 #if defined(PJ_DLL)
 #   if defined(PJ_EXPORTING)
 #	define PJ_DECL_DATA(type)   PJ_EXPORT_DECL_SPECIFIER extern type
@@ -1084,7 +1086,7 @@
  * @def PJ_DEF_DATA(type)
  * @param type The data type.
  * Define a global data.
- */ 
+ */
 #if defined(PJ_DLL) && defined(PJ_EXPORTING)
 #   define PJ_DEF_DATA(type)	    PJ_EXPORT_DEF_SPECIFIER type
 #elif !defined(PJ_DEF_DATA)

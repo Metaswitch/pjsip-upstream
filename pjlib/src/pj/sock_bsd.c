@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include <pj/sock.h>
 #include <pj/os.h>
@@ -230,7 +230,7 @@ PJ_DEF(char*) pj_inet_ntoa(pj_in_addr inaddr)
 /*
  * This function converts the Internet host address cp from the standard
  * numbers-and-dots notation into binary data and stores it in the structure
- * that inp points to. 
+ * that inp points to.
  */
 PJ_DEF(int) pj_inet_aton(const pj_str_t *cp, struct pj_in_addr *inp)
 {
@@ -272,7 +272,7 @@ PJ_DEF(pj_status_t) pj_inet_pton(int af, const pj_str_t *src, void *dst)
     PJ_ASSERT_RETURN(af==PJ_AF_INET || af==PJ_AF_INET6, PJ_EAFNOTSUP);
     PJ_ASSERT_RETURN(src && src->slen && dst, PJ_EINVAL);
 
-    /* Initialize output with PJ_IN_ADDR_NONE for IPv4 (to be 
+    /* Initialize output with PJ_IN_ADDR_NONE for IPv4 (to be
      * compatible with pj_inet_aton()
      */
     if (af==PJ_AF_INET) {
@@ -317,7 +317,7 @@ PJ_DEF(pj_status_t) pj_inet_pton(int af, const pj_str_t *src, void *dst)
 
 	sock_addr.addr.sa_family = (pj_uint16_t)af;
 	rc = WSAStringToAddress(
-		PJ_STRING_TO_NATIVE(tempaddr,wtempaddr,sizeof(wtempaddr)), 
+		PJ_STRING_TO_NATIVE(tempaddr,wtempaddr,sizeof(wtempaddr)),
 		af, NULL, (LPSOCKADDR)&sock_addr, &addr_len);
 	if (rc != 0) {
 	    /* If you get rc 130022 Invalid argument (WSAEINVAL) with IPv6,
@@ -465,8 +465,8 @@ PJ_DEF(const pj_str_t*) pj_gethostname(void)
 /*
  * Create new socket/endpoint for communication and returns a descriptor.
  */
-PJ_DEF(pj_status_t) pj_sock_socket(int af, 
-				   int type, 
+PJ_DEF(pj_status_t) pj_sock_socket(int af,
+				   int type,
 				   int proto,
 				   pj_sock_t *sock)
 {
@@ -474,14 +474,14 @@ PJ_DEF(pj_status_t) pj_sock_socket(int af,
 
     /* Sanity checks. */
     PJ_ASSERT_RETURN(sock!=NULL, PJ_EINVAL);
-    PJ_ASSERT_RETURN((unsigned)PJ_INVALID_SOCKET==INVALID_SOCKET, 
+    PJ_ASSERT_RETURN((unsigned)PJ_INVALID_SOCKET==INVALID_SOCKET,
                      (*sock=PJ_INVALID_SOCKET, PJ_EINVAL));
 
     *sock = WSASocket(af, type, proto, NULL, 0, WSA_FLAG_OVERLAPPED);
 
-    if (*sock == PJ_INVALID_SOCKET) 
+    if (*sock == PJ_INVALID_SOCKET)
 	return PJ_RETURN_OS_ERROR(pj_get_native_netos_error());
-    
+
 #if PJ_SOCK_DISABLE_WSAECONNRESET && \
     (!defined(PJ_WIN32_WINCE) || PJ_WIN32_WINCE==0)
 
@@ -515,9 +515,9 @@ PJ_DEF(pj_status_t) pj_sock_socket(int af,
 /*
  * Create new socket/endpoint for communication and returns a descriptor.
  */
-PJ_DEF(pj_status_t) pj_sock_socket(int af, 
-				   int type, 
-				   int proto, 
+PJ_DEF(pj_status_t) pj_sock_socket(int af,
+				   int type,
+				   int proto,
 				   pj_sock_t *sock)
 {
 
@@ -525,9 +525,9 @@ PJ_DEF(pj_status_t) pj_sock_socket(int af,
 
     /* Sanity checks. */
     PJ_ASSERT_RETURN(sock!=NULL, PJ_EINVAL);
-    PJ_ASSERT_RETURN(PJ_INVALID_SOCKET==-1, 
+    PJ_ASSERT_RETURN(PJ_INVALID_SOCKET==-1,
                      (*sock=PJ_INVALID_SOCKET, PJ_EINVAL));
-    
+
     *sock = socket(af, type, proto);
     if (*sock == PJ_INVALID_SOCKET)
 	return PJ_RETURN_OS_ERROR(pj_get_native_netos_error());
@@ -540,7 +540,7 @@ PJ_DEF(pj_status_t) pj_sock_socket(int af,
 #if defined(PJ_IPHONE_OS_HAS_MULTITASKING_SUPPORT) && \
     PJ_IPHONE_OS_HAS_MULTITASKING_SUPPORT!=0
 	if (type == pj_SOCK_DGRAM()) {
-	    pj_sock_setsockopt(*sock, pj_SOL_SOCKET(), SO_NOSIGPIPE, 
+	    pj_sock_setsockopt(*sock, pj_SOL_SOCKET(), SO_NOSIGPIPE,
 			       &val, sizeof(val));
 	}
 #endif
@@ -552,7 +552,7 @@ PJ_DEF(pj_status_t) pj_sock_socket(int af,
 /*
  * Bind socket.
  */
-PJ_DEF(pj_status_t) pj_sock_bind( pj_sock_t sock, 
+PJ_DEF(pj_status_t) pj_sock_bind( pj_sock_t sock,
 				  const pj_sockaddr_t *addr,
 				  int len)
 {
@@ -561,6 +561,11 @@ PJ_DEF(pj_status_t) pj_sock_bind( pj_sock_t sock,
     PJ_ASSERT_RETURN(addr && len >= (int)sizeof(struct sockaddr_in), PJ_EINVAL);
 
     CHECK_ADDR_LEN(addr, len);
+
+    pj_int32_t val = 1;
+    int rc = pj_sock_setsockopt(sock, pj_SOL_SOCKET(), pj_SO_REUSEADDR(), &val, sizeof(val));
+    if (rc != 0)
+        return rc;
 
     if (bind(sock, (struct sockaddr*)addr, len) != 0)
 	return PJ_RETURN_OS_ERROR(pj_get_native_netos_error());
@@ -572,7 +577,7 @@ PJ_DEF(pj_status_t) pj_sock_bind( pj_sock_t sock,
 /*
  * Bind socket.
  */
-PJ_DEF(pj_status_t) pj_sock_bind_in( pj_sock_t sock, 
+PJ_DEF(pj_status_t) pj_sock_bind_in( pj_sock_t sock,
 				     pj_uint32_t addr32,
 				     pj_uint16_t port)
 {
@@ -680,15 +685,15 @@ PJ_DEF(pj_status_t) pj_sock_sendto(pj_sock_t sock,
 {
     PJ_CHECK_STACK();
     PJ_ASSERT_RETURN(len, PJ_EINVAL);
-    
+
     CHECK_ADDR_LEN(to, tolen);
 
-    *len = sendto(sock, (const char*)buf, *len, flags, 
+    *len = sendto(sock, (const char*)buf, *len, flags,
 		  (const struct sockaddr*)to, tolen);
 
-    if (*len < 0) 
+    if (*len < 0)
 	return PJ_RETURN_OS_ERROR(pj_get_native_netos_error());
-    else 
+    else
 	return PJ_SUCCESS;
 }
 
@@ -705,7 +710,7 @@ PJ_DEF(pj_status_t) pj_sock_recv(pj_sock_t sock,
 
     *len = recv(sock, (char*)buf, *len, flags);
 
-    if (*len < 0) 
+    if (*len < 0)
 	return PJ_RETURN_OS_ERROR(pj_get_native_netos_error());
     else
 	return PJ_SUCCESS;
@@ -724,10 +729,10 @@ PJ_DEF(pj_status_t) pj_sock_recvfrom(pj_sock_t sock,
     PJ_CHECK_STACK();
     PJ_ASSERT_RETURN(buf && len, PJ_EINVAL);
 
-    *len = recvfrom(sock, (char*)buf, *len, flags, 
+    *len = recvfrom(sock, (char*)buf, *len, flags,
 		    (struct sockaddr*)from, (socklen_t*)fromlen);
 
-    if (*len < 0) 
+    if (*len < 0)
 	return PJ_RETURN_OS_ERROR(pj_get_native_netos_error());
     else {
         if (from) {
@@ -829,7 +834,7 @@ PJ_DEF(pj_status_t) pj_sock_accept( pj_sock_t serverfd,
 	PJ_SOCKADDR_SET_LEN(addr, *addrlen);
     }
 #endif
-    
+
     *newsock = accept(serverfd, (struct sockaddr*)addr, (socklen_t*)addrlen);
     if (*newsock==PJ_INVALID_SOCKET)
 	return PJ_RETURN_OS_ERROR(pj_get_native_netos_error());
@@ -840,7 +845,7 @@ PJ_DEF(pj_status_t) pj_sock_accept( pj_sock_t serverfd,
 	    PJ_SOCKADDR_RESET_LEN(addr);
 	}
 #endif
-	    
+	
 	return PJ_SUCCESS;
     }
 }
