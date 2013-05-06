@@ -389,6 +389,10 @@ PJ_DEF(pj_status_t) pjsip_tcp_transport_start3(
     listener->is_registered = PJ_TRUE;
     status = pjsip_tpmgr_register_tpfactory(listener->tpmgr,
 					    &listener->factory);
+    if (status == PJSIP_ETYPEEXISTS) {
+	/* It's not a problem if there is already a TCP factory defined. */
+	status = PJ_SUCCESS;
+    }
     if (status != PJ_SUCCESS) {
 	listener->is_registered = PJ_FALSE;
 	goto on_error;
