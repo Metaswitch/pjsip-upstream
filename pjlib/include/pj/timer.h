@@ -1,5 +1,8 @@
 /* $Id: timer.h 4359 2013-02-21 11:18:36Z bennylp $ */
 /* 
+ * Portions of code copyright (C) 2013  Metaswitch Networks Ltd
+ *  - Don't reschedule a timer when it's already running.
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
