@@ -11,6 +11,8 @@
  *  http://www.cs.wustl.edu/~schmidt/ACE.html
  *
  * ACE is Copyright (C)1993-2006 Douglas C. Schmidt <d.schmidt@vanderbilt.edu>
+ * Portions of code copyright (C) 2013  Metaswitch Networks Ltd
+ *  - Don't reschedule a timer when it's already running.
  *
  * GNU Public License:
  * This program is free software; you can redistribute it and/or modify
