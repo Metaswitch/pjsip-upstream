@@ -2,6 +2,10 @@
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
+ * Copyright (C) 2013  Metaswitch Networks Ltd
+ *  - Add support for index parameter.
+ *  - Improve parsing performance of SIP messages.
+ *  - Add support for History-Info header.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
