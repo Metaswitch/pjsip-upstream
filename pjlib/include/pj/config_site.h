@@ -65,3 +65,12 @@
  * that is enabled by default, but causes interop problems with some clients.
  */
 #define PJSIP_REQ_HAS_VIA_ALIAS PJ_FALSE
+/**
+ * Disable switching to TCP based on message size.  The switch triggers all
+ * the time for UDP clients as our messages sizes are large, and it causes
+ * problems with clients behind NATs.  Since UDP jumbo packet support is now
+ * fairly ubiquitious it seems sensible to disable the switch to TCP and just
+ * send jumbo packets - there's no guarantee this will always work, but probably
+ * more chance than if we do the TCP switch.
+ */
+#define PJSIP_DONT_SWITCH_TO_TCP 1
