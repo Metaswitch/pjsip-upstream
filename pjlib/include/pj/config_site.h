@@ -70,5 +70,5 @@
  * extensively at startup - we see 30-40MB in UTs - and the default
  * chunk size of 4000 bytes is extremely inefficient.  Increase it.
  */
-#define PJSIP_POOL_LEN_ENDPT 10000000
+#define PJSIP_POOL_LEN_ENDPT 20000000
 #define PJSIP_POOL_INC_ENDPT 10000000
