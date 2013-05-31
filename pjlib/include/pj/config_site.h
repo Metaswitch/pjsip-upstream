@@ -65,3 +65,10 @@
  * that is enabled by default, but causes interop problems with some clients.
  */
 #define PJSIP_REQ_HAS_VIA_ALIAS PJ_FALSE
+/**
+ * Increase the chunk size of the endpoint's pool.  This is used
+ * extensively at startup - we see 30-40MB in UTs - and the default
+ * chunk size of 4000 bytes is extremely inefficient.  Increase it.
+ */
+#define PJSIP_POOL_LEN_ENDPT 20000000
+#define PJSIP_POOL_INC_ENDPT 10000000
