@@ -2053,9 +2053,15 @@ static void tp_state_callback(pjsip_transport *tp,
 	pj_memcpy(&st_info, info, sizeof(st_info));
 	while (st_listener != &tp_data->st_listeners) {
 	    st_info.user_data = st_listener->user_data;
+
+	    /* Store the next listener off before the callback in case the
+	     * callback removes this state listener
+	     */
+	    tp_state_listener *next_listener = st_listener->next;
+
 	    (*st_listener->cb)(tp, state, &st_info);
 
-	    st_listener = st_listener->next;
+	    st_listener = next_listener;
 	}
     }
 
