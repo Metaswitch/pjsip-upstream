@@ -1,5 +1,5 @@
 /* $Id: sip_parser.h 4445 2013-03-20 11:29:08Z nanang $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  * Copyright (C) 2013  Metaswitch Networks Ltd
@@ -416,6 +416,14 @@ PJ_DECL(void) pjsip_parse_end_hdr_imp ( pj_scanner *scanner );
 /* Parse generic array header */
 PJ_DECL(void) pjsip_parse_generic_array_hdr_imp(pjsip_generic_array_hdr *hdr,
 						pj_scanner *scanner);
+
+/* Parse name-addr in header */
+PJ_DECL(pjsip_name_addr*) pjsip_parse_name_addr_imp(pj_scanner *scanner,
+                                                    pj_pool_t *pool);
+
+/* Parse URI in header */
+PJ_DECL(pjsip_uri*) pjsip_parse_uri_imp(pj_scanner *scanner, pj_pool_t *pool,
+				        pj_bool_t parse_params);
 
 
 PJ_END_DECL

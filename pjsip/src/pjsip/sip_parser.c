@@ -1,5 +1,5 @@
 /* $Id: sip_parser.c 4445 2013-03-20 11:29:08Z nanang $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  * Copyright (C) 2013  Metaswitch Networks Ltd
@@ -133,6 +133,8 @@ static void	    int_parse_param( pj_scanner *scanner,
 				     pj_str_t *pname,
 				     pj_str_t *pvalue,
 				     unsigned option);
+static pjsip_uri *  int_parse_uri(pj_scanner *scanner, pj_pool_t *pool,
+                                  pj_bool_t parse_params);
 static void	    int_parse_uri_param( pj_scanner *scanner,
 					 pj_pool_t *pool,
 					 pj_str_t *pname,
@@ -1249,6 +1251,20 @@ PJ_DEF(void) pjsip_parse_uri_param_imp( pj_scanner *scanner, pj_pool_t *pool,
 		    &pconst.pjsip_PARAM_CHAR_SPEC_ESC, option);
 }
 
+
+/* Parse name-addr in header */
+PJ_DEF(pjsip_name_addr*) pjsip_parse_name_addr_imp(pj_scanner *scanner,
+                                                   pj_pool_t *pool)
+{
+    return int_parse_name_addr(scanner, pool);
+}
+
+/* Parse URI in header */
+PJ_DEF(pjsip_uri*) pjsip_parse_uri_imp(pj_scanner *scanner, pj_pool_t *pool,
+                                       pj_bool_t parse_params)
+{
+    return int_parse_uri(scanner, pool, parse_params);
+}
 
 /* Parse parameter (";" pname ["=" pvalue]) in SIP header. */
 static void int_parse_param( pj_scanner *scanner, pj_pool_t *pool,
