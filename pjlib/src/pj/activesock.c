@@ -581,8 +581,16 @@ static void ioqueue_on_read_complete(pj_ioqueue_key_t *key,
 	    }
 
 	    /* If callback returns false, we have been destroyed! */
-	    if (!ret)
+	    if (!ret) {
+                /* Close the active socket immediately so it is removed from
+                 * the IO queue, otherwise the IO queue can block up with
+                 * errors while waiting for the higher layers to shut the
+                 * transport down.  pj_activesock_close is idempotent, so
+                 * calling it early is not a problem.
+                 */
+                pj_activesock_close(asock);
 		return;
+            }
 
 	    /* Also stop further read if we've been shutdown */
 	    if (asock->shutdown & SHUT_RX)
