@@ -1185,8 +1185,9 @@ PJ_DEF(pj_status_t) pjsip_tpmgr_unregister_tpfactory( pjsip_tpmgr *mgr,
 {
     pj_lock_acquire(mgr->lock);
 
-    pj_assert(pj_list_find_node(&mgr->factory_list, tpf) == tpf);
-    pj_list_erase(tpf);
+    if (pj_list_find_node(&mgr->factory_list, tpf) == tpf) {
+        pj_list_erase(tpf);
+    }
 
     pj_lock_release(mgr->lock);
 
