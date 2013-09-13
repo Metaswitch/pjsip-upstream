@@ -1045,6 +1045,7 @@ static pj_status_t destroy_transport( pjsip_tpmgr *mgr,
     int key_len;
     pj_uint32_t hval;
     void *entry;
+    pjsip_tp_state_callback state_cb;
 
     TRACE_((THIS_FILE, "Transport %s is being destroyed", tp->obj_name));
 
@@ -1073,6 +1074,15 @@ static pj_status_t destroy_transport( pjsip_tpmgr *mgr,
 
     pj_lock_release(mgr->lock);
 
+    /* Notify application of transport destroyed state */
+    state_cb = pjsip_tpmgr_get_state_cb(mgr);
+    if (state_cb) {
+	pjsip_transport_state_info state_info;
+
+	pj_bzero(&state_info, sizeof(state_info));
+	(*state_cb)(tp, PJSIP_TP_STATE_DESTROYED, &state_info);
+    }
+    
     /* Destroy. */
     return tp->destroy(tp);
 }
@@ -1186,7 +1196,7 @@ PJ_DEF(pj_status_t) pjsip_tpmgr_unregister_tpfactory( pjsip_tpmgr *mgr,
     pj_lock_acquire(mgr->lock);
 
     if (pj_list_find_node(&mgr->factory_list, tpf) == tpf) {
-        pj_list_erase(tpf);
+	pj_list_erase(tpf);
     }
 
     pj_lock_release(mgr->lock);
