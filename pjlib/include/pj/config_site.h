@@ -72,3 +72,16 @@
  */
 #define PJSIP_POOL_LEN_ENDPT 20000000
 #define PJSIP_POOL_INC_ENDPT 10000000
+/**
+ * Move to soft assert behaviour rather than hard asserts.
+ */
+extern int pj_log_get_level(void);
+extern void pj_log_1(const char *src, const char *format, ...);
+#define pj_assert(expr) \
+          if (!(expr)) { \
+              if (pj_log_get_level() >= 1) { \
+                  pj_log_1("Assert failed:", "%s:%d %s", \
+                           __FILE__, __LINE__, #expr); \
+              } \
+          }
+
