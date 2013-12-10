@@ -1976,15 +1976,18 @@ static void tsx_tp_state_callback( pjsip_transport *tp,
 
 	tsx = (pjsip_transaction*)info->user_data;
 
-	/* Post the event for later processing, to avoid deadlock.
-	 * See https://trac.pjsip.org/repos/ticket/1646
-	 */
-	lock_timer(tsx);
-	tsx->transport_err = info->status;
-	tsx_cancel_timer(tsx, &tsx->timeout_timer);
-	tsx_schedule_timer(tsx, &tsx->timeout_timer, &delay,
-	                   TRANSPORT_ERR_TIMER);
-	unlock_timer(tsx);
+	/* Ignore the event if the transaction has already terminated. */
+	if (tsx->state < PJSIP_TSX_STATE_TERMINATED) {
+	    /* Post the event for later processing, to avoid deadlock.
+	     * See https://trac.pjsip.org/repos/ticket/1646
+	     */
+	    lock_timer(tsx);
+	    tsx->transport_err = info->status;
+	    tsx_cancel_timer(tsx, &tsx->timeout_timer);
+	    tsx_schedule_timer(tsx, &tsx->timeout_timer, &delay,
+	                       TRANSPORT_ERR_TIMER);
+	    unlock_timer(tsx);
+	}
     }
 }
 
