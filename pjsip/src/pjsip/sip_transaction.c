@@ -1976,7 +1976,9 @@ static void tsx_tp_state_callback( pjsip_transport *tp,
 
 	tsx = (pjsip_transaction*)info->user_data;
 
-	/* Ignore the event if the transaction has already terminated. */
+	/* Ignore the event if the transaction has already terminated,
+	 * otherwise the transition to destroyed state won't happen.
+	 */
 	if (tsx->state < PJSIP_TSX_STATE_TERMINATED) {
 	    /* Post the event for later processing, to avoid deadlock.
 	     * See https://trac.pjsip.org/repos/ticket/1646
