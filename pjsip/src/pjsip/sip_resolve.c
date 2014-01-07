@@ -214,12 +214,11 @@ PJ_DEF(void) pjsip_resolve( pjsip_resolver_t *resolver,
 		type = PJSIP_TRANSPORT_UDP;
 	    }
 	}
-
-	/* Add IPv6 flag for IPv6 address */
-	if (ip_addr_ver == 6)
-	    type = (pjsip_transport_type_e)((int)type + PJSIP_TRANSPORT_IPV6);
     }
 
+    /* Add IPv6 flag for IPv6 address, which may already have been set. */
+    if (ip_addr_ver == 6)
+	type = (pjsip_transport_type_e)((int)type | PJSIP_TRANSPORT_IPV6);
 
     /* If target is an IP address, or if resolver is not configured, 
      * we can just finish the resolution now using pj_gethostbyname()
