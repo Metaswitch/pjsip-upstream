@@ -149,9 +149,6 @@ static void parse_digest_challenge( pj_scanner *scanner, pj_pool_t *pool,
 	    unquoted_value.slen = value.slen;
 	}
 
-	pjsip_parse_param_imp(scanner, pool, &name, &value,
-			      PJSIP_PARSE_REMOVE_QUOTE);
-
 	if (!pj_stricmp(&name, &pjsip_REALM_STR)) {
 	    chal->realm = unquoted_value;
 
