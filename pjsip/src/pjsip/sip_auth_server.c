@@ -127,8 +127,12 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
     pjsip_authorization_hdr *h_auth;
     pjsip_msg *msg = rdata->msg_info.msg;
     pjsip_hdr_e htype;
+    pj_str_t realm;
     pj_str_t acc_name;
     pjsip_cred_info cred_info;
+    pj_bool_t invalid_auth_scheme = PJ_FALSE;
+    pj_bool_t forbidden = PJ_FALSE;
+    pj_bool_t succeeded = PJ_FALSE;
     pj_status_t status;
 
     PJ_ASSERT_RETURN(auth_srv && rdata, PJ_EINVAL);
@@ -137,14 +141,53 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
     htype = auth_srv->is_proxy ? PJSIP_H_PROXY_AUTHORIZATION : 
 				 PJSIP_H_AUTHORIZATION;
 
-    /* Initialize status with 200. */
-    *status_code = 200;
-
-    /* Find authorization header for our realm. */
+    /* Find authorization header(s) for our realm and process them. */
     h_auth = (pjsip_authorization_hdr*) pjsip_msg_find_hdr(msg, htype, NULL);
     while (h_auth) {
-	if (!pj_stricmp(&h_auth->credential.common.realm, &auth_srv->realm))
-	    break;
+	realm = h_auth->credential.common.realm;
+	if (((auth_srv->realm.slen == 1) &&
+             (auth_srv->realm.ptr[0] == '*')) ||
+            (!pj_stricmp(&realm, &auth_srv->realm))) {
+
+	    /* Check authorization scheme. */
+	    if (pj_stricmp(&h_auth->scheme, &pjsip_DIGEST_STR) == 0) {
+		acc_name = h_auth->credential.digest.username;
+
+		/* Find the credential information for the account. */
+		if (auth_srv->lookup2) {
+		    pjsip_auth_lookup_cred_param param;
+
+		    pj_bzero(&param, sizeof(param));
+		    param.realm = realm;
+		    param.acc_name = acc_name;
+		    param.rdata = rdata;
+		    status = (*auth_srv->lookup2)(rdata->tp_info.pool, &param,
+						  &cred_info);
+		} else {
+		    status = (*auth_srv->lookup)(rdata->tp_info.pool, &realm,
+						 &acc_name, &cred_info);
+		}
+
+		/* Authenticate with the specified credential. */
+		if (status == PJ_SUCCESS) {
+		    status = pjsip_auth_verify(h_auth,
+					       &msg->line.req.method.name,
+					       &cred_info);
+		}
+
+		if (status == PJ_SUCCESS) {
+		    succeeded = PJ_TRUE;
+		    break;
+		} else {
+		    if (status == PJSIP_EAUTHNOAUTH)
+		        invalid_auth_scheme = PJ_TRUE;
+		    else
+		        forbidden = PJ_TRUE;
+		}
+	    } else {
+                invalid_auth_scheme = PJ_TRUE;
+	    }
+        }
 
 	h_auth = h_auth->next;
 	if (h_auth == (void*) &msg->hdr) {
@@ -155,48 +198,17 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
 	h_auth=(pjsip_authorization_hdr*)pjsip_msg_find_hdr(msg,htype,h_auth);
     }
 
-    if (!h_auth) {
-	*status_code = auth_srv->is_proxy ? 407 : 401;
-	return PJSIP_EAUTHNOAUTH;
-    }
-
-    /* Check authorization scheme. */
-    if (pj_stricmp(&h_auth->scheme, &pjsip_DIGEST_STR) == 0)
-	acc_name = h_auth->credential.digest.username;
-    else {
-	*status_code = auth_srv->is_proxy ? 407 : 401;
-	return PJSIP_EINVALIDAUTHSCHEME;
-    }
-
-    /* Find the credential information for the account. */
-    if (auth_srv->lookup2) {
-	pjsip_auth_lookup_cred_param param;
-
-	pj_bzero(&param, sizeof(param));
-	param.realm = auth_srv->realm;
-	param.acc_name = acc_name;
-	param.rdata = rdata;
-	status = (*auth_srv->lookup2)(rdata->tp_info.pool, &param, &cred_info);
-	if (status != PJ_SUCCESS) {
-	    *status_code = PJSIP_SC_FORBIDDEN;
-	    return status;
-	}
-    } else {
-	status = (*auth_srv->lookup)(rdata->tp_info.pool, &auth_srv->realm,
-				     &acc_name, &cred_info);
-	if (status != PJ_SUCCESS) {
-	    *status_code = PJSIP_SC_FORBIDDEN;
-	    return status;
-	}
-    }
-
-    /* Authenticate with the specified credential. */
-    status = pjsip_auth_verify(h_auth, &msg->line.req.method.name, 
-			       &cred_info);
-    if (status != PJ_SUCCESS) {
-	*status_code = PJSIP_SC_FORBIDDEN;
-    }
-    return status;
+    /* Work out the status code and return code.  Because there may have been
+     * multiple authorization headers, we have an order of precedence:
+     * Success > forbidden > invalid auth scheme > no auth
+     */
+    *status_code = succeeded ? 200 :
+                   forbidden ? PJSIP_SC_FORBIDDEN :
+                   auth_srv->is_proxy ? 407 : 401;
+    return succeeded ? PJ_SUCCESS :
+	   forbidden ? status :
+	   invalid_auth_scheme ? PJSIP_EINVALIDAUTHSCHEME :
+	   PJSIP_EAUTHNOAUTH;
 }
 
 
