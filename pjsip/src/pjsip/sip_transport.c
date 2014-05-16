@@ -43,6 +43,9 @@
 
 #if 0
 #   define TRACE_(x)	PJ_LOG(5,x)
+#else
+#   define TRACE_(x)
+#endif
 
 static const char *addr_string(const pj_sockaddr_t *addr)
 {
@@ -52,9 +55,6 @@ static const char *addr_string(const pj_sockaddr_t *addr)
 		 str, sizeof(str));
     return str;
 }
-#else
-#   define TRACE_(x)
-#endif
 
 /* Prototype. */
 static pj_status_t mod_on_tx_msg(pjsip_tx_data *tdata);
@@ -1029,11 +1029,10 @@ PJ_DEF(pj_status_t) pjsip_transport_register( pjsip_tpmgr *mgr,
 
     pj_lock_release(mgr->lock);
 
-    TRACE_((THIS_FILE,"Transport %s registered: type=%s, remote=%s:%d",
-		       tp->obj_name,
-		       pjsip_transport_get_type_name(tp->key.type),
-		       addr_string(&tp->key.rem_addr),
-		       pj_sockaddr_get_port(&tp->key.rem_addr)));
+    PJ_LOG(5, (tp->obj_name, "Transport registered: type=%s, remote=%s:%d",
+			     pjsip_transport_get_type_name(tp->key.type),
+			     addr_string(&tp->key.rem_addr),
+ 			     pj_sockaddr_get_port(&tp->key.rem_addr)));
 
     return PJ_SUCCESS;
 }
@@ -1047,7 +1046,7 @@ static pj_status_t destroy_transport( pjsip_tpmgr *mgr,
     void *entry;
     pjsip_tp_state_callback state_cb;
 
-    TRACE_((THIS_FILE, "Transport %s is being destroyed", tp->obj_name));
+    PJ_LOG(5, (tp->obj_name, "Transport is being destroyed"));
 
     pj_lock_acquire(tp->lock);
     pj_lock_acquire(mgr->lock);
@@ -1096,7 +1095,7 @@ PJ_DEF(pj_status_t) pjsip_transport_shutdown(pjsip_transport *tp)
     pjsip_tpmgr *mgr;
     pj_status_t status;
 
-    TRACE_((THIS_FILE, "Transport %s shutting down", tp->obj_name));
+    PJ_LOG(5, (tp->obj_name, "Transport shutting down"));
 
     pj_lock_acquire(tp->lock);
 

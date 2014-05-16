@@ -182,6 +182,8 @@ static void tcp_init_shutdown(struct tcp_transport *tcp, pj_status_t status)
     if (tcp->base.is_shutdown)
 	return;
 
+    PJ_LOG(4,(tcp->base.obj_name, "TCP shutdown initiated (code %d)", status));
+
     /* Prevent immediate transport destroy by application, as transport
      * state notification callback may be stacked and transport instance
      * must remain valid at any point in the callback.
