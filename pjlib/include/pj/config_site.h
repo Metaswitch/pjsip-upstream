@@ -58,8 +58,9 @@
  * STUN/TURN can be very large due to the many alternatives offered,
  * and we mustn't drop them.  This can be set as high as 65535,
  * but packets of that size are almost certainly pathological.
+ * Sprout issue #952 / oldurecu / 03.06.2014 / Moved value from 4000 to 65536 (64 kb)
  */
-#define PJSIP_MAX_PKT_LEN 8000
+#define PJSIP_MAX_PKT_LEN 65536
 /**
  * Disable alias parameter on Via headers.  This is a new feature in PJSIP
  * that is enabled by default, but causes interop problems with some clients.
