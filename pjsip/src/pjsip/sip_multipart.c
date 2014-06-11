@@ -1,5 +1,5 @@
 /* $Id: sip_multipart.c 3841 2011-10-24 09:28:13Z ming $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include <pjsip/sip_multipart.h>
 #include <pjsip/sip_parser.h>
@@ -89,46 +89,6 @@ static int multipart_print_body(struct pjsip_msg_body *msg_body,
 	    *p++ = '\r';
 	    *p++ = '\n';
 	    hdr = hdr->next;
-	}
-
-	/* Automaticly adds Content-Type and Content-Length headers, only
-	 * if content_type is set in the message body.
-	 */
-	if (part->body && part->body->content_type.type.slen) {
-	    pj_str_t ctype_hdr = { "Content-Type: ", 14};
-	    const pjsip_media_type *media = &part->body->content_type;
-
-	    if (pjsip_use_compact_form) {
-		ctype_hdr.ptr = "c: ";
-		ctype_hdr.slen = 3;
-	    }
-
-	    /* Add Content-Type header. */
-	    if ( (end-p) < 24 + media->type.slen + media->subtype.slen) {
-		return -1;
-	    }
-	    pj_memcpy(p, ctype_hdr.ptr, ctype_hdr.slen);
-	    p += ctype_hdr.slen;
-	    p += pjsip_media_type_print(p, end-p, media);
-	    *p++ = '\r';
-	    *p++ = '\n';
-
-	    /* Add Content-Length header. */
-	    if ((end-p) < clen_hdr.slen + 12 + 2) {
-		return -1;
-	    }
-	    pj_memcpy(p, clen_hdr.ptr, clen_hdr.slen);
-	    p += clen_hdr.slen;
-
-	    /* Print blanks after "Content-Length:", this is where we'll put
-	     * the content length value after we know the length of the
-	     * body.
-	     */
-	    pj_memset(p, ' ', CLEN_SPACE);
-	    clen_pos = p;
-	    p += CLEN_SPACE;
-	    *p++ = '\r';
-	    *p++ = '\n';
 	}
 
 	/* Empty newline */
@@ -457,7 +417,7 @@ static pjsip_multipart_part *parse_multipart_part(pj_pool_t *pool,
 	pjsip_hdr *hdr;
 	pj_status_t status;
 
-	status = pjsip_parse_headers(pool, start, end_hdr-start, 
+	status = pjsip_parse_headers(pool, start, end_hdr-start,
 				     &part->hdr, 0);
 	if (status != PJ_SUCCESS) {
 	    PJ_PERROR(2,(THIS_FILE, status, "Warning: error parsing multipart"
@@ -525,11 +485,7 @@ PJ_DEF(pjsip_msg_body*) pjsip_multipart_parse(pj_pool_t *pool,
     ctype_param = pjsip_param_find(&ctype->param, &STR_BOUNDARY);
     if (ctype_param) {
 	boundary = ctype_param->value;
-	if (boundary.slen>2 && *boundary.ptr=='"') {
-	    /* Remove quote */
-	    boundary.ptr++;
-	    boundary.slen -= 2;
-	}
+	// Don't strip quotes from the boundary.
 	TRACE_((THIS_FILE, "Boundary is specified: '%.*s'", (int)boundary.slen,
 		boundary.ptr));
     }
