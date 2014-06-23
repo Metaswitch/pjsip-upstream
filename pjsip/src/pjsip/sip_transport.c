@@ -1,5 +1,5 @@
 /* $Id: sip_transport.c 4295 2012-11-06 05:22:11Z nanang $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  * Copyright (C) 2013  Metaswitch Networks Ltd
@@ -477,29 +477,63 @@ PJ_DEF(void) pjsip_tx_data_invalidate_msg( pjsip_tx_data *tdata )
  */
 PJ_DEF(pj_status_t) pjsip_tx_data_encode(pjsip_tx_data *tdata)
 {
-    /* Allocate buffer if necessary. */
-    if (tdata->buf.start == NULL) {
-	PJ_USE_EXCEPTION;
-
-	PJ_TRY {
-	    tdata->buf.start = (char*)
-			       pj_pool_alloc(tdata->pool, PJSIP_MAX_PKT_LEN);
-	}
-	PJ_CATCH_ANY {
-	    return PJ_ENOMEM;
-	}
-	PJ_END
-
-	tdata->buf.cur = tdata->buf.start;
-	tdata->buf.end = tdata->buf.start + PJSIP_MAX_PKT_LEN;
-    }
-
     /* Do we need to reprint? */
     if (!pjsip_tx_data_is_valid(tdata)) {
+
+        /* Allocate buffer if necessary. */
+        if (tdata->buf.start == NULL) {
+
+            pj_ssize_t buf_size = PJSIP_NORMAL_PKT_LEN;
+            if (tdata->msg->body != NULL &&
+                tdata->msg->body->len > PJSIP_NORMAL_PKT_LEN) {
+                /* Body is too large for the normal packet size, so use the
+                 * maximum size immediately.
+                 */
+                buf_size = PJSIP_MAX_PKT_LEN;
+            }
+
+            PJ_USE_EXCEPTION;
+
+            PJ_TRY {
+                tdata->buf.start = (char*)
+                                   pj_pool_alloc(tdata->pool, buf_size);
+            }
+            PJ_CATCH_ANY {
+                return PJ_ENOMEM;
+            }
+            PJ_END
+
+            tdata->buf.cur = tdata->buf.start;
+            tdata->buf.end = tdata->buf.start + buf_size;
+        }
+
 	pj_ssize_t size;
 
 	size = pjsip_msg_print( tdata->msg, tdata->buf.start,
 			        tdata->buf.end - tdata->buf.start);
+
+        if (size < 0 && tdata->buf.end - tdata->buf.start < PJSIP_MAX_PKT_LEN) {
+            /* Message didn't fit in a smaller buffer, so try a maximum
+             * sized one.
+             */
+            PJ_USE_EXCEPTION;
+
+            PJ_TRY {
+                tdata->buf.start = (char*)
+                                   pj_pool_alloc(tdata->pool, PJSIP_MAX_PKT_LEN);
+            }
+            PJ_CATCH_ANY {
+                return PJ_ENOMEM;
+            }
+            PJ_END
+
+            tdata->buf.cur = tdata->buf.start;
+            tdata->buf.end = tdata->buf.start + PJSIP_MAX_PKT_LEN;
+
+            size = pjsip_msg_print( tdata->msg, tdata->buf.start,
+                                    tdata->buf.end - tdata->buf.start);
+        }
+
 	if (size < 0) {
 	    return PJSIP_EMSGTOOLONG;
 	}
@@ -643,7 +677,8 @@ PJ_DEF(pj_status_t) pjsip_rx_data_clone( const pjsip_rx_data *src,
      * interest in the packet buffer, rather than the whole buffer.
      */
     dst->pkt_info.timestamp = src->pkt_info.timestamp;
-    pj_memcpy(&dst->pkt_info.packet, src->msg_info.msg_buf, src->msg_info.len);
+    dst->pkt_info.packet = pj_pool_alloc(pool, src->pkt_info.len + 1);
+    pj_memcpy(dst->pkt_info.packet, src->msg_info.msg_buf, src->msg_info.len);
     dst->pkt_info.zero = src->pkt_info.zero;
     dst->pkt_info.len = src->pkt_info.len;
     dst->pkt_info.src_addr = src->pkt_info.src_addr;
@@ -1082,7 +1117,7 @@ static pj_status_t destroy_transport( pjsip_tpmgr *mgr,
 	pj_bzero(&state_info, sizeof(state_info));
 	(*state_cb)(tp, PJSIP_TP_STATE_DESTROYED, &state_info);
     }
-    
+
     /* Destroy. */
     return tp->destroy(tp);
 }

@@ -1,5 +1,5 @@
 /* $Id: sip_transport.h 4275 2012-10-04 06:11:58Z bennylp $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  * Copyright (C) 2013  Metaswitch Networks Ltd
@@ -314,7 +314,7 @@ struct pjsip_rx_data
 	pj_time_val		 timestamp;
 
 	/** Pointer to the original packet. */
-	char			 packet[PJSIP_MAX_PKT_LEN];
+	char*			 packet;
 
 	/** Zero termination for the packet. */
 	pj_uint32_t		 zero;
@@ -1396,10 +1396,10 @@ typedef enum pjsip_transport_state
     PJSIP_TP_STATE_DISCONNECTED,    /**< Transport disconnected, applicable
 					 only to connection-oriented
 					 transports such as TCP and TLS.    */
-    PJSIP_TP_STATE_DESTROYED	    /**< Transport destroyed. When the 
-					 transport is in this state, its 
-					 public fields may be read, but it 
-					 is illegal to perform any 
+    PJSIP_TP_STATE_DESTROYED	    /**< Transport destroyed. When the
+					 transport is in this state, its
+					 public fields may be read, but it
+					 is illegal to perform any
 					 operations on the transport.       */
 } pjsip_transport_state;
 
