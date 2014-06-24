@@ -128,8 +128,6 @@ static void udp_on_read_complete( pj_ioqueue_key_t *key,
     int i;
     pj_status_t status;
 
-    PJ_LOG(4,(THIS_FILE, "Received UDP packet size %d", bytes_read));
-
     /* Don't do anything if transport is closing. */
     if (tp->is_closing) {
 	tp->is_closing++;
@@ -238,7 +236,7 @@ static void udp_on_read_complete( pj_ioqueue_key_t *key,
 	    return;
 
 	/* Read next packet. */
-	bytes_read = sizeof(rdata->pkt_info.packet);
+	bytes_read = PJSIP_MAX_PKT_LEN;
 	rdata->pkt_info.src_addr_len = sizeof(rdata->pkt_info.src_addr);
 	status = pj_ioqueue_recvfrom(key, op_key,
 				     rdata->pkt_info.packet,
