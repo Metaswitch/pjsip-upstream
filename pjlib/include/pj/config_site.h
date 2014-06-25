@@ -54,13 +54,6 @@
  */
 #define PJSIP_TCP_KEEP_ALIVE_INTERVAL 0
 /**
- * Increase the maximum packet length. INVITEs for video with
- * STUN/TURN can be very large due to the many alternatives offered,
- * and we mustn't drop them.  This can be set as high as 65535,
- * but packets of that size are almost certainly pathological.
- */
-#define PJSIP_MAX_PKT_LEN 8000
-/**
  * Disable alias parameter on Via headers.  This is a new feature in PJSIP
  * that is enabled by default, but causes interop problems with some clients.
  */
