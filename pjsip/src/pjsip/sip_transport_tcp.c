@@ -646,8 +646,8 @@ static pj_status_t tcp_create( struct tcp_listener *listener,
 
     /* Create a pool for large messages. */
     tcp->large_msg_pool =
-             pjsip_endpt_create_pool(listener->endpt, "tcp-lm",
-                                     PJSIP_MAX_PKT_LEN, PJSIP_MAX_PKT_LEN);
+                     pjsip_endpt_create_pool(listener->endpt, "tcp-lm",
+                                             POOL_TP_INIT, PJSIP_MAX_PKT_LEN);
     if (tcp->large_msg_pool == NULL) {
         goto on_error;
     }
@@ -1334,7 +1334,7 @@ static pj_bool_t on_data_read(pj_activesock_t *asock,
         pj_assert(size_eaten <= (pj_size_t)rdata->pkt_info.len);
 
         /* Handle unprocessed data. */
-        *remainder = size - size_eaten;
+        *remainder = rdata->pkt_info.len - size_eaten;
         if (*remainder < PJSIP_NORMAL_PKT_LEN) {
 
             if (*remainder > 0)
@@ -1346,9 +1346,11 @@ static pj_bool_t on_data_read(pj_activesock_t *asock,
                     /* Data has been moved to a separate large buffer, so
                      * copy it back to the receive buffer.
                      */
-                    pj_memcpy(tcp->rx_buf, rdata->pkt_info.packet + size_eaten, *remainder);
+                    pj_memcpy(tcp->rx_buf,
+                              rdata->pkt_info.packet + size_eaten,
+                              *remainder);
 
-                } else if (*remainder != size) {
+                } else if (size_eaten > 0) {
                     /* Data is already in the receive buffer, so just move it
                      * to the front.
                      */
@@ -1364,20 +1366,31 @@ static pj_bool_t on_data_read(pj_activesock_t *asock,
 
             rdata->pkt_info.packet = NULL;
 
-        } else if (rdata->pkt_info.packet == tcp->rx_buf) {
-            /* Message is too large for the receive buffer, so allocate a
-             * large message buffer and copy the data across.
+        } else {
+
+            if (rdata->pkt_info.packet == tcp->rx_buf) {
+                /* Message is too large for the receive buffer, so allocate a
+                 * large message buffer and copy the data across.
+                 */
+                rdata->pkt_info.packet = (char*)
+                        pj_pool_alloc(tcp->large_msg_pool, PJSIP_MAX_PKT_LEN);
+                pj_memcpy(rdata->pkt_info.packet,
+                          tcp->rx_buf + size_eaten,
+                          *remainder);
+                *remainder = 0;
+
+            } else if (size_eaten > 0) {
+                /* Move data to the front of the large message buffer. */
+                pj_memmove(rdata->pkt_info.packet,
+                           rdata->pkt_info.packet + size_eaten,
+                           *remainder);
+
+            }
+
+            /* All data has been moved from the receive buffer, so return
+             * remainder of zero.
              */
-            pj_pool_reset(rdata->tp_info.pool);
-            rdata->pkt_info.packet = (char*)pj_pool_alloc(tcp->large_msg_pool, PJSIP_MAX_PKT_LEN);
-            pj_memcpy(rdata->pkt_info.packet, tcp->rx_buf + size_eaten, *remainder);
-
-        } else if (*remainder != size) {
-            /* Move data to the front of the large message buffer. */
-            pj_memmove(rdata->pkt_info.packet,
-                       rdata->pkt_info.packet + size_eaten,
-                       *remainder);
-
+            *remainder = 0;
         }
 
     } else {

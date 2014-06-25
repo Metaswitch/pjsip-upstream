@@ -104,8 +104,11 @@ struct tls_transport
      */
     pjsip_rx_data	     rdata;
 
-    /* The packet buffer passed to the asock for receiving data. */
-    char                     packet[PJSIP_MAX_PKT_LEN];
+    /* The buffer passed to the asock for receiving data. */
+    char                     rx_buf[PJSIP_NORMAL_PKT_LEN];
+
+    /* Pool used for large message buffers when required. */
+    pj_pool_t               *large_msg_pool;
 
     /* Pending transmission list. */
     struct delayed_tdata     delayed_list;
@@ -658,6 +661,14 @@ static pj_status_t tls_create( struct tls_listener *listener,
 
     tls->ssock = ssock;
 
+    /* Create a pool for large messages. */
+    tls->large_msg_pool =
+                     pjsip_endpt_create_pool(listener->endpt, "tls-lm",
+                                             POOL_TP_INIT, PJSIP_MAX_PKT_LEN);
+    if (tls->large_msg_pool == NULL) {
+        goto on_error;
+    }
+
     /* Register transport to transport manager */
     status = pjsip_transport_register(listener->tpmgr, &tls->base);
     if (status != PJ_SUCCESS) {
@@ -791,6 +802,12 @@ static pj_status_t tls_destroy(pjsip_transport *transport,
 	pj_ssl_sock_close(tls->ssock);
 	tls->ssock = NULL;
     }
+
+    if (tls->large_msg_pool) {
+        pj_pool_release(tls->large_msg_pool);
+        tls->large_msg_pool == NULL;
+    }
+
     if (tls->base.lock) {
 	pj_lock_destroy(tls->base.lock);
 	tls->base.lock = NULL;
@@ -866,8 +883,8 @@ static pj_status_t tls_start_read(struct tls_transport *tls)
                           sizeof(tls->rdata.pkt_info.src_name), 0);
     tls->rdata.pkt_info.src_port = pj_sockaddr_get_port(rem_addr);
 
-    size = PJSIP_MAX_PKT_LEN;
-    tls->rdata.pkt_info.packet = tls->packet;
+    size = PJSIP_NORMAL_PKT_LEN;
+    tls->rdata.pkt_info.packet = tls->rx_buf;
     readbuf[0] = tls->rdata.pkt_info.packet;
     status = pj_ssl_sock_start_read2(tls->ssock, tls->base.pool, size,
 				     readbuf, 0);
@@ -1388,30 +1405,97 @@ static pj_bool_t on_data_read(pj_ssl_sock_t *ssock,
 	/* Mark this as an activity */
 	pj_gettimeofday(&tls->last_activity);
 
-	pj_assert((void*)rdata->pkt_info.packet == data);
+        if (rdata->pkt_info.packet == NULL) {
+            /* There is no data already buffered in the rdata, so link the
+             * rdata to the receive buffer to see if this is enough for the
+             * transport manager to consume.
+             */
+            rdata->pkt_info.packet = tls->rx_buf;
+            rdata->pkt_info.len = size;
 
-	/* Init pkt_info part. */
-	rdata->pkt_info.len = size;
-	rdata->pkt_info.zero = 0;
-	pj_gettimeofday(&rdata->pkt_info.timestamp);
+        } else {
+            /* The rdata already has a linked buffer containing some data, so
+             * append the new data and see if the transport manager can consume
+             * this.
+             */
+            pj_memcpy(&rdata->pkt_info.packet[rdata->pkt_info.len], data, size);
+            rdata->pkt_info.len += size;
 
-	/* Report to transport manager.
-	 * The transport manager will tell us how many bytes of the packet
-	 * have been processed (as valid SIP message).
-	 */
-	size_eaten =
-	    pjsip_tpmgr_receive_packet(rdata->tp_info.transport->tpmgr,
-				       rdata);
+        }
 
-	pj_assert(size_eaten <= (pj_size_t)rdata->pkt_info.len);
+        /* Init pkt_info part. */
+        rdata->pkt_info.zero = 0;
+        pj_gettimeofday(&rdata->pkt_info.timestamp);
 
-	/* Move unprocessed data to the front of the buffer */
-	*remainder = size - size_eaten;
-	if (*remainder > 0 && *remainder != size) {
-	    pj_memmove(rdata->pkt_info.packet,
-		       rdata->pkt_info.packet + size_eaten,
-		       *remainder);
-	}
+        /* Report to transport manager.
+         * The transport manager will tell us how many bytes of the packet
+         * have been processed (as valid SIP message).
+         */
+        size_eaten =
+            pjsip_tpmgr_receive_packet(rdata->tp_info.transport->tpmgr,
+                                       rdata);
+
+        pj_assert(size_eaten <= (pj_size_t)rdata->pkt_info.len);
+
+        /* Handle unprocessed data. */
+        *remainder = rdata->pkt_info.len - size_eaten;
+        if (*remainder < PJSIP_NORMAL_PKT_LEN) {
+
+            if (*remainder > 0)
+            {
+                /* Remainder will fit in receive buffer, so just copy it to
+                 * the front of the buffer.
+                 */
+                if (rdata->pkt_info.packet != tls->rx_buf) {
+                    /* Data has been moved to a separate large buffer, so
+                     * copy it back to the receive buffer.
+                     */
+                    pj_memcpy(tls->rx_buf,
+                              rdata->pkt_info.packet + size_eaten,
+                              *remainder);
+
+                } else if (size_eaten > 0) {
+                    /* Data is already in the receive buffer, so just move it
+                     * to the front.
+                     */
+                    pj_memmove(tls->rx_buf,
+                               tls->rx_buf + size_eaten,
+                               *remainder);
+
+                }
+            }
+
+            /* Reset the large message pool. */
+            pj_pool_reset(tls->large_msg_pool);
+
+            rdata->pkt_info.packet = NULL;
+
+        } else {
+
+            if (rdata->pkt_info.packet == tls->rx_buf) {
+                /* Message is too large for the receive buffer, so allocate a
+                 * large message buffer and copy the data across.
+                 */
+                rdata->pkt_info.packet = (char*)
+                        pj_pool_alloc(tls->large_msg_pool, PJSIP_MAX_PKT_LEN);
+                pj_memcpy(rdata->pkt_info.packet,
+                          tls->rx_buf + size_eaten,
+                          *remainder);
+                *remainder = 0;
+
+            } else if (size_eaten > 0) {
+                /* Move data to the front of the large message buffer. */
+                pj_memmove(rdata->pkt_info.packet,
+                           rdata->pkt_info.packet + size_eaten,
+                           *remainder);
+
+            }
+
+            /* All data has been moved from the receive buffer, so return
+             * remainder of zero.
+             */
+            *remainder = 0;
+        }
 
     } else {
 
