@@ -1188,9 +1188,9 @@ static pj_bool_t on_accept_complete(pj_ssl_sock_t *ssock,
 	/* Start keep-alive timer */
 	if (PJSIP_TLS_KEEP_ALIVE_INTERVAL) {
 	    pj_time_val delay = {PJSIP_TLS_KEEP_ALIVE_INTERVAL, 0};
-	    pjsip_endpt_schedule_timer(listener->endpt,
+	    pjsip_endpt_schedule_timer(listener->endpt, 
 				       &tls->ka_timer, 
-				       &delay); 
+				       &delay);
 	    tls->ka_timer.id = PJ_TRUE;
 	    pj_gettimeofday(&tls->last_activity);
 	}
