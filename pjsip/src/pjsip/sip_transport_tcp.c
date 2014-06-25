@@ -1,5 +1,5 @@
 /* $Id: sip_transport_tcp.c 4294 2012-11-06 05:02:10Z nanang $ */
-/*
+/* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  * Copyright (C) 2013  Metaswitch Networks Ltd
@@ -281,7 +281,7 @@ PJ_DEF(pj_status_t) pjsip_tcp_transport_start3(
 						     PJSIP_TRANSPORT_TCP6;
     listener->factory.type_name = (char*)
 		pjsip_transport_get_type_name(listener->factory.type);
-    listener->factory.flag =
+    listener->factory.flag = 
 	pjsip_transport_get_flag_from_type(listener->factory.type);
     listener->qos_type = cfg->qos_type;
     pj_memcpy(&listener->qos_params, &cfg->qos_params,
@@ -953,7 +953,7 @@ static pj_status_t lis_create_transport(pjsip_tpfactory *factory,
     }
 
     /* Create the transport descriptor */
-    status = tcp_create(listener, NULL, sock, PJ_FALSE, &local_addr,
+    status = tcp_create(listener, NULL, sock, PJ_FALSE, &local_addr, 
 			rem_addr, &tcp);
     if (status != PJ_SUCCESS)
 	return status;
@@ -1050,7 +1050,7 @@ static pj_bool_t on_accept_complete(pj_activesock_t *asock,
     pj_bzero(&tmp_src_addr, sizeof(tmp_src_addr));
     pj_sockaddr_cp(&tmp_src_addr, src_addr);
 
-    /*
+    /* 
      * Incoming connection!
      * Create TCP transport for the new socket.
      */
@@ -1200,7 +1200,7 @@ static pj_status_t tcp_send_msg(pjsip_transport *transport,
              * connect() is completed, the timeout value will be checked to
              * determine whether the transmit data needs to be sent.
 	     */
-	    delayed_tdata = PJ_POOL_ZALLOC_T(tdata->pool,
+	    delayed_tdata = PJ_POOL_ZALLOC_T(tdata->pool, 
 					     struct delayed_tdata);
 	    delayed_tdata->tdata_op_key = &tdata->op_key;
             if (tdata->msg && tdata->msg->type == PJSIP_REQUEST_MSG) {

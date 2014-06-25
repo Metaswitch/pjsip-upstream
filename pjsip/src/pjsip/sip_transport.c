@@ -1,5 +1,5 @@
 /* $Id: sip_transport.c 4295 2012-11-06 05:22:11Z nanang $ */
-/*
+/* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  * Copyright (C) 2013  Metaswitch Networks Ltd
@@ -1117,7 +1117,7 @@ static pj_status_t destroy_transport( pjsip_tpmgr *mgr,
 	pj_bzero(&state_info, sizeof(state_info));
 	(*state_cb)(tp, PJSIP_TP_STATE_DESTROYED, &state_info);
     }
-
+    
     /* Destroy. */
     return tp->destroy(tp);
 }
