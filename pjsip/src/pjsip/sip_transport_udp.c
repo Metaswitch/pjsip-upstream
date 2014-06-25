@@ -116,8 +116,8 @@ static void init_rdata(struct udp_transport *tp, unsigned rdata_index,
  * This is callback notification from ioqueue that a pending recvfrom()
  * operation has completed.
  */
-static void udp_on_read_complete( pj_ioqueue_key_t *key,
-				  pj_ioqueue_op_key_t *op_key,
+static void udp_on_read_complete( pj_ioqueue_key_t *key, 
+				  pj_ioqueue_op_key_t *op_key, 
 				  pj_ssize_t bytes_read)
 {
     /* See https://trac.pjsip.org/repos/ticket/1197 */
@@ -171,8 +171,8 @@ static void udp_on_read_complete( pj_ioqueue_key_t *key,
 		rdata->pkt_info.src_port = pj_ntohs(src_addr->ipv6.sin6_port);
 	    }
 
-	    size_eaten =
-		pjsip_tpmgr_receive_packet(rdata->tp_info.transport->tpmgr,
+	    size_eaten = 
+		pjsip_tpmgr_receive_packet(rdata->tp_info.transport->tpmgr, 
 					   rdata);
 
 	    if (size_eaten < 0) {
@@ -188,8 +188,8 @@ static void udp_on_read_complete( pj_ioqueue_key_t *key,
 	    /* TODO: */
 
 	} else if (-bytes_read != PJ_STATUS_FROM_OS(OSERR_EWOULDBLOCK) &&
-		   -bytes_read != PJ_STATUS_FROM_OS(OSERR_EINPROGRESS) &&
-		   -bytes_read != PJ_STATUS_FROM_OS(OSERR_ECONNRESET))
+		   -bytes_read != PJ_STATUS_FROM_OS(OSERR_EINPROGRESS) && 
+		   -bytes_read != PJ_STATUS_FROM_OS(OSERR_ECONNRESET)) 
 	{
 
 	    /* Report error to endpoint. */
@@ -257,8 +257,8 @@ static void udp_on_read_complete( pj_ioqueue_key_t *key,
 
 		/* Report error to endpoint if this is not EWOULDBLOCK error.*/
 		if (status != PJ_STATUS_FROM_OS(OSERR_EWOULDBLOCK) &&
-		    status != PJ_STATUS_FROM_OS(OSERR_EINPROGRESS) &&
-		    status != PJ_STATUS_FROM_OS(OSERR_ECONNRESET))
+		    status != PJ_STATUS_FROM_OS(OSERR_EINPROGRESS) && 
+		    status != PJ_STATUS_FROM_OS(OSERR_ECONNRESET)) 
 		{
 
 		    PJSIP_ENDPT_LOG_ERROR((rdata->tp_info.transport->endpt,
@@ -802,8 +802,8 @@ static pj_status_t transport_attach( pjsip_endpoint *endpt,
     /* Done. */
     if (p_transport)
 	*p_transport = &tp->base;
-
-    PJ_LOG(4,(tp->base.obj_name,
+    
+    PJ_LOG(4,(tp->base.obj_name, 
 	      "SIP %s started, published address is %s%.*s%s:%d",
 	      pjsip_transport_get_type_desc((pjsip_transport_type_e)tp->base.key.type),
 	      ipv6_quoteb,

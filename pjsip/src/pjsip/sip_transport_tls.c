@@ -410,8 +410,8 @@ PJ_DEF(pj_status_t) pjsip_tls_transport_start2( pjsip_endpoint *endpt,
      */
     has_listener = PJ_FALSE;
 
-    status = pj_ssl_sock_start_accept(listener->ssock, pool,
-			  (pj_sockaddr_t*)listener_addr,
+    status = pj_ssl_sock_start_accept(listener->ssock, pool, 
+			  (pj_sockaddr_t*)listener_addr, 
 			  pj_sockaddr_get_len((pj_sockaddr_t*)listener_addr));
     if (status == PJ_SUCCESS || status == PJ_EPENDING) {
 	pj_ssl_sock_info info;
@@ -825,8 +825,8 @@ static pj_status_t tls_destroy(pjsip_transport *transport,
 	    char errmsg[PJ_ERR_MSG_SIZE];
 
 	    pj_strerror(reason, errmsg, sizeof(errmsg));
-	    PJ_LOG(4,(tls->base.obj_name,
-		      "TLS transport destroyed with reason %d: %s",
+	    PJ_LOG(4,(tls->base.obj_name, 
+		      "TLS transport destroyed with reason %d: %s", 
 		      reason, errmsg));
 
 	} else {
@@ -889,8 +889,8 @@ static pj_status_t tls_start_read(struct tls_transport *tls)
     status = pj_ssl_sock_start_read2(tls->ssock, tls->base.pool, size,
 				     readbuf, 0);
     if (status != PJ_SUCCESS && status != PJ_EPENDING) {
-	PJ_LOG(4, (tls->base.obj_name,
-		   "pj_ssl_sock_start_read() error, status=%d",
+	PJ_LOG(4, (tls->base.obj_name, 
+		   "pj_ssl_sock_start_read() error, status=%d", 
 		   status));
 	return status;
     }
@@ -1189,8 +1189,8 @@ static pj_bool_t on_accept_complete(pj_ssl_sock_t *ssock,
 	if (PJSIP_TLS_KEEP_ALIVE_INTERVAL) {
 	    pj_time_val delay = {PJSIP_TLS_KEEP_ALIVE_INTERVAL, 0};
 	    pjsip_endpt_schedule_timer(listener->endpt,
-				       &tls->ka_timer,
-				       &delay);
+				       &tls->ka_timer, 
+				       &delay); 
 	    tls->ka_timer.id = PJ_TRUE;
 	    pj_gettimeofday(&tls->last_activity);
 	}
@@ -1250,8 +1250,8 @@ static pj_bool_t on_data_sent(pj_ssl_sock_t *ssock,
 }
 
 
-/*
- * This callback is called by transport manager to send SIP message
+/* 
+ * This callback is called by transport manager to send SIP message 
  */
 static pj_status_t tls_send_msg(pjsip_transport *transport, 
 				pjsip_tx_data *tdata,
@@ -1321,8 +1321,8 @@ static pj_status_t tls_send_msg(pjsip_transport *transport,
 	}
 
 	pj_lock_release(tls->base.lock);
-    }
-
+    } 
+    
     if (!delayed) {
 	/*
 	 * Transport is ready to go. Send the packet to ioqueue to be

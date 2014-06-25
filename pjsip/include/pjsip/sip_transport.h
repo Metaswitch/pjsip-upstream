@@ -1396,10 +1396,10 @@ typedef enum pjsip_transport_state
     PJSIP_TP_STATE_DISCONNECTED,    /**< Transport disconnected, applicable
 					 only to connection-oriented
 					 transports such as TCP and TLS.    */
-    PJSIP_TP_STATE_DESTROYED	    /**< Transport destroyed. When the
-					 transport is in this state, its
-					 public fields may be read, but it
-					 is illegal to perform any
+    PJSIP_TP_STATE_DESTROYED	    /**< Transport destroyed. When the 
+					 transport is in this state, its 
+					 public fields may be read, but it 
+					 is illegal to perform any 
 					 operations on the transport.       */
 } pjsip_transport_state;
 

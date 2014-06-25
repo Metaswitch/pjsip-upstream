@@ -165,9 +165,9 @@ typedef struct pjsip_cfg_t
     /** Client registration settings. */
     struct {
 	/**
-	 * Specify whether client registration should check for its
-	 * registered contact in Contact header of successful REGISTER
-	 * response to determine whether registration has been successful.
+	 * Specify whether client registration should check for its 
+	 * registered contact in Contact header of successful REGISTER 
+	 * response to determine whether registration has been successful. 
 	 * This setting may be disabled if non-compliant registrar is unable
 	 * to return correct Contact header.
 	 *
@@ -514,8 +514,8 @@ PJ_INLINE(pjsip_cfg_t*) pjsip_cfg(void)
 
 
 /**
- * Max entries to process in timer heap per poll.
- *
+ * Max entries to process in timer heap per poll. 
+ * 
  * Default: 10
  */
 #ifndef PJSIP_MAX_TIMED_OUT_ENTRIES
@@ -648,8 +648,8 @@ PJ_INLINE(pjsip_cfg_t*) pjsip_cfg(void)
 #endif
 
 
-/**
- * Maximum number of addresses returned by the resolver. The number here
+/** 
+ * Maximum number of addresses returned by the resolver. The number here 
  * will slightly affect stack usage, since each entry will occupy about
  * 32 bytes of stack memory.
  *

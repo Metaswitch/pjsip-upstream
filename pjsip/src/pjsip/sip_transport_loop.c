@@ -73,8 +73,8 @@ struct recv_list *create_incoming_packet( struct loop_transport *loop,
     pj_pool_t *pool;
     struct recv_list *pkt;
 
-    pool = pjsip_endpt_create_pool(loop->base.endpt, "rdata",
-				   PJSIP_POOL_RDATA_LEN,
+    pool = pjsip_endpt_create_pool(loop->base.endpt, "rdata", 
+				   PJSIP_POOL_RDATA_LEN, 
 				   PJSIP_POOL_RDATA_INC+5);
     if (!pool)
 	return NULL;
@@ -392,8 +392,8 @@ PJ_DEF(pj_status_t) pjsip_loop_start( pjsip_endpoint *endpt,
     pj_list_init(&loop->send_list);
 
     /* Create worker thread. */
-    status = pj_thread_create(pool, "loop",
-			      &loop_transport_worker_thread, loop, 0,
+    status = pj_thread_create(pool, "loop", 
+			      &loop_transport_worker_thread, loop, 0, 
 			      PJ_THREAD_SUSPENDED, &loop->thread);
     if (status != PJ_SUCCESS)
 	goto on_error;

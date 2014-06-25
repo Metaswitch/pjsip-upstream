@@ -355,8 +355,8 @@ PJ_DEF(pj_status_t) pjsip_tcp_transport_start3(
 	}
 
 	/* Save the address name */
-	sockaddr_to_host_port(listener->factory.pool,
-			      &listener->factory.addr_name,
+	sockaddr_to_host_port(listener->factory.pool, 
+			      &listener->factory.addr_name, 
 			      listener_addr);
     }
 
