@@ -293,7 +293,7 @@ PJ_INLINE(pjsip_cfg_t*) pjsip_cfg(void)
  * most messages.
  */
 #ifndef PJSIP_NORMAL_PKT_LEN
-#   define PJSIP_NORMAL_PKT_LEN		2000
+#   define PJSIP_NORMAL_PKT_LEN		4000
 #endif
 
 
