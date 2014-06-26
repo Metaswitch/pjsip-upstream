@@ -102,6 +102,8 @@ static void init_rdata(struct udp_transport *tp, unsigned rdata_index,
 			   sizeof(pj_ioqueue_op_key_t));
 
     tp->rdata[rdata_index] = rdata;
+    tp->rdata[rdata_index]->pkt_info.packet = (char*)
+                                        pj_pool_alloc(pool, PJSIP_MAX_PKT_LEN);
 
     if (p_rdata)
 	*p_rdata = rdata;
@@ -234,7 +236,7 @@ static void udp_on_read_complete( pj_ioqueue_key_t *key,
 	    return;
 
 	/* Read next packet. */
-	bytes_read = sizeof(rdata->pkt_info.packet);
+	bytes_read = PJSIP_MAX_PKT_LEN;
 	rdata->pkt_info.src_addr_len = sizeof(rdata->pkt_info.src_addr);
 	status = pj_ioqueue_recvfrom(key, op_key, 
 				     rdata->pkt_info.packet,
@@ -629,7 +631,7 @@ static pj_status_t start_async_read(struct udp_transport *tp)
     for (i=0; i<tp->rdata_cnt; ++i) {
 	pj_ssize_t size;
 
-	size = sizeof(tp->rdata[i]->pkt_info.packet);
+	size = PJSIP_MAX_PKT_LEN;
 	tp->rdata[i]->pkt_info.src_addr_len = sizeof(tp->rdata[i]->pkt_info.src_addr);
 	status = pj_ioqueue_recvfrom(tp->key, 
 				     &tp->rdata[i]->tp_info.op_key.op_key,

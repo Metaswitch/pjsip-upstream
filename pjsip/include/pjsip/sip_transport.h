@@ -314,7 +314,7 @@ struct pjsip_rx_data
 	pj_time_val		 timestamp;
 
 	/** Pointer to the original packet. */
-	char			 packet[PJSIP_MAX_PKT_LEN];
+	char			*packet;
 
 	/** Zero termination for the packet. */
 	pj_uint32_t		 zero;

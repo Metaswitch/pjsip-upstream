@@ -86,9 +86,10 @@ struct recv_list *create_incoming_packet( struct loop_transport *loop,
     pkt->rdata.tp_info.transport = &loop->base;
     
     /* Copy the packet. */
-    pj_memcpy(pkt->rdata.pkt_info.packet, tdata->buf.start,
-	      tdata->buf.cur - tdata->buf.start);
     pkt->rdata.pkt_info.len = tdata->buf.cur - tdata->buf.start;
+    pkt->rdata.pkt_info.packet = pj_pool_alloc(pool, pkt->rdata.pkt_info.len + 1);
+    pj_memcpy(pkt->rdata.pkt_info.packet, tdata->buf.start,
+	      pkt->rdata.pkt_info.len);
 
     /* the source address */
     pkt->rdata.pkt_info.src_addr.addr.sa_family = pj_AF_INET();

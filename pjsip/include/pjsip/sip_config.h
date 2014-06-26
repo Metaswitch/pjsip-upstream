@@ -280,11 +280,20 @@ PJ_INLINE(pjsip_cfg_t*) pjsip_cfg(void)
 
 
 /**
- * Maximum packet length. We set it more than MTU since a SIP PDU
- * containing presence information can be quite large (>1500).
+ * Maximum packet length. This should be set to the largest message size
+ * supported as larger messages will be rejected.
  */
 #ifndef PJSIP_MAX_PKT_LEN
-#   define PJSIP_MAX_PKT_LEN		4000
+#   define PJSIP_MAX_PKT_LEN		65536
+#endif
+
+
+/**
+ * Normal packet length. This should be set to a size large enough to contain
+ * most messages.
+ */
+#ifndef PJSIP_NORMAL_PKT_LEN
+#   define PJSIP_NORMAL_PKT_LEN		4000
 #endif
 
 
