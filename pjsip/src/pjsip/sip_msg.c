@@ -935,6 +935,10 @@ static pjsip_generic_array_hdr* pjsip_generic_array_hdr_clone( pj_pool_t *pool,
     pjsip_generic_array_hdr *hdr = PJ_POOL_ALLOC_T(pool, pjsip_generic_array_hdr);
 
     pj_memcpy(hdr, rhs, sizeof(*hdr));
+
+    pj_strdup(pool, &hdr->name, &rhs->name);
+    pj_strdup(pool, &hdr->sname, &rhs->sname);
+
     for (i=0; i<rhs->count; ++i) {
 	pj_strdup(pool, &hdr->values[i], &rhs->values[i]);
     }
