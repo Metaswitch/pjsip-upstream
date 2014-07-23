@@ -63,6 +63,7 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_init2(
     pj_bzero(auth_srv, sizeof(*auth_srv));
     pj_strdup( pool, &auth_srv->realm, param->realm);
     auth_srv->lookup2 = param->lookup2;
+    auth_srv->lookup3 = param->lookup3;
     auth_srv->is_proxy = (param->options & PJSIP_AUTH_SRV_IS_PROXY);
 
     return PJ_SUCCESS;
@@ -124,6 +125,16 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
 					   pjsip_rx_data *rdata,
 					   int *status_code)
 {
+  pj_assert(auth_srv->lookup3 == NULL);
+  pjsip_auth_srv_verify2(auth_srv, rdata, status_code, NULL);
+}
+
+
+PJ_DEF(pj_status_t) pjsip_auth_srv_verify2( pjsip_auth_srv *auth_srv,
+					    pjsip_rx_data *rdata,
+					    int *status_code,
+					    void *lookup_data)
+{
     pjsip_authorization_hdr *h_auth;
     pjsip_msg *msg = rdata->msg_info.msg;
     pjsip_hdr_e htype;
@@ -153,14 +164,18 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
 	    if (pj_stricmp(&h_auth->scheme, &pjsip_DIGEST_STR) == 0) {
 		acc_name = h_auth->credential.digest.username;
 
-		/* Find the credential information for the account. */
-		if (auth_srv->lookup2) {
 		    pjsip_auth_lookup_cred_param param;
-
 		    pj_bzero(&param, sizeof(param));
 		    param.realm = realm;
 		    param.acc_name = acc_name;
 		    param.rdata = rdata;
+
+		/* Find the credential information for the account. */
+		if (auth_srv->lookup3) {
+		    status = (*auth_srv->lookup3)(rdata->tp_info.pool, &param,
+						  &cred_info, lookup_data);
+		/* Find the credential information for the account. */
+		} else if (auth_srv->lookup2) {
 		    status = (*auth_srv->lookup2)(rdata->tp_info.pool, &param,
 						  &cred_info);
 		} else {
