@@ -566,7 +566,8 @@ PJ_DECL(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
  * @param rdata		Incoming request to be authenticated.
  * @param status_code	When not null, it will be filled with suitable
  *			status code to be sent to the client.
- * @param lookup_data	Arbitrary data to be passed to the lookup function.
+ * @param lookup_data	Arbitrary data to be passed to the lookup
+ *			function. May be NULL.
  *
  * @return		PJ_SUCCESS if request is successfully authenticated.
  *			Otherwise the function may return one of the

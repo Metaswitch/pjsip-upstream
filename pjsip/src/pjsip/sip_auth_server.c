@@ -125,7 +125,6 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
 					   pjsip_rx_data *rdata,
 					   int *status_code)
 {
-  pj_assert(auth_srv->lookup3 == NULL);
   pjsip_auth_srv_verify2(auth_srv, rdata, status_code, NULL);
 }
 
