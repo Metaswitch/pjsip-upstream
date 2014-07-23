@@ -1,5 +1,5 @@
 /* $Id: sip_auth.h 4214 2012-07-25 14:29:28Z nanang $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  *
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #ifndef __PJSIP_AUTH_SIP_AUTH_H__
 #define __PJSIP_AUTH_SIP_AUTH_H__
@@ -70,10 +70,10 @@ typedef enum pjsip_auth_qop_type
 /**
  * Type of callback function to create authentication response.
  * Application can specify this callback in \a cb field of the credential info
- * (#pjsip_cred_info) and specifying PJSIP_CRED_DATA_DIGEST_CALLBACK as 
- * \a data_type. When this function is called, most of the fields in the 
- * \a auth authentication response will have been filled by the framework. 
- * Application normally should just need to calculate the response digest 
+ * (#pjsip_cred_info) and specifying PJSIP_CRED_DATA_DIGEST_CALLBACK as
+ * \a data_type. When this function is called, most of the fields in the
+ * \a auth authentication response will have been filled by the framework.
+ * Application normally should just need to calculate the response digest
  * of the authentication response.
  *
  * @param pool	    Pool to allocate memory from if application needs to.
@@ -86,7 +86,7 @@ typedef enum pjsip_auth_qop_type
  *		    calculate the response digest.
  *
  * @return	    Application may return non-PJ_SUCCESS to abort the
- *		    authentication process. When this happens, the 
+ *		    authentication process. When this happens, the
  *		    framework will return failure to the original function
  *		    that requested authentication.
  */
@@ -97,8 +97,8 @@ typedef pj_status_t (*pjsip_cred_cb)(pj_pool_t *pool,
 				     pjsip_digest_credential *auth);
 
 
-/** 
- * This structure describes credential information. 
+/**
+ * This structure describes credential information.
  * A credential information is a static, persistent information that identifies
  * username and password required to authorize to a specific realm.
  *
@@ -114,7 +114,7 @@ struct pjsip_cred_info
     pj_str_t	scheme;		/**< Scheme (e.g. "digest").		    */
     pj_str_t	username;	/**< User name.				    */
     int		data_type;	/**< Type of data (0 for plaintext passwd). */
-    pj_str_t	data;		/**< The data, which can be a plaintext 
+    pj_str_t	data;		/**< The data, which can be a plaintext
 				     password or a hashed digest.	    */
 
     /** Extended data */
@@ -197,7 +197,7 @@ typedef struct pjsip_auth_clt_pref
     pj_bool_t	initial_auth;
 
     /**
-     * Specify the algorithm to use when empty Authorization header 
+     * Specify the algorithm to use when empty Authorization header
      * is to be sent for each initial request (see above)
      */
     pj_str_t	algorithm;
@@ -219,7 +219,7 @@ PJ_DECL(void) pjsip_auth_clt_pref_dup(pj_pool_t *pool,
 
 /**
  * This structure describes client authentication sessions. It keeps
- * all the information needed to authorize the client against all downstream 
+ * all the information needed to authorize the client against all downstream
  * servers.
  */
 typedef struct pjsip_auth_clt_sess
@@ -305,6 +305,25 @@ typedef pj_status_t pjsip_auth_lookup_cred2(
 				const pjsip_auth_lookup_cred_param *param,
 				pjsip_cred_info *cred_info );
 
+/**
+ * Type of function to lookup credential for the specified name.
+ *
+ * @param pool		Pool to initialize the credential info.
+ * @param param		The input param for credential lookup.
+ * @param cred_info	The structure to put the credential when it's found.
+ * @param lookup_data	Arbitrary data passed through from pj_auth_srv_verify
+ *
+ * @return		The function MUST return PJ_SUCCESS when it found
+ *			a correct credential for the specified account and
+ *			realm. Otherwise it may return PJSIP_EAUTHACCNOTFOUND
+ *			or PJSIP_EAUTHACCDISABLED.
+ */
+typedef pj_status_t pjsip_auth_lookup_cred3(
+				pj_pool_t *pool,
+				const pjsip_auth_lookup_cred_param *param,
+				pjsip_cred_info *cred_info,
+				void *lookup_data );
+
 
 /** Flag to specify that server is a proxy. */
 #define PJSIP_AUTH_SRV_IS_PROXY	    1
@@ -319,12 +338,15 @@ typedef struct pjsip_auth_srv
     pjsip_auth_lookup_cred  *lookup;	/**< Lookup function.		    */
     pjsip_auth_lookup_cred2 *lookup2;	/**< Lookup function with additional
 					     info in its input param.	    */
-} pjsip_auth_srv;
+    pjsip_auth_lookup_cred3 *lookup3;	/**< Lookup function with more
+					     additional info in its
+					     input param.	      */
+}   pjsip_auth_srv;
 
 
 /**
- * Initialize client authentication session data structure, and set the 
- * session to use pool for its subsequent memory allocation. The argument 
+ * Initialize client authentication session data structure, and set the
+ * session to use pool for its subsequent memory allocation. The argument
  * options should be set to zero for this PJSIP version.
  *
  * @param sess		The client authentication session.
@@ -336,12 +358,12 @@ typedef struct pjsip_auth_srv
  */
 PJ_DECL(pj_status_t) pjsip_auth_clt_init( pjsip_auth_clt_sess *sess,
 					  pjsip_endpoint *endpt,
-					  pj_pool_t *pool, 
+					  pj_pool_t *pool,
 					  unsigned options);
 
 
 /**
- * Clone client initialization session. 
+ * Clone client initialization session.
  *
  * @param pool		Pool to use.
  * @param sess		Structure to put the duplicated session.
@@ -354,7 +376,7 @@ PJ_DECL(pj_status_t) pjsip_auth_clt_clone( pj_pool_t *pool,
 					   const pjsip_auth_clt_sess *rhs);
 
 /**
- * Set the credentials to be used during the session. This will duplicate 
+ * Set the credentials to be used during the session. This will duplicate
  * the specified credentials using client authentication's pool.
  *
  * @param sess		The client authentication session.
@@ -397,7 +419,7 @@ PJ_DECL(pj_status_t) pjsip_auth_clt_get_prefs(pjsip_auth_clt_sess *sess,
  * outgoing request message. If caching is enabled (PJSIP_AUTH_HEADER_CACHING)
  * and the session has previously sent Authorization/Proxy-Authorization header
  * with the same method, then the same Authorization/Proxy-Authorization header
- * will be resent from the cache only if qop is not present. If the stack is 
+ * will be resent from the cache only if qop is not present. If the stack is
  * configured to automatically generate next Authorization/Proxy-Authorization
  * headers (PJSIP_AUTH_AUTO_SEND_NEXT flag), then new Authorization/Proxy-
  * Authorization headers are calculated and generated when they are not present
@@ -442,9 +464,9 @@ PJ_DECL(pj_status_t) pjsip_auth_clt_reinit_req(	pjsip_auth_clt_sess *sess,
 						pjsip_tx_data **new_request );
 
 /**
- * Initialize server authorization session data structure to serve the 
- * specified realm and to use lookup_func function to look for the credential 
- * info. 
+ * Initialize server authorization session data structure to serve the
+ * specified realm and to use lookup_func function to look for the credential
+ * info.
  *
  * @param pool		Pool used to initialize the authentication server.
  * @param auth_srv	The authentication server structure.
@@ -453,7 +475,7 @@ PJ_DECL(pj_status_t) pjsip_auth_clt_reinit_req(	pjsip_auth_clt_sess *sess,
  * @param options	Options, bitmask of:
  *			- PJSIP_AUTH_SRV_IS_PROXY: to specify that the server
  *			  will authorize clients as a proxy server (instead of
- *			  as UAS), which means that Proxy-Authenticate will 
+ *			  as UAS), which means that Proxy-Authenticate will
  *			  be used instead of WWW-Authenticate.
  *
  * @return		PJ_SUCCESS on success.
@@ -481,6 +503,11 @@ typedef struct pjsip_auth_srv_init_param
      */
     pjsip_auth_lookup_cred2	*lookup2;
 
+  /**
+     * Account lookup function.
+     */
+    pjsip_auth_lookup_cred3	*lookup3;
+
     /**
      * Options, bitmask of:
      * - PJSIP_AUTH_SRV_IS_PROXY: to specify that the server will authorize
@@ -493,9 +520,9 @@ typedef struct pjsip_auth_srv_init_param
 
 
 /**
- * Initialize server authorization session data structure to serve the 
+ * Initialize server authorization session data structure to serve the
  * specified realm and to use lookup_func function to look for the credential
- * info. 
+ * info.
  *
  * @param pool		Pool used to initialize the authentication server.
  * @param auth_srv	The authentication server structure.
@@ -509,12 +536,12 @@ PJ_DECL(pj_status_t) pjsip_auth_srv_init2(
 				    const pjsip_auth_srv_init_param *param);
 
 /**
- * Request the authorization server framework to verify the authorization 
+ * Request the authorization server framework to verify the authorization
  * information in the specified request in rdata.
  *
  * @param auth_srv	The server authentication structure.
  * @param rdata		Incoming request to be authenticated.
- * @param status_code	When not null, it will be filled with suitable 
+ * @param status_code	When not null, it will be filled with suitable
  *			status code to be sent to the client.
  *
  * @return		PJ_SUCCESS if request is successfully authenticated.
@@ -531,11 +558,36 @@ PJ_DECL(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
 					    pjsip_rx_data *rdata,
 					    int *status_code );
 
+/**
+ * Request the authorization server framework to verify the authorization
+ * information in the specified request in rdata.
+ *
+ * @param auth_srv	The server authentication structure.
+ * @param rdata		Incoming request to be authenticated.
+ * @param status_code	When not null, it will be filled with suitable
+ *			status code to be sent to the client.
+ * @param lookup_data	Arbitrary data to be passed to the lookup function.
+ *
+ * @return		PJ_SUCCESS if request is successfully authenticated.
+ *			Otherwise the function may return one of the
+ *			following error codes:
+ *			- PJSIP_EAUTHNOAUTH
+ *			- PJSIP_EINVALIDAUTHSCHEME
+ *			- PJSIP_EAUTHACCNOTFOUND
+ *			- PJSIP_EAUTHACCDISABLED
+ *			- PJSIP_EAUTHINVALIDREALM
+ *			- PJSIP_EAUTHINVALIDDIGEST
+ */
+PJ_DECL(pj_status_t) pjsip_auth_srv_verify2( pjsip_auth_srv *auth_srv,
+					     pjsip_rx_data *rdata,
+					     int *status_code,
+					     void *lookup_data );
+
 
 /**
- * Add authentication challenge headers to the outgoing response in tdata. 
- * Application may specify its customized nonce and opaque for the challenge, 
- * or can leave the value to NULL to make the function fills them in with 
+ * Add authentication challenge headers to the outgoing response in tdata.
+ * Application may specify its customized nonce and opaque for the challenge,
+ * or can leave the value to NULL to make the function fills them in with
  * random characters.
  *
  * @param auth_srv	The server authentication structure.
@@ -556,11 +608,11 @@ PJ_DECL(pj_status_t) pjsip_auth_srv_challenge( pjsip_auth_srv *auth_srv,
 					       pjsip_tx_data *tdata);
 
 /**
- * Helper function to create MD5 digest out of the specified 
+ * Helper function to create MD5 digest out of the specified
  * parameters.
  *
  * @param result	String to store the response digest. This string
- *			must have been preallocated by caller with the 
+ *			must have been preallocated by caller with the
  *			buffer at least PJSIP_MD5STRLEN (32 bytes) in size.
  * @param nonce		Optional nonce.
  * @param nc		Nonce count.
