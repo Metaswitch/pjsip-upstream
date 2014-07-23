@@ -1,5 +1,5 @@
 /* $Id: sip_auth_server.c 4214 2012-07-25 14:29:28Z nanang $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  *
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include <pjsip/sip_auth.h>
@@ -28,9 +28,9 @@
 
 
 /*
- * Initialize server authorization session data structure to serve the 
- * specified realm and to use lookup_func function to look for the credential 
- * info. 
+ * Initialize server authorization session data structure to serve the
+ * specified realm and to use lookup_func function to look for the credential
+ * info.
  */
 PJ_DEF(pj_status_t) pjsip_auth_srv_init(  pj_pool_t *pool,
 					  pjsip_auth_srv *auth_srv,
@@ -49,9 +49,9 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_init(  pj_pool_t *pool,
 }
 
 /*
- * Initialize server authorization session data structure to serve the 
- * specified realm and to use lookup_func function to look for the credential 
- * info. 
+ * Initialize server authorization session data structure to serve the
+ * specified realm and to use lookup_func function to look for the credential
+ * info.
  */
 PJ_DEF(pj_status_t) pjsip_auth_srv_init2(
 				    pj_pool_t *pool,
@@ -63,13 +63,14 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_init2(
     pj_bzero(auth_srv, sizeof(*auth_srv));
     pj_strdup( pool, &auth_srv->realm, param->realm);
     auth_srv->lookup2 = param->lookup2;
+    auth_srv->lookup3 = param->lookup3;
     auth_srv->is_proxy = (param->options & PJSIP_AUTH_SRV_IS_PROXY);
 
     return PJ_SUCCESS;
 }
 
 
-/* Verify incoming Authorization/Proxy-Authorization header against the 
+/* Verify incoming Authorization/Proxy-Authorization header against the
  * specified credential.
  */
 static pj_status_t pjsip_auth_verify( const pjsip_authorization_hdr *hdr,
@@ -81,7 +82,7 @@ static pj_status_t pjsip_auth_verify( const pjsip_authorization_hdr *hdr,
 	pj_str_t digest;
 	const pjsip_digest_credential *dig = &hdr->credential.digest;
 
-	/* Check that username and realm match. 
+	/* Check that username and realm match.
 	 * These checks should have been performed before entering this
 	 * function.
 	 */
@@ -95,14 +96,14 @@ static pj_status_t pjsip_auth_verify( const pjsip_authorization_hdr *hdr,
 	digest.slen = PJSIP_MD5STRLEN;
 
 	/* Create digest for comparison. */
-	pjsip_auth_create_digest(&digest, 
+	pjsip_auth_create_digest(&digest,
 				 &hdr->credential.digest.nonce,
-				 &hdr->credential.digest.nc, 
+				 &hdr->credential.digest.nc,
 				 &hdr->credential.digest.cnonce,
 				 &hdr->credential.digest.qop,
 				 &hdr->credential.digest.uri,
 				 &cred_info->realm,
-				 cred_info, 
+				 cred_info,
 				 method );
 
 	/* Compare digest. */
@@ -117,12 +118,22 @@ static pj_status_t pjsip_auth_verify( const pjsip_authorization_hdr *hdr,
 
 
 /*
- * Request the authorization server framework to verify the authorization 
+ * Request the authorization server framework to verify the authorization
  * information in the specified request in rdata.
  */
 PJ_DEF(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
 					   pjsip_rx_data *rdata,
 					   int *status_code)
+{
+  pj_assert(auth_srv->lookup3 == NULL);
+  pjsip_auth_srv_verify2(auth_srv, rdata, status_code, NULL);
+}
+
+
+PJ_DEF(pj_status_t) pjsip_auth_srv_verify2( pjsip_auth_srv *auth_srv,
+					    pjsip_rx_data *rdata,
+					    int *status_code,
+					    void *lookup_data)
 {
     pjsip_authorization_hdr *h_auth;
     pjsip_msg *msg = rdata->msg_info.msg;
@@ -138,7 +149,7 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
     PJ_ASSERT_RETURN(auth_srv && rdata, PJ_EINVAL);
     PJ_ASSERT_RETURN(msg->type == PJSIP_REQUEST_MSG, PJSIP_ENOTREQUESTMSG);
 
-    htype = auth_srv->is_proxy ? PJSIP_H_PROXY_AUTHORIZATION : 
+    htype = auth_srv->is_proxy ? PJSIP_H_PROXY_AUTHORIZATION :
 				 PJSIP_H_AUTHORIZATION;
 
     /* Find authorization header(s) for our realm and process them. */
@@ -153,14 +164,18 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
 	    if (pj_stricmp(&h_auth->scheme, &pjsip_DIGEST_STR) == 0) {
 		acc_name = h_auth->credential.digest.username;
 
-		/* Find the credential information for the account. */
-		if (auth_srv->lookup2) {
 		    pjsip_auth_lookup_cred_param param;
-
 		    pj_bzero(&param, sizeof(param));
 		    param.realm = realm;
 		    param.acc_name = acc_name;
 		    param.rdata = rdata;
+
+		/* Find the credential information for the account. */
+		if (auth_srv->lookup3) {
+		    status = (*auth_srv->lookup3)(rdata->tp_info.pool, &param,
+						  &cred_info, lookup_data);
+		/* Find the credential information for the account. */
+		} else if (auth_srv->lookup2) {
 		    status = (*auth_srv->lookup2)(rdata->tp_info.pool, &param,
 						  &cred_info);
 		} else {
@@ -213,9 +228,9 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
 
 
 /*
- * Add authentication challenge headers to the outgoing response in tdata. 
- * Application may specify its customized nonce and opaque for the challenge, 
- * or can leave the value to NULL to make the function fills them in with 
+ * Add authentication challenge headers to the outgoing response in tdata.
+ * Application may specify its customized nonce and opaque for the challenge,
+ * or can leave the value to NULL to make the function fills them in with
  * random characters.
  */
 PJ_DEF(pj_status_t) pjsip_auth_srv_challenge(  pjsip_auth_srv *auth_srv,
@@ -240,7 +255,7 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_challenge(  pjsip_auth_srv *auth_srv,
     else
 	hdr = pjsip_www_authenticate_hdr_create(tdata->pool);
 
-    /* Initialize header. 
+    /* Initialize header.
      * Note: only support digest authentication now.
      */
     hdr->scheme = pjsip_DIGEST_STR;
