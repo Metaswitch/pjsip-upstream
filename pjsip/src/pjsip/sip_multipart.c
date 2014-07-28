@@ -207,14 +207,26 @@ PJ_DEF(pjsip_msg_body*) pjsip_multipart_create( pj_pool_t *pool,
     }
     body->data = mp_data;
 
-    /* Add ";boundary" parameter to content_type parameter. */
+    /* Add ";boundary" parameter to content_type parameter. Quote it*/
     ctype_param = pjsip_param_find(&body->content_type.param, &STR_BOUNDARY);
     if (!ctype_param) {
 	ctype_param = PJ_POOL_ALLOC_T(pool, pjsip_param);
 	ctype_param->name = STR_BOUNDARY;
 	pj_list_push_back(&body->content_type.param, ctype_param);
     }
-    ctype_param->value = mp_data->boundary;
+
+    char quoted_boundary_char[mp_data->boundary.slen + 2];
+    memset(quoted_boundary_char, 0, sizeof(quoted_boundary_char));
+    pj_str_t quoted_boundary = {NULL,0};
+
+    quoted_boundary.ptr = quoted_boundary_char;
+    quoted_boundary.slen = mp_data->boundary.slen + 2;
+
+    quoted_boundary_char[0] = '"';
+    pj_memcpy(quoted_boundary.ptr + 1, mp_data->boundary.ptr, mp_data->boundary.slen);
+    quoted_boundary_char[mp_data->boundary.slen + 1] = '"';
+
+    pj_strdup(pool, &ctype_param->value, &quoted_boundary);	
 
     /* function pointers */
     body->print_body = &multipart_print_body;
@@ -485,7 +497,11 @@ PJ_DEF(pjsip_msg_body*) pjsip_multipart_parse(pj_pool_t *pool,
     ctype_param = pjsip_param_find(&ctype->param, &STR_BOUNDARY);
     if (ctype_param) {
 	boundary = ctype_param->value;
-	// Don't strip quotes from the boundary.
+        if (boundary.slen>2 && *boundary.ptr=='"') {
+            /* Remove quote */
+            boundary.ptr++;
+            boundary.slen -= 2;
+        }
 	TRACE_((THIS_FILE, "Boundary is specified: '%.*s'", (int)boundary.slen,
 		boundary.ptr));
     }
