@@ -305,6 +305,25 @@ typedef pj_status_t pjsip_auth_lookup_cred2(
 				const pjsip_auth_lookup_cred_param *param,
 				pjsip_cred_info *cred_info );
 
+/**
+ * Type of function to lookup credential for the specified name.
+ *
+ * @param pool		Pool to initialize the credential info.
+ * @param param		The input param for credential lookup.
+ * @param cred_info	The structure to put the credential when it's found.
+ * @param lookup_data	Arbitrary data passed through from pj_auth_srv_verify
+ *
+ * @return		The function MUST return PJ_SUCCESS when it found
+ *			a correct credential for the specified account and
+ *			realm. Otherwise it may return PJSIP_EAUTHACCNOTFOUND
+ *			or PJSIP_EAUTHACCDISABLED.
+ */
+typedef pj_status_t pjsip_auth_lookup_cred3(
+				pj_pool_t *pool,
+				const pjsip_auth_lookup_cred_param *param,
+				pjsip_cred_info *cred_info,
+				void *lookup_data );
+
 
 /** Flag to specify that server is a proxy. */
 #define PJSIP_AUTH_SRV_IS_PROXY	    1
@@ -319,7 +338,10 @@ typedef struct pjsip_auth_srv
     pjsip_auth_lookup_cred  *lookup;	/**< Lookup function.		    */
     pjsip_auth_lookup_cred2 *lookup2;	/**< Lookup function with additional
 					     info in its input param.	    */
-} pjsip_auth_srv;
+    pjsip_auth_lookup_cred3 *lookup3;	/**< Lookup function with more
+					     additional info in its
+					     input param.	      */
+}   pjsip_auth_srv;
 
 
 /**
@@ -481,6 +503,11 @@ typedef struct pjsip_auth_srv_init_param
      */
     pjsip_auth_lookup_cred2	*lookup2;
 
+  /**
+     * Account lookup function.
+     */
+    pjsip_auth_lookup_cred3	*lookup3;
+
     /**
      * Options, bitmask of:
      * - PJSIP_AUTH_SRV_IS_PROXY: to specify that the server will authorize
@@ -530,6 +557,32 @@ PJ_DECL(pj_status_t) pjsip_auth_srv_init2(
 PJ_DECL(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
 					    pjsip_rx_data *rdata,
 					    int *status_code );
+
+/**
+ * Request the authorization server framework to verify the authorization
+ * information in the specified request in rdata.
+ *
+ * @param auth_srv	The server authentication structure.
+ * @param rdata		Incoming request to be authenticated.
+ * @param status_code	When not null, it will be filled with suitable
+ *			status code to be sent to the client.
+ * @param lookup_data	Arbitrary data to be passed to the lookup
+ *			function. May be NULL.
+ *
+ * @return		PJ_SUCCESS if request is successfully authenticated.
+ *			Otherwise the function may return one of the
+ *			following error codes:
+ *			- PJSIP_EAUTHNOAUTH
+ *			- PJSIP_EINVALIDAUTHSCHEME
+ *			- PJSIP_EAUTHACCNOTFOUND
+ *			- PJSIP_EAUTHACCDISABLED
+ *			- PJSIP_EAUTHINVALIDREALM
+ *			- PJSIP_EAUTHINVALIDDIGEST
+ */
+PJ_DECL(pj_status_t) pjsip_auth_srv_verify2( pjsip_auth_srv *auth_srv,
+					     pjsip_rx_data *rdata,
+					     int *status_code,
+					     void *lookup_data );
 
 
 /**
