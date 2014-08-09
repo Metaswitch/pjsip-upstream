@@ -462,6 +462,12 @@ PJ_DEF(pj_ssize_t) pjsip_msg_print( const pjsip_msg *msg,
 
     /* Print each of the headers. */
     for (hdr=msg->hdr.next; hdr!=&msg->hdr; hdr=hdr->next) {
+        if (hdr->type == PJSIP_H_CONTENT_LENGTH &&
+            (!msg->body || msg->body->content_type.type.slen != 0)) {
+            /* Ignore Content-Length - we'll add later */
+            continue;
+        }
+
 	len = pjsip_hdr_print_on(hdr, p, end-p);
 	if (len < 0)
 	    return -1;
