@@ -464,7 +464,10 @@ PJ_DEF(pj_ssize_t) pjsip_msg_print( const pjsip_msg *msg,
     for (hdr=msg->hdr.next; hdr!=&msg->hdr; hdr=hdr->next) {
         if (hdr->type == PJSIP_H_CONTENT_LENGTH &&
             (!msg->body || msg->body->content_type.type.slen != 0)) {
-            /* Ignore Content-Length - we'll add later */
+            /* If there is no message body or a message body with content-type
+             * specified then we will calculate the Content-Length automatically 
+             * and add a Content-Length header, so ignore any existing header.
+             */
             continue;
         }
 
