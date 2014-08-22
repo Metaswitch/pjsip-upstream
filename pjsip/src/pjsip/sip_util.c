@@ -1300,9 +1300,13 @@ stateless_send_resolver_callback( pj_status_t status,
 	    return;
 	}
 
-	/* Check if request message is larger than 1300 bytes. */
+	/* Check if request message is larger than 1300 bytes, but only if
+         * the application hasn't already selected a transport for the
+         * request.
+         */
 	len = tdata->buf.cur - tdata->buf.start;
-	if (len >= PJSIP_UDP_SIZE_THRESHOLD) {
+	if (len >= PJSIP_UDP_SIZE_THRESHOLD &&
+            tdata->tp_sel.type != PJSIP_TPSELECTOR_TRANSPORT) {
 	    int i;
 	    int count = tdata->dest_info.addr.count;
 
