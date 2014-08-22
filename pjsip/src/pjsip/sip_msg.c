@@ -471,6 +471,17 @@ PJ_DEF(pj_ssize_t) pjsip_msg_print( const pjsip_msg *msg,
             continue;
         }
 
+        if (hdr->type == PJSIP_H_CONTENT_TYPE &&
+            msg->body &&
+            msg->body->content_type.type.slen != 0) {
+            /* If there is a message body with content-type specified then
+             * Content-Type header is added automatically, so ignore the 
+             * existing header.  (Note that it is legitimate to have a
+             * Content-Type header with no body - see RFC3261 20.15.)
+             */
+            continue;
+        }
+
 	len = pjsip_hdr_print_on(hdr, p, end-p);
 	if (len < 0)
 	    return -1;
