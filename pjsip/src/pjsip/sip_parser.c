@@ -445,7 +445,7 @@ static pj_status_t init_parser()
 
     status = pj_cis_init(&cis_buf, &pconst.pjsip_PROBE_USER_HOST_SPEC);
     PJ_ASSERT_RETURN(status == PJ_SUCCESS, status);
-    pj_cis_add_str( &pconst.pjsip_PROBE_USER_HOST_SPEC, "@ \n>\"");
+    pj_cis_add_str( &pconst.pjsip_PROBE_USER_HOST_SPEC, UNRESERVED ESCAPED USER_UNRESERVED);
     pj_cis_invert( &pconst.pjsip_PROBE_USER_HOST_SPEC );
 
     status = pj_cis_init(&cis_buf, &pconst.pjsip_DISPLAY_SPEC);
