@@ -1221,9 +1221,11 @@ static void parse_param_imp( pj_scanner *scanner, pj_pool_t *pool,
 		 * '[' and ']' quote characters are to be removed
 		 * from the pvalue.
 		 */
-		pj_scan_get_char(scanner);
-		pj_scan_get_until_ch(scanner, ']', pvalue);
-		pj_scan_get_char(scanner);
+		pj_scan_get_quote( scanner, '[', ']', pvalue);
+		if (option & PJSIP_PARSE_REMOVE_QUOTE) {
+		    pvalue->ptr++;
+		    pvalue->slen -= 2;
+		}
 	    } else if(pj_cis_match(spec, *scanner->curptr)) {
 		parser_get_and_unescape(scanner, pool, spec, esc_spec, pvalue);
 	    }
