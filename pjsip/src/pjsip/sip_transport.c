@@ -1,5 +1,5 @@
 /* $Id: sip_transport.c 4295 2012-11-06 05:22:11Z nanang $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  * Copyright (C) 2013  Metaswitch Networks Ltd
@@ -1005,7 +1005,7 @@ PJ_DEF(pj_status_t) pjsip_transport_dec_ref( pjsip_transport *tp )
 	 */
 	if (pj_atomic_get(tp->ref_cnt) == 0 && !tp->is_destroying) {
 	    pj_time_val delay;
-	
+
 	    /* If transport is in graceful shutdown, then this is the
 	     * last user who uses the transport. Schedule to destroy the
 	     * transport immediately. Otherwise schedule idle timer.
@@ -1117,7 +1117,7 @@ static pj_status_t destroy_transport( pjsip_tpmgr *mgr,
 	pj_bzero(&state_info, sizeof(state_info));
 	(*state_cb)(tp, PJSIP_TP_STATE_DESTROYED, &state_info);
     }
-    
+
     /* Destroy. */
     return tp->destroy(tp);
 }
@@ -1534,7 +1534,7 @@ PJ_DEF(pj_status_t) pjsip_tpmgr_destroy( pjsip_tpmgr *mgr )
     while (itr != NULL) {
 	pj_hash_iterator_t *next;
 	pjsip_transport *transport;
-	
+
 	transport = (pjsip_transport*) pj_hash_this(mgr->table, itr);
 
 	next = pj_hash_next(mgr->table, itr);
@@ -1550,7 +1550,7 @@ PJ_DEF(pj_status_t) pjsip_tpmgr_destroy( pjsip_tpmgr *mgr )
     factory = mgr->factory_list.next;
     while (factory != &mgr->factory_list) {
 	pjsip_tpfactory *next = factory->next;
-	
+
 	factory->destroy(factory);
 
 	factory = next;
@@ -1715,17 +1715,25 @@ PJ_DEF(pj_ssize_t) pjsip_tpmgr_receive_packet( pjsip_tpmgr *mgr,
 		      rdata->msg_info.msg_buf));
 	    }
 
-	    goto finish_process_fragment;
+	    /* Carry on processing despite this parse error. If it was
+	    sufficiently catastrophic that we have no message, or are
+	    missing crucial headers like Call-ID, we'll bail out at
+	    the next check. If not, we'll still pass a useful message
+	    to the application rather than dropping the message. */
 	}
 
+        PJ_LOG(1, (THIS_FILE, "msg %p cid %p\n", msg, rdata->msg_info.cid));
+
 	/* Perform basic header checking. */
-	if (rdata->msg_info.cid == NULL ||
+        if (msg == NULL ||
+            rdata->msg_info.cid == NULL ||
 	    rdata->msg_info.cid->id.slen == 0 ||
 	    rdata->msg_info.from == NULL ||
 	    rdata->msg_info.to == NULL ||
 	    rdata->msg_info.via == NULL ||
 	    rdata->msg_info.cseq == NULL)
 	{
+            PJ_LOG(1, (THIS_FILE, "failed, raising EMISSINGHDR\n"));
 	    mgr->on_rx_msg(mgr->endpt, PJSIP_EMISSINGHDR, rdata);
 	    goto finish_process_fragment;
 	}

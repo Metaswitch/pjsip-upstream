@@ -1054,16 +1054,16 @@ parse_headers:
 	     * Ref: PROTOS #2412
 	     */
 	    hname.slen = 0;
-	
+
 	    /* Get hname. */
 	    pj_scan_get( scanner, &pconst.pjsip_TOKEN_SPEC, &hname);
 	    if (pj_scan_get_char( scanner ) != ':') {
 		PJ_THROW(PJSIP_SYN_ERR_EXCEPTION);
 	    }
-	
+
 	    /* Find handler. */
 	    handler = find_handler(&hname);
-	
+
 	    /* Call the handler if found.
 	     * If no handler is found, then treat the header as generic
 	     * hname/hvalue pair.
@@ -1089,8 +1089,8 @@ parse_headers:
 		hdr = parse_hdr_generic_string(ctx);
 		hdr->name = hdr->sname = hname;
 	    }
-	
-	
+
+
 	    /* Single parse of header line can produce multiple headers.
 	     * For example, if one Contact: header contains Contact list
 	     * separated by comma, then these Contacts will be split into
@@ -1099,10 +1099,10 @@ parse_headers:
 	     */
 	    if (hdr)
 		pj_list_insert_nodes_before(&msg->hdr, hdr);
-	
+
 	    /* Parse until EOF or an empty line is found. */
 	} while (!pj_scan_is_eof(scanner) && !IS_NEWLINE(*scanner->curptr));
-	
+    parse_body:
 	parsing_headers = PJ_FALSE;
 
 	/* If empty line is found, eat it. */
@@ -1147,7 +1147,7 @@ parse_headers:
 	 */
 	if (err_list) {
 	    pjsip_parser_err_report *err_info;
-	
+
 	    err_info = PJ_POOL_ALLOC_T(pool, pjsip_parser_err_report);
 	    err_info->except_code = PJ_GET_EXCEPTION();
 	    err_info->line = scanner->line;
@@ -1161,10 +1161,10 @@ parse_headers:
 		err_info->hname = pj_str("Status Line");
 	    else
 		err_info->hname.slen = 0;
-	
+
 	    pj_list_insert_before(err_list, err_info);
 	}
-	
+
 	if (parsing_headers) {
 	    if (!pj_scan_is_eof(scanner)) {
 		/* Skip until next line.
@@ -1180,8 +1180,11 @@ parse_headers:
 
 	    /* Continue parse next header, if any. */
 	    if (!pj_scan_is_eof(scanner) && !IS_NEWLINE(*scanner->curptr)) {
+              printf("RETRYING PARSE\n\n\n\n");
 		goto retry_parse;
-	    }
+	    } else {
+              goto parse_body;
+            }
 	}
 
 	msg = NULL;
@@ -2009,7 +2012,7 @@ static void parse_hdr_fromto( pj_scanner *scanner,
 
 	if (!parser_stricmp(pname, pconst.pjsip_TAG_STR)) {
 	    hdr->tag = pvalue;
-	
+
 	} else {
 	    pjsip_param *p = PJ_POOL_ALLOC_T(pool, pjsip_param);
 	    p->name = pname;
@@ -2198,7 +2201,7 @@ static void int_parse_via_param( pjsip_via_hdr *hdr, pj_scanner *scanner,
 
 	} else if (!parser_stricmp(pname, pconst.pjsip_TTL_STR) && pvalue.slen) {
 	    hdr->ttl_param = pj_strtoul(&pvalue);
-	
+
 	} else if (!parser_stricmp(pname, pconst.pjsip_MADDR_STR) && pvalue.slen) {
 	    hdr->maddr_param = pvalue;
 
@@ -2339,7 +2342,7 @@ static pjsip_hdr* parse_hdr_via( pjsip_parse_ctx *ctx )
 	    pj_scan_get(scanner, &pconst.pjsip_DIGIT_SPEC, &digit);
 	    hdr->sent_by.port = pj_strtoul(&digit);
 	}
-	
+
 	int_parse_via_param(hdr, scanner, ctx->pool);
 
 	if (*scanner->curptr == '(') {
