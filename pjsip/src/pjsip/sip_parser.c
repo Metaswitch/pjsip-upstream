@@ -1102,7 +1102,7 @@ parse_headers:
 	
 	    /* Parse until EOF or an empty line is found. */
 	} while (!pj_scan_is_eof(scanner) && !IS_NEWLINE(*scanner->curptr));
-	
+    parse_body:
 	parsing_headers = PJ_FALSE;
 
 	/* If empty line is found, eat it. */
@@ -1178,10 +1178,13 @@ parse_headers:
 	    /* Restore flag. Flag may be set in int_parse_sip_url() */
 	    scanner->skip_ws = PJ_SCAN_AUTOSKIP_WS_HEADER;
 
-	    /* Continue parse next header, if any. */
+	    /* Continue parsing next header, if any - otherwise,
+             * start parsing the body. */
 	    if (!pj_scan_is_eof(scanner) && !IS_NEWLINE(*scanner->curptr)) {
-		goto retry_parse;
-	    }
+		goto retry_parse;   
+	    } else {
+		goto parse_body;                
+            }
 	}
 
 	msg = NULL;

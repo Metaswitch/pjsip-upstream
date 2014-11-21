@@ -1715,11 +1715,16 @@ PJ_DEF(pj_ssize_t) pjsip_tpmgr_receive_packet( pjsip_tpmgr *mgr,
 		      rdata->msg_info.msg_buf));
 	    }
 
-	    goto finish_process_fragment;
+	    /* Carry on processing despite this parse error. If it was
+	    sufficiently catastrophic that we have no message, or are
+	    missing crucial headers like Call-ID, we'll bail out at
+	    the next check. If not, we'll still pass a useful message
+	    to the application rather than dropping the message. */
 	}
 
 	/* Perform basic header checking. */
-	if (rdata->msg_info.cid == NULL ||
+        if (msg == NULL ||
+            rdata->msg_info.cid == NULL ||
 	    rdata->msg_info.cid->id.slen == 0 ||
 	    rdata->msg_info.from == NULL ||
 	    rdata->msg_info.to == NULL ||
