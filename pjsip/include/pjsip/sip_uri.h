@@ -82,17 +82,20 @@ PJ_INLINE(pjsip_param*) pjsip_param_cfind(const pjsip_param *param_list,
 /**
  * Compare two parameter lists.
  *
- * @param param_list1	First parameter list.
- * @param param_list2	Second parameter list.
- * @param ig_nf		If set to 1, do not compare parameters that only
- * 			appear in one of the list.
+ * @param param_list1    First parameter list.
+ * @param param_list2    Second parameter list.
+ * @param ig_nf          If set to 1, do not compare parameters that only
+ *                       appear in one of the list.
+ * @param case_sensitive If set to 1, the comparison of the parameters 
+ *                       is case sensitive.
  *
- * @return		Zero if the parameter list are equal, non-zero
- * 			otherwise.
+ * @return               Zero if the parameter list are equal, non-zero
+ *                       otherwise.
  */
 PJ_DECL(int) pjsip_param_cmp(const pjsip_param *param_list1,
 			     const pjsip_param *param_list2,
-			     pj_bool_t ig_nf);
+			     pj_bool_t ig_nf,
+                             pj_bool_t case_sensitive);
 
 /**
  * Duplicate the parameters.
@@ -347,6 +350,7 @@ typedef struct pjsip_sip_uri
     pj_str_t	    maddr_param;	/**< Optional maddr param */
     pjsip_param	    other_param;	/**< Other parameters grouped together. */
     pjsip_param	    header_param;	/**< Optional header parameter. */
+    pjsip_param     userinfo_param;     /**< Optional userinfo parameter. */
 } pjsip_sip_uri;
 
 

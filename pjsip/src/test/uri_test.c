@@ -28,7 +28,7 @@
 		    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
 		    "0123456789"
 #define MARK	    "-_.!~*'()"
-#define USER_CHAR   ALPHANUM MARK "&=+$,;?/"
+#define USER_CHAR   ALPHANUM MARK "&=+$,?/"
 #define PASS_CHAR   ALPHANUM MARK "&=+$,"
 #define PARAM_CHAR  ALPHANUM MARK "[]/:&+$"
 
@@ -83,6 +83,7 @@ static pjsip_uri *create_uri36( pj_pool_t *pool );
 static pjsip_uri *create_uri37( pj_pool_t *pool );
 static pjsip_uri *create_uri38( pj_pool_t *pool );
 static pjsip_uri *create_uri39( pj_pool_t *pool );
+static pjsip_uri *create_uri40( pj_pool_t *pool );
 static pjsip_uri *create_dummy( pj_pool_t *pool );
 
 #define ERR_NOT_EQUAL	-1001
@@ -181,11 +182,11 @@ struct uri_test
 	&create_uri13,
     },
     {
-	/* Excercise strange character sets allowed in display, user, password,
+	/* Exercise strange character sets allowed in display, user, password,
 	 * host, and port. 
 	 */
 	PJ_SUCCESS,
-	"This is -. !% *_+`'~ me <sip:a19A&=+$,;?/%2c:%40a&Zz=+$,@"
+	"This is -. !% *_+`'~ me <sip:a19A&=+$,?/%2c:%40a&Zz=+$,@"
 	"my_proxy09.MY-domain.com:9801>",
 	&create_uri14,
     },
@@ -353,13 +354,28 @@ struct uri_test
 	"\"\xC0\x81\" <sip:localhost>"
     },
     {
-	/* Even number of backslash before end quote in display name. */
+	/* 39: Even number of backslash before end quote in display name. */
 	PJ_SUCCESS,
 	"\"User\\\\\" <sip:localhost>",
 	&create_uri39,
+    },
+    {
+        /* 40: User info parameters. */
+        PJ_SUCCESS,
+        "sip:user;rn=123;npdi;other@localhost",
+        &create_uri40,
     }
 
 };
+
+#define param_add(list,pname,pvalue)  \
+        do { \
+            pjsip_param *param; \
+            param=PJ_POOL_ALLOC_T(pool, pjsip_param); \
+            param->name = pj_str(pname); \
+            param->value = pj_str(pvalue); \
+            pj_list_insert_before(&list, param); \
+        } while (0)
 
 static pjsip_uri *create_uri0(pj_pool_t *pool)
 {
@@ -418,15 +434,6 @@ static pjsip_uri *create_uri4(pj_pool_t *pool)
 
     return (pjsip_uri*)url;
 }
-
-#define param_add(list,pname,pvalue)  \
-	do { \
-	    pjsip_param *param; \
-	    param=PJ_POOL_ALLOC_T(pool, pjsip_param); \
-	    param->name = pj_str(pname); \
-	    param->value = pj_str(pvalue); \
-	    pj_list_insert_before(&list, param); \
-	} while (0)
 
 static pjsip_uri *create_uri5(pj_pool_t *pool)
 {
@@ -556,7 +563,7 @@ static pjsip_uri *create_uri13(pj_pool_t *pool)
 
 static pjsip_uri *create_uri14(pj_pool_t *pool)
 {
-    /* "This is -. !% *_+`'~ me <sip:a19A&=+$,;?/%2c:%40a&Zz=+$,@my_proxy09.my-domain.com:9801>" */
+    /* "This is -. !% *_+`'~ me <sip:a19A&=+$,?/%2c:%40a&Zz=+$;,@my_proxy09.my-domain.com:9801>" */
     pjsip_name_addr *name_addr = pjsip_name_addr_create(pool);
     pjsip_sip_uri *url;
 
@@ -564,7 +571,7 @@ static pjsip_uri *create_uri14(pj_pool_t *pool)
     name_addr->uri = (pjsip_uri*) url;
 
     pj_strdup2(pool, &name_addr->display, "This is -. !% *_+`'~ me");
-    pj_strdup2(pool, &url->user, "a19A&=+$,;?/,");
+    pj_strdup2(pool, &url->user, "a19A&=+$,?/,");
     pj_strdup2(pool, &url->passwd, "@a&Zz=+$,");
     pj_strdup2(pool, &url->host, "my_proxy09.MY-domain.com");
     url->port = 9801;
@@ -716,7 +723,7 @@ static pjsip_uri *create_uri35( pj_pool_t *pool )
     url = pjsip_sip_uri_create(pool, 0);
     url->user = pj_str("user");
     url->host = pj_str("::1");
-    url->maddr_param = pj_str("::01");
+    url->maddr_param = pj_str("[::01]");
     return (pjsip_uri*)url;
 }
 
@@ -726,7 +733,7 @@ static pjsip_uri *create_uri36( pj_pool_t *pool )
     pjsip_sip_uri *url;
     url = pjsip_sip_uri_create(pool, 0);
     url->host = pj_str("::1");
-    url->maddr_param = pj_str("::01");
+    url->maddr_param = pj_str("[::01]");
     return (pjsip_uri*)url;
 
 }
@@ -779,6 +786,21 @@ static pjsip_uri *create_uri39(pj_pool_t *pool)
     pj_strdup2(pool, &name_addr->display, "User\\\\");
     pj_strdup2(pool, &url->host, "localhost");
     return (pjsip_uri*)name_addr;
+}
+
+/* User info parameters */
+static pjsip_uri *create_uri40(pj_pool_t *pool)
+{
+    /* "sip:user;rn="+123";npdi;other@localhost" */
+    pjsip_sip_uri *url = pjsip_sip_uri_create(pool, 0);
+
+    pj_strdup2( pool, &url->user, "user");
+    pj_strdup2( pool, &url->host, "localhost");
+    param_add(url->userinfo_param, "rn", "123");
+    param_add(url->userinfo_param, "npdi", "");
+    param_add(url->userinfo_param, "other", "");
+
+    return (pjsip_uri*) url;
 }
 
 static pjsip_uri *create_dummy(pj_pool_t *pool)

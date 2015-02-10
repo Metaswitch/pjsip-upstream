@@ -90,6 +90,7 @@ static const struct
     PJ_BUILD_ERR( PJSIP_ECMPMADDRPARAM,	"URI maddr param mismatch" ),
     PJ_BUILD_ERR( PJSIP_ECMPOTHERPARAM,	"URI other param mismatch" ),
     PJ_BUILD_ERR( PJSIP_ECMPHEADERPARAM,"URI header parameter mismatch" ),
+    PJ_BUILD_ERR( PJSIP_ECMPUSERINFOPARAM,"URI userinfo param mismatch" ),
 
     /* Authentication. */
     PJ_BUILD_ERR( PJSIP_EFAILEDCREDENTIAL, "Credential failed to authenticate"),
