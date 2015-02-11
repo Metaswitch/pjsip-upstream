@@ -362,7 +362,7 @@ struct uri_test
     {
         /* 40: User info parameters. */
         PJ_SUCCESS,
-        "sip:user;rn=123;npdi;other@localhost",
+        "sip:user;other;npdi;rn=123@localhost",
         &create_uri40,
     }
 

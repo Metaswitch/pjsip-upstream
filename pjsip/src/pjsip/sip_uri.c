@@ -281,9 +281,13 @@ static pj_ssize_t pjsip_url_print(  pjsip_uri_context_e context,
 				&pc->pjsip_USER_SPEC;
 	copy_advance_escape(buf, url->user, *spec);
 
-        pjsip_param_print_on(&url->userinfo_param, buf, endbuf-buf,
-                                   &pc->pjsip_PARAM_CHAR_SPEC,
-                                   &pc->pjsip_PARAM_CHAR_SPEC, ';');
+        printed = pjsip_param_print_on(&url->userinfo_param, buf, endbuf-buf,
+                                       &pc->pjsip_PARAM_CHAR_SPEC,
+                                       &pc->pjsip_PARAM_CHAR_SPEC, ';');
+        if (printed < 0)
+            return -1;
+        buf += printed;
+
 	if (url->passwd.slen) {
 	    *buf++ = ':';
 	    copy_advance_escape(buf, url->passwd, pc->pjsip_PASSWD_SPEC);
