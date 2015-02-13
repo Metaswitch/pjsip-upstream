@@ -314,6 +314,11 @@ PJ_BEGIN_DECL
  * Parameter part in header_param mismatch.
  */
 #define PJSIP_ECMPHEADERPARAM	(PJSIP_ERRNO_START_PJSIP + 91)	/* 171091 */
+/**
+ * @hideinitializer
+ * Parameter part in userinfo mismatch.
+ */
+#define PJSIP_ECMPUSERINFOPARAM (PJSIP_ERRNO_START_PJSIP + 92)  /* 171092 */
 
 
 /************************************************************

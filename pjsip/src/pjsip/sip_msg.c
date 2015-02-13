@@ -681,7 +681,7 @@ PJ_DEF(int) pjsip_media_type_cmp( const pjsip_media_type *mt1,
     if (rc) return rc;
 
     if (cmp_param) {
-	rc = pjsip_param_cmp(&mt1->param, &mt2->param, (cmp_param==1));
+	rc = pjsip_param_cmp(&mt1->param, &mt2->param, (cmp_param==1), 0);
     }
 
     return rc;

@@ -44,7 +44,8 @@ PJ_DEF(pjsip_param*) pjsip_param_find(  const pjsip_param *param_list,
 
 PJ_DEF(int) pjsip_param_cmp( const pjsip_param *param_list1,
 			     const pjsip_param *param_list2,
-			     pj_bool_t ig_nf)
+			     pj_bool_t ig_nf,
+                             pj_bool_t case_sensitive)
 {
     const pjsip_param *p1;
 
@@ -56,7 +57,12 @@ PJ_DEF(int) pjsip_param_cmp( const pjsip_param *param_list1,
 	const pjsip_param *p2;
 	p2 = pjsip_param_find(param_list2, &p1->name);
 	if (p2 ) {
-	    int rc = pj_stricmp(&p1->value, &p2->value);
+	    int rc;
+            if (case_sensitive) {
+              rc = pj_strcmp(&p1->value, &p2->value);
+            } else {
+              rc = pj_stricmp(&p1->value, &p2->value);
+            }
 	    if (rc != 0)
 		return rc;
 	} else if ((ig_nf & 1)==0)
@@ -240,6 +246,7 @@ PJ_DEF(void) pjsip_sip_uri_init(pjsip_sip_uri *url, pj_bool_t secure)
     pjsip_sip_uri_set_secure(url, secure);
     pj_list_init(&url->other_param);
     pj_list_init(&url->header_param);
+    pj_list_init(&url->userinfo_param);
 }
 
 PJ_DEF(pjsip_sip_uri*) pjsip_sip_uri_create( pj_pool_t *pool, 
@@ -273,6 +280,14 @@ static pj_ssize_t pjsip_url_print(  pjsip_uri_context_e context,
 				&pc->pjsip_USER_SPEC_LENIENT :
 				&pc->pjsip_USER_SPEC;
 	copy_advance_escape(buf, url->user, *spec);
+
+        printed = pjsip_param_print_on(&url->userinfo_param, buf, endbuf-buf,
+                                       &pc->pjsip_PARAM_CHAR_SPEC,
+                                       &pc->pjsip_PARAM_CHAR_SPEC, ';');
+        if (printed < 0)
+            return -1;
+        buf += printed;
+
 	if (url->passwd.slen) {
 	    *buf++ = ':';
 	    copy_advance_escape(buf, url->passwd, pc->pjsip_PASSWD_SPEC);
@@ -406,6 +421,8 @@ static pj_status_t pjsip_url_compare( pjsip_uri_context_e context,
      */
     if (pj_strcmp(&url1->user, &url2->user) != 0)
 	return PJSIP_ECMPUSER;
+    if (pjsip_param_cmp(&url1->userinfo_param, &url2->userinfo_param, 1, 1)!=0)
+        return PJSIP_ECMPUSERINFOPARAM;
     if (pj_strcmp(&url1->passwd, &url2->passwd) != 0)
 	return PJSIP_ECMPPASSWD;
     
@@ -463,7 +480,7 @@ static pj_status_t pjsip_url_compare( pjsip_uri_context_e context,
     }
     /* maddr param is not allowed in From and To header. */
     if (context != PJSIP_URI_IN_FROMTO_HDR) {
-	if (pj_stricmp(&url1->maddr_param, &url2->maddr_param) != 0)
+	if (pj_stricmp(&url1->maddr_param, &url2->maddr_param) != 0) 
 	    return PJSIP_ECMPMADDRPARAM;
     }
 
@@ -474,7 +491,7 @@ static pj_status_t pjsip_url_compare( pjsip_uri_context_e context,
     /* All other uri-parameters appearing in only one URI are ignored when 
      * comparing the URIs.
      */
-    if (pjsip_param_cmp(&url1->other_param, &url2->other_param, 1)!=0)
+    if (pjsip_param_cmp(&url1->other_param, &url2->other_param, 1, 0)!=0)
 	return PJSIP_ECMPOTHERPARAM;
 
     /* URI header components are never ignored. Any present header component
@@ -517,6 +534,7 @@ PJ_DEF(void) pjsip_sip_uri_assign(pj_pool_t *pool, pjsip_sip_uri *url,
     pj_strdup( pool, &url->maddr_param, &rhs->maddr_param);
     pjsip_param_clone(pool, &url->other_param, &rhs->other_param);
     pjsip_param_clone(pool, &url->header_param, &rhs->header_param);
+    pjsip_param_clone(pool, &url->userinfo_param, &rhs->userinfo_param);
     url->lr_param = rhs->lr_param;
 }
 
