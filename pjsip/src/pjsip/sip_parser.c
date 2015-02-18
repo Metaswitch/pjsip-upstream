@@ -46,7 +46,7 @@
 #define MARK		    "-_.!~*'()"
 #define UNRESERVED	    ALNUM MARK
 #define ESCAPED		    "%"
-#define USER_UNRESERVED	    "&=+$,;?/"
+#define USER_UNRESERVED	    "&=+$,?/"
 #define PASS		    "&=+$,"
 #define TOKEN		    "-.!%*_`'~+"   /* '=' was removed for parsing
 					    * param */
@@ -153,7 +153,8 @@ static void	    int_parse_status_line( pj_scanner *scanner,
 static void	    int_parse_user_pass( pj_scanner *scanner,
 					 pj_pool_t *pool,
 					 pj_str_t *user,
-					 pj_str_t *pass);
+					 pj_str_t *pass,
+                                         pjsip_param *userinfo_param);
 static void	    int_parse_uri_host_port( pj_scanner *scanner,
 					     pj_str_t *p_host,
 					     int *p_port);
@@ -445,7 +446,7 @@ static pj_status_t init_parser()
 
     status = pj_cis_dup(&pconst.pjsip_PROBE_USER_HOST_SPEC, &pconst.pjsip_ALNUM_SPEC);
     PJ_ASSERT_RETURN(status == PJ_SUCCESS, status);
-    pj_cis_add_str( &pconst.pjsip_PROBE_USER_HOST_SPEC, UNRESERVED ESCAPED USER_UNRESERVED ":");
+    pj_cis_add_str( &pconst.pjsip_PROBE_USER_HOST_SPEC, UNRESERVED ESCAPED USER_UNRESERVED ";" ":");
 
     status = pj_cis_init(&cis_buf, &pconst.pjsip_DISPLAY_SPEC);
     PJ_ASSERT_RETURN(status == PJ_SUCCESS, status);
@@ -1374,10 +1375,20 @@ static int int_is_next_user(pj_scanner *scanner)
 
 /* Parse user:pass tokens in an URI. */
 static void int_parse_user_pass( pj_scanner *scanner, pj_pool_t *pool,
-				 pj_str_t *user, pj_str_t *pass)
+				 pj_str_t *user, pj_str_t *pass, 
+                                 pjsip_param *userinfo_param)
 {
     parser_get_and_unescape(scanner, pool, &pconst.pjsip_USER_SPEC_LENIENT,
 			    &pconst.pjsip_USER_SPEC_LENIENT_ESC, user);
+
+    while (*scanner->curptr == ';' ) {
+      pj_str_t pname, pvalue;
+      int_parse_uri_param( scanner, pool, &pname, &pvalue, 0);
+      pjsip_param *p = PJ_POOL_ALLOC_T(pool, pjsip_param);
+      p->name = pname;
+      p->value = pvalue;
+      pj_list_insert_before(&userinfo_param, p);
+    }
 
     if ( *scanner->curptr == ':') {
 	pj_scan_get_char( scanner );
@@ -1517,7 +1528,7 @@ static void* int_parse_sip_url( pj_scanner *scanner,
     }
 
     if (int_is_next_user(scanner)) {
-	int_parse_user_pass(scanner, pool, &url->user, &url->passwd);
+	int_parse_user_pass(scanner, pool, &url->user, &url->passwd, &url->userinfo_param);
     }
 
     /* Get host:port */
