@@ -1723,8 +1723,8 @@ PJ_DEF(pj_ssize_t) pjsip_tpmgr_receive_packet( pjsip_tpmgr *mgr,
 	}
 
 	/* Perform basic header checking. */
-        if (msg == NULL ||
-            rdata->msg_info.cid == NULL ||
+	if (msg == NULL ||
+	    rdata->msg_info.cid == NULL ||
 	    rdata->msg_info.cid->id.slen == 0 ||
 	    rdata->msg_info.from == NULL ||
 	    rdata->msg_info.to == NULL ||

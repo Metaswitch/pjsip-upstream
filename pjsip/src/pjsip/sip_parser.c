@@ -1180,12 +1180,12 @@ parse_headers:
 	    scanner->skip_ws = PJ_SCAN_AUTOSKIP_WS_HEADER;
 
 	    /* Continue parsing next header, if any - otherwise,
-             * start parsing the body. */
+	     * start parsing the body. */
 	    if (!pj_scan_is_eof(scanner) && !IS_NEWLINE(*scanner->curptr)) {
 		goto retry_parse;   
 	    } else {
 		goto parse_body;                
-            }
+	    }
 	}
 
 	msg = NULL;
