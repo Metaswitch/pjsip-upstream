@@ -65,11 +65,11 @@
  */
 #define PJSIP_POOL_LEN_ENDPT 20000000
 #define PJSIP_POOL_INC_ENDPT 10000000
-/*
+/**
  * Disable retransmission of 1XX responses - this makes sense for UEs,
  * but not for intermediate proxies (who should just forward the
  * retransmissions that UEs generate).
-*/
+ */
 #define PJSIP_TSX_1XX_RETRANS_DELAY 0
 /**
  * Move to soft assert behaviour rather than hard asserts.
