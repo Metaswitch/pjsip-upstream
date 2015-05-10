@@ -1430,7 +1430,20 @@ static pj_bool_t on_connect_complete(pj_activesock_t *asock,
     /* Check connect() status */
     if (status != PJ_SUCCESS) {
 
-	tcp_perror(tcp->base.obj_name, "TCP connect() error", status);
+	char errmsg[PJ_ERR_MSG_SIZE];
+	pj_strerror(status, errmsg, sizeof(errmsg));
+ 
+	PJ_LOG(2,(tcp->base.obj_name,
+	       "TCP transport %.*s:%d failed to connect to %.*s:%d with error '%s' [code=%d]",
+	       (int)tcp->base.local_name.host.slen,
+	       tcp->base.local_name.host.ptr,
+	       tcp->base.local_name.port,
+	       (int)tcp->base.remote_name.host.slen,
+	       tcp->base.remote_name.host.ptr,
+	       tcp->base.remote_name.port,
+	       errmsg,
+	       status));
+
 
 	/* Cancel all delayed transmits */
 	while (!pj_list_empty(&tcp->delayed_list)) {
