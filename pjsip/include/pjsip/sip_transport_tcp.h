@@ -98,6 +98,15 @@ typedef struct pjsip_tcp_transport_cfg
      */
     pj_qos_params	qos_params;
 
+    /**
+     * The connection timeout (ms) for TCP transports. If the value is zero
+     * or larger than the OS TCP connection timeout, this timer the will be
+     * disabled.
+     *
+     * Default: PJSIP_TCP_CONNECT_TIMEOUT_MS
+     */
+    unsigned            connect_timeout_ms;
+
 } pjsip_tcp_transport_cfg;
 
 
