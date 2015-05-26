@@ -579,7 +579,7 @@ PJ_INLINE(pjsip_cfg_t*) pjsip_cfg(void)
 
 /**
  * The connection timeout for TCP transports. If the value is zero or
- * larger than the OS TCP connection timeout, this timer the will be
+ * larger than the OS TCP connection timeout, this timer will be
  * disabled.
  *
  * Default: 0 (milliseconds) - disabled
