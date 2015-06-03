@@ -1559,6 +1559,11 @@ static void tcp_connect_timer(pj_timer_heap_t *th, pj_timer_entry *e)
 
     PJ_UNUSED_ARG(th);
 
+    if (!tcp->has_pending_connect) {
+        pj_assert(!"tcp_connect_timer popped but no pending connect");
+        return;
+    }
+
     /* Fake up a failed connection complete event from the lower layers.
        on_connect_complete will close the socket, which will tear
        everything down. */
