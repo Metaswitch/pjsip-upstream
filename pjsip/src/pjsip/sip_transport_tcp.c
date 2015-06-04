@@ -63,6 +63,7 @@ struct tcp_listener
     pj_sockaddr		     bound_addr;
     pj_qos_type		     qos_type;
     pj_qos_params	     qos_params;
+    pj_time_val		     connect_timeout;
 };
 
 
@@ -102,6 +103,10 @@ struct tcp_transport
     pj_sock_t		     sock;
     pj_activesock_t	    *asock;
     pj_bool_t		     has_pending_connect;
+
+    /* Connect timeout. */
+    pj_timer_entry           connect_timer;
+    pj_time_val              connect_timeout;
 
     /* Keep-alive timer. */
     pj_timer_entry	     ka_timer;
@@ -226,6 +231,7 @@ PJ_DEF(void) pjsip_tcp_transport_cfg_default(pjsip_tcp_transport_cfg *cfg,
     cfg->af = af;
     pj_sockaddr_init(cfg->af, &cfg->bind_addr, NULL, 0);
     cfg->async_cnt = 1;
+    cfg->connect_timeout_ms = PJSIP_TCP_CONNECT_TIMEOUT_MS;
 }
 
 
@@ -286,6 +292,8 @@ PJ_DEF(pj_status_t) pjsip_tcp_transport_start3(
     listener->qos_type = cfg->qos_type;
     pj_memcpy(&listener->qos_params, &cfg->qos_params,
 	      sizeof(cfg->qos_params));
+    listener->connect_timeout.sec = cfg->connect_timeout_ms / 1000;
+    listener->connect_timeout.msec = cfg->connect_timeout_ms % 1000;
 
     pj_ansi_strcpy(listener->factory.obj_name, "tcplis");
     if (listener->factory.type==PJSIP_TRANSPORT_TCP6)
@@ -548,6 +556,9 @@ static pj_bool_t on_data_sent(pj_activesock_t *asock,
 static pj_bool_t on_connect_complete(pj_activesock_t *asock,
 				     pj_status_t status);
 
+/* TCP connection timeout timer callback */
+static void tcp_connect_timer(pj_timer_heap_t *th, pj_timer_entry *e);
+
 /* TCP keep-alive timer callback */
 static void tcp_keep_alive_timer(pj_timer_heap_t *th, pj_timer_entry *e);
 
@@ -660,6 +671,12 @@ static pj_status_t tcp_create( struct tcp_listener *listener,
 
     tcp->is_registered = PJ_TRUE;
 
+    /* Initialize connect timeout timer */
+    tcp->connect_timer.user_data = (void*)tcp;
+    tcp->connect_timer.cb = &tcp_connect_timer;
+    pj_memcpy(&tcp->connect_timeout, &listener->connect_timeout,
+              sizeof(listener->connect_timeout));
+
     /* Initialize keep-alive timer */
     tcp->ka_timer.user_data = (void*)tcp;
     tcp->ka_timer.cb = &tcp_keep_alive_timer;
@@ -757,6 +774,12 @@ static pj_status_t tcp_destroy(pjsip_transport *transport,
     /* Mark transport as closing */
     tcp->is_closing = PJ_TRUE;
 
+    /* Stop connect timeout timer. */
+    if (tcp->connect_timer.id) {
+	pjsip_endpt_cancel_timer(tcp->base.endpt, &tcp->connect_timer);
+	tcp->connect_timer.id = PJ_FALSE;
+    }
+
     /* Stop keep-alive timer. */
     if (tcp->ka_timer.id) {
 	pjsip_endpt_cancel_timer(tcp->base.endpt, &tcp->ka_timer);
@@ -792,7 +815,7 @@ static pj_status_t tcp_destroy(pjsip_transport *transport,
 
     if (tcp->large_msg_pool) {
         pj_pool_release(tcp->large_msg_pool);
-        tcp->large_msg_pool == NULL;
+        tcp->large_msg_pool = NULL;
     }
 
     if (tcp->base.lock) {
@@ -958,6 +981,16 @@ static pj_status_t lis_create_transport(pjsip_tpfactory *factory,
     if (status != PJ_SUCCESS)
 	return status;
 
+    /* Start the connection timeout timer.  This will be cancelled when we
+       connect successfully, or when we have definitively failed and destroy
+       the connection.
+       */
+    if ((tcp->connect_timeout.sec != 0) || (tcp->connect_timeout.msec != 0)) {
+        pjsip_endpt_schedule_timer(listener->endpt,
+                                   &tcp->connect_timer,
+                                   &tcp->connect_timeout);
+        tcp->connect_timer.id = PJ_TRUE;
+    }
 
     /* Start asynchronous connect() operation */
     tcp->has_pending_connect = PJ_TRUE;
@@ -1258,6 +1291,12 @@ static pj_status_t tcp_shutdown(pjsip_transport *transport)
 {
     struct tcp_transport *tcp = (struct tcp_transport*)transport;
 
+    /* Stop connect timeout timer. */
+    if (tcp->connect_timer.id) {
+        pjsip_endpt_cancel_timer(tcp->base.endpt, &tcp->connect_timer);
+        tcp->connect_timer.id = PJ_FALSE;
+    }
+
     /* Stop keep-alive timer. */
     if (tcp->ka_timer.id) {
 	pjsip_endpt_cancel_timer(tcp->base.endpt, &tcp->ka_timer);
@@ -1427,6 +1466,12 @@ static pj_bool_t on_connect_complete(pj_activesock_t *asock,
     /* Mark that pending connect() operation has completed. */
     tcp->has_pending_connect = PJ_FALSE;
 
+    /* Cancel the connect timeout timer. */
+    if (tcp->connect_timer.id) {
+        pjsip_endpt_cancel_timer(tcp->base.endpt, &tcp->connect_timer);
+        tcp->connect_timer.id = PJ_FALSE;
+    }
+
     /* Check connect() status */
     if (status != PJ_SUCCESS) {
 
@@ -1505,6 +1550,25 @@ static pj_bool_t on_connect_complete(pj_activesock_t *asock,
     }
 
     return PJ_TRUE;
+}
+
+/* Transport connection timeout timer callback */
+static void tcp_connect_timer(pj_timer_heap_t *th, pj_timer_entry *e)
+{
+    struct tcp_transport *tcp = (struct tcp_transport*) e->user_data;
+
+    PJ_UNUSED_ARG(th);
+
+    if (!tcp->has_pending_connect) {
+        pj_assert(!"tcp_connect_timer popped but no pending connect");
+        return;
+    }
+
+    /* Fake up a failed connection complete event from the lower layers.
+       on_connect_complete will close the socket, which will tear
+       everything down. */
+    PJ_LOG(4,(tcp->base.obj_name, "TCP transport connect timeout timed out"));
+    on_connect_complete(tcp->asock, PJ_ETIMEDOUT);
 }
 
 /* Transport keep-alive timer callback */
