@@ -64,6 +64,7 @@ struct tcp_listener
     pj_qos_type		     qos_type;
     pj_qos_params	     qos_params;
     pj_time_val		     connect_timeout;
+    unsigned		     send_timeout_ms;
 };
 
 
@@ -232,6 +233,7 @@ PJ_DEF(void) pjsip_tcp_transport_cfg_default(pjsip_tcp_transport_cfg *cfg,
     pj_sockaddr_init(cfg->af, &cfg->bind_addr, NULL, 0);
     cfg->async_cnt = 1;
     cfg->connect_timeout_ms = PJSIP_TCP_CONNECT_TIMEOUT_MS;
+    cfg->send_timeout_ms = PJSIP_TCP_SEND_TIMEOUT_MS;
 }
 
 
@@ -294,6 +296,7 @@ PJ_DEF(pj_status_t) pjsip_tcp_transport_start3(
 	      sizeof(cfg->qos_params));
     listener->connect_timeout.sec = cfg->connect_timeout_ms / 1000;
     listener->connect_timeout.msec = cfg->connect_timeout_ms % 1000;
+    listener->send_timeout_ms = cfg->send_timeout_ms;
 
     pj_ansi_strcpy(listener->factory.obj_name, "tcplis");
     if (listener->factory.type==PJSIP_TRANSPORT_TCP6)
@@ -377,6 +380,16 @@ PJ_DEF(pj_status_t) pjsip_tcp_transport_start3(
 		     sizeof(listener->factory.obj_name),
 		     "tcplis:%d",  listener->factory.addr_name.port);
 
+    /* If we have a send timeout, configure it down to the OS. */
+    if (listener->send_timeout_ms != 0) {
+	status = pj_sock_setsockopt(sock,
+	                            pj_SOL_TCP(),
+	                            pj_TCP_USER_TIMEOUT(),
+	                            &listener->send_timeout_ms,
+	                            sizeof(unsigned));
+	if (status != PJ_SUCCESS)
+	    goto on_error;
+    }
 
     /* Start listening to the address */
     status = pj_sock_listen(sock, PJSIP_TCP_TRANSPORT_BACKLOG);
@@ -973,6 +986,19 @@ static pj_status_t lis_create_transport(pjsip_tpfactory *factory,
     /* Initially set the address from the listener's address */
     if (!pj_sockaddr_has_addr(&local_addr)) {
 	pj_sockaddr_copy_addr(&local_addr, &listener->factory.local_addr);
+    }
+
+    /* If we have a send timeout, configure it down to the OS. */
+    if (listener->send_timeout_ms != 0) {
+	status = pj_sock_setsockopt(sock,
+	                            pj_SOL_TCP(),
+	                            pj_TCP_USER_TIMEOUT(),
+	                            &listener->send_timeout_ms,
+	                            sizeof(unsigned));
+	if (status != PJ_SUCCESS) {
+	    pj_sock_close(sock);
+	    return status;
+        }
     }
 
     /* Create the transport descriptor */

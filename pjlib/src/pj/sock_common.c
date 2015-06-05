@@ -1202,6 +1202,11 @@ PJ_DEF(pj_uint16_t) pj_TCP_NODELAY(void)
     return PJ_TCP_NODELAY;
 }
 
+PJ_DEF(pj_uint16_t) pj_TCP_USER_TIMEOUT(void)
+{
+    return PJ_TCP_USER_TIMEOUT;
+}
+
 PJ_DEF(pj_uint16_t) pj_SO_REUSEADDR(void)
 {
     return PJ_SO_REUSEADDR;

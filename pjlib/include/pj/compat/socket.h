@@ -107,6 +107,10 @@
 #if defined(PJ_HAS_NETINET_TCP_H) && PJ_HAS_NETINET_TCP_H != 0
 /* To pull in TCP_NODELAY constants */
 #  include <netinet/tcp.h>
+/* Define TCP_USER_TIMEOUT if tcp.h didn't */
+#  ifndef TCP_USER_TIMEOUT
+#    define TCP_USER_TIMEOUT 18
+#  endif
 #endif
 
 #if defined(PJ_HAS_NET_IF_H) && PJ_HAS_NET_IF_H != 0
