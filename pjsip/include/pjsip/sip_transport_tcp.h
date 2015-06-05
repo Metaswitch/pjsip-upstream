@@ -107,6 +107,15 @@ typedef struct pjsip_tcp_transport_cfg
      */
     unsigned            connect_timeout_ms;
 
+    /**
+     * The send timeout (ms) for TCP transports.  If it takes longer than
+     * this for data to be acknowledged by the peer, the connection will be
+     * torn down.  If the value is zero, the OS default will be used.
+     *
+     * Default: PJSIP_TCP_SEND_TIMEOUT_MS
+     */
+    unsigned            send_timeout_ms;
+
 } pjsip_tcp_transport_cfg;
 
 

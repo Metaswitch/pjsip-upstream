@@ -293,6 +293,11 @@ extern const pj_uint16_t PJ_SO_SNDBUF;
 /** Disables the Nagle algorithm for send coalescing. @see pj_TCP_NODELAY */
 extern const pj_uint16_t PJ_TCP_NODELAY;
 
+/** Maximum amount of time in milliseconds that transmitted data may remain
+ *  unacknowledged before TCP will forcibly close the connection.
+ *  @see pj_TCP_USER_TIMEOUT */
+extern const pj_uint16_t PJ_TCP_USER_TIMEOUT;
+
 /** Allows the socket to be bound to an address that is already in use.
  *  @see pj_SO_REUSEADDR */
 extern const pj_uint16_t PJ_SO_REUSEADDR;
@@ -333,6 +338,9 @@ extern const pj_uint16_t PJ_IP_DROP_MEMBERSHIP;
     /** Get #PJ_TCP_NODELAY constant */
     PJ_DECL(pj_uint16_t) pj_TCP_NODELAY(void);
 
+    /** Get #PJ_TCP_USER_TIMEOUT constant */
+    PJ_DECL(pj_uint16_t) pj_TCP_USER_TIMEOUT(void);
+
     /** Get #PJ_SO_REUSEADDR constant */
     PJ_DECL(pj_uint16_t) pj_SO_REUSEADDR(void);
 
@@ -368,6 +376,9 @@ extern const pj_uint16_t PJ_IP_DROP_MEMBERSHIP;
 
     /** Get #PJ_TCP_NODELAY constant */
 #   define pj_TCP_NODELAY() PJ_TCP_NODELAY
+
+    /** Get #PJ_TCP_USER_TIMEOUT constant */
+#   define pj_TCP_USER_TIMEOUT() PJ_TCP_USER_TIMEOUT
 
     /** Get #PJ_SO_REUSEADDR constant */
 #   define pj_SO_REUSEADDR() PJ_SO_REUSEADDR
