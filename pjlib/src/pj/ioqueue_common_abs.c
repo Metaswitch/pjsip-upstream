@@ -28,6 +28,7 @@
  * This file is NOT supposed to be compiled as stand-alone source.
  */
 
+#include <assert.h>
 #define PENDING_RETRY	2
 
 static void ioqueue_init( pj_ioqueue_t *ioqueue )
@@ -265,13 +266,15 @@ void ioqueue_dispatch_write_event(pj_ioqueue_t *ioqueue, pj_ioqueue_key_t *h)
         /* Unlock; from this point we don't need to hold key's mutex
 	 * (unless concurrency is disabled, which in this case we should
 	 * hold the mutex while calling the callback) */
-	if (h->allow_concurrent) {
+	if (h->allow_concurrent || h->allow_concurrent_write_only) {
 	    /* concurrency may be changed while we're in the callback, so
 	     * save it to a flag.
 	     */
 	    has_lock = PJ_FALSE;
 	    pj_ioqueue_unlock_key(h);
+      pj_assert(!"RKD - entered the unlocking branch, all is OK");
 	} else {
+      pj_assert(!"RKD - should not enter this branch");
 	    has_lock = PJ_TRUE;
 	}
 
@@ -383,14 +386,16 @@ void ioqueue_dispatch_write_event(pj_ioqueue_t *ioqueue, pj_ioqueue_key_t *h)
 	    /* Unlock; from this point we don't need to hold key's mutex
 	     * (unless concurrency is disabled, which in this case we should
 	     * hold the mutex while calling the callback) */
-	    if (h->allow_concurrent) {
+	    if (h->allow_concurrent || h->allow_concurrent_write_only) {
 		/* concurrency may be changed while we're in the callback, so
 		 * save it to a flag.
 		 */
 		has_lock = PJ_FALSE;
 		pj_ioqueue_unlock_key(h);
 		PJ_RACE_ME(5);
-	    } else {
+      pj_assert(!"RKD - entered the unlocking branch, all is OK");
+	} else {
+      pj_assert(!"RKD - should not enter this branch");
 		has_lock = PJ_TRUE;
 	    }
 
@@ -1299,6 +1304,21 @@ PJ_DEF(pj_status_t) pj_ioqueue_set_default_concurrency( pj_ioqueue_t *ioqueue,
     ioqueue->default_concurrency = allow;
     return PJ_SUCCESS;
 }
+
+PJ_DEF(pj_status_t) pj_ioqueue_set_write_only_concurrency(pj_ioqueue_key_t *key,
+					       pj_bool_t allow)
+{
+    PJ_ASSERT_RETURN(key, PJ_EINVAL);
+
+    /* PJ_IOQUEUE_HAS_SAFE_UNREG must be enabled if concurrency is
+     * disabled.
+     */
+    PJ_ASSERT_RETURN(allow || PJ_IOQUEUE_HAS_SAFE_UNREG, PJ_EINVAL);
+
+    key->allow_concurrent_write_only = allow;
+    return PJ_SUCCESS;
+}
+
 
 
 PJ_DEF(pj_status_t) pj_ioqueue_set_concurrency(pj_ioqueue_key_t *key,

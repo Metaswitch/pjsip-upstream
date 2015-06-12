@@ -234,6 +234,11 @@ PJ_DEF(pj_status_t) pj_activesock_create( pj_pool_t *pool,
         pj_ioqueue_set_concurrency(asock->key, opt->concurrency);
     }
 
+    if (opt && opt->concurrency >= 0) {
+        // Write concurrency is OK even for whole data
+        pj_ioqueue_set_write_only_concurrency(asock->key, opt->concurrency);
+    }
+
 #if defined(PJ_IPHONE_OS_HAS_MULTITASKING_SUPPORT) && \
     PJ_IPHONE_OS_HAS_MULTITASKING_SUPPORT!=0
     asock->sock = sock;
