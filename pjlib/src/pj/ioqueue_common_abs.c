@@ -272,7 +272,6 @@ void ioqueue_dispatch_write_event(pj_ioqueue_t *ioqueue, pj_ioqueue_key_t *h)
 	     */
 	    has_lock = PJ_FALSE;
 	    pj_ioqueue_unlock_key(h);
-      pj_assert(!"RKD - entered the unlocking branch, all is OK");
 	} else {
       pj_assert(!"RKD - should not enter this branch");
 	    has_lock = PJ_TRUE;
@@ -393,7 +392,6 @@ void ioqueue_dispatch_write_event(pj_ioqueue_t *ioqueue, pj_ioqueue_key_t *h)
 		has_lock = PJ_FALSE;
 		pj_ioqueue_unlock_key(h);
 		PJ_RACE_ME(5);
-      pj_assert(!"RKD - entered the unlocking branch, all is OK");
 	} else {
       pj_assert(!"RKD - should not enter this branch");
 		has_lock = PJ_TRUE;
