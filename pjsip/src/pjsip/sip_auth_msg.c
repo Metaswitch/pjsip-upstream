@@ -70,7 +70,10 @@ static int print_digest_credential(pjsip_digest_credential *cred, char *buf, pj_
     char *endbuf = buf + size;
     const pjsip_parser_const_t *pc = pjsip_parser_const();
     
+    // Print the first parameter unconditionally, to avoid printing an invalid header with a leading
+    // comma (e.g.  'Authorization: Digest , username=x').
     copy_advance_pair_quote(buf, "response=", 9, cred->response, '"', '"');
+    
     copy_advance_pair_quote_cond(buf, ", username=", 11, cred->username, '"', '"');
     copy_advance_pair_quote_cond(buf, ", realm=", 8, cred->realm, '"', '"');
     copy_advance_pair_quote(buf, ", nonce=", 8, cred->nonce, '"', '"');
