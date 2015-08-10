@@ -489,7 +489,17 @@ static pj_status_t schedule_w_grp_lock(pj_timer_heap_t *ht,
     PJ_ASSERT_RETURN(entry->cb != NULL, PJ_EINVAL);
 
     /* Prevent same entry from being scheduled more than once */
-    PJ_ASSERT_RETURN(entry->_timer_id < 1, PJ_EINVALIDOP);
+    if (entry->_timer_id > 0)
+    {
+      PJ_LOG(1,(THIS_FILE, "Timer was scheduled more than once: internal ID %d, user-provided ID %d, delay %ld sec, %ld msec, user data %p, callback %p, group lock %p",
+                entry->_timer_id,
+                entry->id,
+                delay->sec,
+                delay->msec,
+                entry->user_data,
+                entry->cb,
+                grp_lock));
+    }
 
 #if PJ_TIMER_DEBUG
     entry->src_file = src_file;
