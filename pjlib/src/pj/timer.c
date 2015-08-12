@@ -501,6 +501,8 @@ static pj_status_t schedule_w_grp_lock(pj_timer_heap_t *ht,
                 grp_lock));
     }
 
+    PJ_ASSERT_RETURN(entry->_timer_id < 1, PJ_EINVALIDOP);
+
 #if PJ_TIMER_DEBUG
     entry->src_file = src_file;
     entry->src_line = src_line;
