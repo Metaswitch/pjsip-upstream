@@ -3526,7 +3526,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 if test -z "$CROSS_COMPILE"; then
-    CROSS_COMPILE=`echo ${CC} | sed 's/gcc//'`
+    CROSS_COMPILE=`echo ${CC} | sed 's/gcc//' | sed 's/clang-3\..//' | sed 's/clang//'`
 fi
 
 if test "$AR" = ""; then AR="${CROSS_COMPILE}ar rv"; fi
