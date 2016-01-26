@@ -1396,17 +1396,18 @@ static pj_bool_t on_data_read(pj_activesock_t *asock,
             pjsip_tpmgr_receive_packet(rdata->tp_info.transport->tpmgr,
                                        rdata);
 
-        pj_assert(size_eaten <= (pj_size_t)rdata->pkt_info.len);
 
         if (size_eaten == -1) {
           /* There was a problem receiving the message.  This suggests the
            * data on the socket is corrupt.  Shutdown this connection.
            */
-          PJ_LOG(2,(tcp->base.obj_name, "Reeive failed, closing connection"));
+          PJ_LOG(2,(tcp->base.obj_name, "Receive failed, closing connection"));
 
           tcp_init_shutdown(tcp, PJSIP_EINVALIDMSG);
           return PJ_FALSE;
         }
+
+        pj_assert(size_eaten <= (pj_size_t)rdata->pkt_info.len);
 
         /* Handle unprocessed data. */
         *remainder = rdata->pkt_info.len - size_eaten;
