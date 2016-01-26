@@ -1401,8 +1401,8 @@ static pj_bool_t on_data_read(pj_activesock_t *asock,
            * data on the socket is corrupt.  Shutdown this connection.
            */
           PJ_LOG(2,(THIS_FILE, 
-                    tcp->base.obj_name, 
-                    "Receive failed, closing TCP connection"));
+                    "Receive failed, closing TCP connection: %s",
+                    tcp->base.obj_name));
 
           tcp_init_shutdown(tcp, PJSIP_EINVALIDMSG);
           return PJ_FALSE;
