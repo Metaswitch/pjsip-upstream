@@ -1361,7 +1361,7 @@ static pj_bool_t on_data_read(pj_activesock_t *asock,
      * to be parsed.
      */
     if (status == PJ_SUCCESS) {
-	pj_size_t size_eaten;
+	pj_ssize_t size_eaten;
 
 	/* Mark this as an activity */
 	pj_gettimeofday(&tcp->last_activity);
@@ -1409,7 +1409,7 @@ static pj_bool_t on_data_read(pj_activesock_t *asock,
           return PJ_FALSE;
         }
 
-        pj_assert(size_eaten <= (pj_size_t)rdata->pkt_info.len);
+        pj_assert(size_eaten <= (pj_ssize_t)rdata->pkt_info.len);
 
         /* Handle unprocessed data. */
         *remainder = rdata->pkt_info.len - size_eaten;
