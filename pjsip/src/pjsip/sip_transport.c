@@ -1657,7 +1657,7 @@ PJ_DEF(pj_ssize_t) pjsip_tpmgr_receive_packet( pjsip_tpmgr *mgr,
         	    /* No content-length header which is not allowed. */
         	    PJ_LOG(2,(THIS_FILE, 
                               "No content-length header in TCP packet"));
-        	    return -1;
+        	    return -PJSIP_EMISSINGHDR;
 		} else {
 		    /* Not enough data in packet. */
 		    return total_processed;
