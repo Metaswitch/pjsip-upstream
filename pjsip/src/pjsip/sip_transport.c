@@ -1654,10 +1654,15 @@ PJ_DEF(pj_ssize_t) pjsip_tpmgr_receive_packet( pjsip_tpmgr *mgr,
 		    /* Exhaust all data. */
 		    return rdata->pkt_info.len;
      		} else if (msg_status == PJSIP_EMISSINGHDR) {
-        	    /* No content-length header which is not allowed. */
-        	    PJ_LOG(2,(THIS_FILE, 
+                    /* pjsip_find_msg will only return this if it has received 
+                     * the blank line denoting end of headers but cannot find a
+                     * Content-Length header.
+                     *
+                     * This is not allowed for TCP according to RFC3261 (20.14)
+                     */
+                    PJ_LOG(3,(THIS_FILE, 
                               "No content-length header in TCP packet"));
-        	    return -PJSIP_EMISSINGHDR;
+                    return -PJSIP_EMISSINGHDR;
 		} else {
 		    /* Not enough data in packet. */
 		    return total_processed;
