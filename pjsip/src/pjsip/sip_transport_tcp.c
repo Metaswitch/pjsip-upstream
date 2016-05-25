@@ -403,6 +403,8 @@ PJ_DEF(pj_status_t) pjsip_tcp_transport_start3(
 	asock_cfg.async_cnt = MAX_ASYNC_CNT;
     else
 	asock_cfg.async_cnt = cfg->async_cnt;
+	
+    asock_cfg.concurrency = 1;
 
     pj_bzero(&listener_cb, sizeof(listener_cb));
     listener_cb.on_accept_complete = &on_accept_complete;
@@ -655,6 +657,7 @@ static pj_status_t tcp_create( struct tcp_listener *listener,
     /* Create active socket */
     pj_activesock_cfg_default(&asock_cfg);
     asock_cfg.async_cnt = 1;
+    asock_cfg.concurrency = 1;
 
     pj_bzero(&tcp_callback, sizeof(tcp_callback));
     tcp_callback.on_data_read = &on_data_read;

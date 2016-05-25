@@ -106,6 +106,7 @@ union operation_key
     pj_bool_t		    inside_callback;	    \
     pj_bool_t		    destroy_requested;	    \
     pj_bool_t		    allow_concurrent;	    \
+    pj_bool_t		    allow_concurrent_write_only;	    \
     pj_sock_t		    fd;                     \
     int                     fd_type;                \
     void		   *user_data;              \
