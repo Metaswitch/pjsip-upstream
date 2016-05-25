@@ -273,7 +273,7 @@ void ioqueue_dispatch_write_event(pj_ioqueue_t *ioqueue, pj_ioqueue_key_t *h)
 	    has_lock = PJ_FALSE;
 	    pj_ioqueue_unlock_key(h);
 	} else {
-      pj_assert(!"RKD - should not enter this branch");
+	    pj_assert(!"Clearwater requires write concurrency - should not enter this branch");
 	    has_lock = PJ_TRUE;
 	}
 
@@ -392,8 +392,8 @@ void ioqueue_dispatch_write_event(pj_ioqueue_t *ioqueue, pj_ioqueue_key_t *h)
 		has_lock = PJ_FALSE;
 		pj_ioqueue_unlock_key(h);
 		PJ_RACE_ME(5);
-	} else {
-      pj_assert(!"RKD - should not enter this branch");
+	    } else {
+		pj_assert(!"Clearwater requires write concurrency - should not enter this branch");
 		has_lock = PJ_TRUE;
 	    }
 
