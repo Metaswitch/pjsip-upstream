@@ -72,12 +72,6 @@
  */
 #define PJSIP_TSX_1XX_RETRANS_DELAY 0
 /**
- * Disable UDP to TCP uplift.  We recommend that most customers use TCP so this
- * makes no difference to most deployments but allows us to support an all-UDP
- * network.
- */
-#define PJSIP_DONT_SWITCH_TO_TCP 1
-/**
  * Move to soft assert behaviour rather than hard asserts.
  */
 extern int pj_log_get_level(void);
