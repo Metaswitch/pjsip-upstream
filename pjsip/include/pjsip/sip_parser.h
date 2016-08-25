@@ -374,6 +374,7 @@ typedef struct pjsip_parser_const_t
 					     any chars except newlines or
 					     zero.			*/
     pj_cis_t pjsip_NOT_COMMA_OR_NEWLINE;/**< Array elements.		*/
+    pj_cis_t pjsip_NOT_SEMICOLON_OR_NEWLINE;/**< Array elements for privacy header.       */
     pj_cis_t pjsip_DISPLAY_SPEC;	/**< Used when searching for display
 					     name.			*/
     pj_cis_t pjsip_OTHER_URI_CONTENT;	/**< Generic URI content.	*/
@@ -416,6 +417,10 @@ PJ_DECL(void) pjsip_parse_end_hdr_imp ( pj_scanner *scanner );
 /* Parse generic array header */
 PJ_DECL(void) pjsip_parse_generic_array_hdr_imp(pjsip_generic_array_hdr *hdr,
 						pj_scanner *scanner);
+
+/* Parse generic array header with arbitrary delimiter */
+PJ_DECL(void) pjsip_parse_generic_delimited_array_hdr(pjsip_generic_array_hdr *hdr,
+                        pj_scanner *scanner,char delimiter, const pj_cis_t *not_delimiter_or_newline);
 
 /* Parse name-addr in header */
 PJ_DECL(pjsip_name_addr*) pjsip_parse_name_addr_imp(pj_scanner *scanner,

@@ -885,6 +885,38 @@ static pjsip_generic_int_hdr* pjsip_generic_int_hdr_shallow_clone( pj_pool_t *po
     return hdr;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+/*
+ * Print function for a generic array header with an arbitrary delimiter.
+ * The generic array header will use this print function with ', ' as a delimiter,
+ * the privacy header will use it with '; '.
+ */
+int pjsip_generic_array_hdr_delimited_print( pjsip_generic_array_hdr *hdr,
+                      char *buf, pj_size_t size, char *delimiter, size_t delimiter_length)
+{
+    char *p = buf, *endbuf = buf+size;
+    const pj_str_t *hname = pjsip_use_compact_form? &hdr->sname : &hdr->name;
+
+    copy_advance(p, (*hname));
+    *p++ = ':';
+    *p++ = ' ';
+
+    if (hdr->count > 0) {
+    unsigned i;
+    int printed;
+    copy_advance(p, hdr->values[0]);
+    for (i=1; i<hdr->count; ++i) {
+        copy_advance_pair(p, delimiter, delimiter_length, hdr->values[i]);
+    }
+    }
+
+    return p - buf;
+}
+
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 /*
  * Generic array header.
@@ -929,23 +961,7 @@ PJ_DEF(pjsip_generic_array_hdr*) pjsip_generic_array_hdr_create( pj_pool_t *pool
 static int pjsip_generic_array_hdr_print( pjsip_generic_array_hdr *hdr,
 					  char *buf, pj_size_t size)
 {
-    char *p = buf, *endbuf = buf+size;
-    const pj_str_t *hname = pjsip_use_compact_form? &hdr->sname : &hdr->name;
-
-    copy_advance(p, (*hname));
-    *p++ = ':';
-    *p++ = ' ';
-
-    if (hdr->count > 0) {
-	unsigned i;
-	int printed;
-	copy_advance(p, hdr->values[0]);
-	for (i=1; i<hdr->count; ++i) {
-	    copy_advance_pair(p, ", ", 2, hdr->values[i]);
-	}
-    }
-
-    return p - buf;
+    return pjsip_generic_array_hdr_delimited_print(hdr, buf, size, ", ", 2);
 }
 
 static pjsip_generic_array_hdr* pjsip_generic_array_hdr_clone( pj_pool_t *pool,

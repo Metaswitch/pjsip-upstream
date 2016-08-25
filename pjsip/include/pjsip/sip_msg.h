@@ -1954,6 +1954,14 @@ pjsip_warning_hdr_create_from_status( pj_pool_t *pool,
 				      const pj_str_t *host,
 				      pj_status_t status);
 
+/**
+* Print function for a generic array header with an arbitrary delimiter.
+* This allows the creation of array headers with custom delimiters, like
+* the semicolon-separated privacy header in RFC 3323.
+*/
+PJ_DECL(int) pjsip_generic_array_hdr_delimited_print( pjsip_generic_array_hdr *hdr,
+                      char *buf, pj_size_t size, char delimiter[], size_t delimiter_length);
+
 /* **************************************************************************/
 /** Accept-Encoding header. */
 typedef pjsip_generic_string_hdr pjsip_accept_encoding_hdr;
