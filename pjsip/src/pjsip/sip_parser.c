@@ -116,7 +116,7 @@ static pjsip_parser_const_t pconst =
     { "expires", 7 },	/* pjsip_EXPIRES_STR	*/
     { "tag", 3 },	/* pjsip_TAG_STR	*/
     { "rport", 5},	/* pjsip_RPORT_STR	*/
-    { "index", 5}	/* pjsip_INDEX_STR	*/
+    { "index", 5},	/* pjsip_INDEX_STR	*/
 };
 
 /* Character Input Specification buffer. */
@@ -379,6 +379,11 @@ static pj_status_t init_parser()
     PJ_ASSERT_RETURN(status == PJ_SUCCESS, status);
     pj_cis_add_str( &pconst.pjsip_NOT_COMMA_OR_NEWLINE, ",\r\n");
     pj_cis_invert(&pconst.pjsip_NOT_COMMA_OR_NEWLINE);
+
+    status = pj_cis_init(&cis_buf, &pconst.pjsip_NOT_SEMICOLON_OR_NEWLINE);
+    PJ_ASSERT_RETURN(status == PJ_SUCCESS, status);
+    pj_cis_add_str( &pconst.pjsip_NOT_SEMICOLON_OR_NEWLINE, ";\r\n");
+    pj_cis_invert(&pconst.pjsip_NOT_SEMICOLON_OR_NEWLINE);
 
     status = pj_cis_dup(&pconst.pjsip_TOKEN_SPEC, &pconst.pjsip_ALNUM_SPEC);
     PJ_ASSERT_RETURN(status == PJ_SUCCESS, status);
@@ -1745,9 +1750,10 @@ PJ_DEF(void) pjsip_parse_end_hdr_imp( pj_scanner *scanner )
     parse_hdr_end(scanner);
 }
 
-/* Parse generic array header. */
-static void parse_generic_array_hdr( pjsip_generic_array_hdr *hdr,
-				     pj_scanner *scanner)
+/* Parse generic array with an arbitrary delimiter. */
+void pjsip_parse_delimited_array_hdr(
+				pjsip_generic_array_hdr *hdr, pj_scanner *scanner,
+				char delimiter, const pj_cis_t* const not_delimiter_or_newline)
 {
     /* Some header fields allow empty elements in the value:
      *   Accept, Allow, Supported
@@ -1764,13 +1770,13 @@ static void parse_generic_array_hdr( pjsip_generic_array_hdr *hdr,
 	return;
     }
 
-    pj_scan_get( scanner, &pconst.pjsip_NOT_COMMA_OR_NEWLINE,
+    pj_scan_get( scanner, not_delimiter_or_newline,
 		 &hdr->values[hdr->count]);
     hdr->count++;
 
-    while (*scanner->curptr == ',') {
+    while (*scanner->curptr == delimiter) {
 	pj_scan_get_char(scanner);
-	pj_scan_get( scanner, &pconst.pjsip_NOT_COMMA_OR_NEWLINE,
+	pj_scan_get( scanner, not_delimiter_or_newline,
 		     &hdr->values[hdr->count]);
 	hdr->count++;
 
@@ -1780,6 +1786,13 @@ static void parse_generic_array_hdr( pjsip_generic_array_hdr *hdr,
 
 end:
     parse_hdr_end(scanner);
+}
+
+/* Parse generic array header. */
+static void parse_generic_array_hdr( pjsip_generic_array_hdr *hdr,
+				     pj_scanner *scanner)
+{
+    pjsip_parse_delimited_array_hdr(hdr, scanner, ',', &pconst.pjsip_NOT_COMMA_OR_NEWLINE);
 }
 
 /* Parse generic array header. */
