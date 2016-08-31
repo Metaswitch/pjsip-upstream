@@ -327,57 +327,57 @@ PJ_DECL(pj_status_t) pjsip_parse_headers( pj_pool_t *pool, char *input,
  */
 typedef struct pjsip_parser_const_t
 {
-    const pj_str_t pjsip_USER_STR;	/**< "user" string constant.    */
-    const pj_str_t pjsip_METHOD_STR;	/**< "method" string constant   */
-    const pj_str_t pjsip_TRANSPORT_STR;	/**< "transport" string const.  */
-    const pj_str_t pjsip_MADDR_STR;	/**< "maddr" string const.	*/
-    const pj_str_t pjsip_LR_STR;	/**< "lr" string const.		*/
-    const pj_str_t pjsip_SIP_STR;	/**< "sip" string constant.	*/
-    const pj_str_t pjsip_SIPS_STR;	/**< "sips" string constant.    */
-    const pj_str_t pjsip_TEL_STR;	/**< "tel" string constant.	*/
-    const pj_str_t pjsip_BRANCH_STR;	/**< "branch" string constant.  */
-    const pj_str_t pjsip_TTL_STR;	/**< "ttl" string constant.	*/
-    const pj_str_t pjsip_RECEIVED_STR;	/**< "received" string const.   */
-    const pj_str_t pjsip_Q_STR;		/**< "q" string constant.	*/
-    const pj_str_t pjsip_EXPIRES_STR;	/**< "expires" string constant. */
-    const pj_str_t pjsip_TAG_STR;	/**< "tag" string constant.	*/
-    const pj_str_t pjsip_RPORT_STR;	/**< "rport" string const.	*/
-    const pj_str_t pjsip_INDEX_STR;	/**< "index" string constant.	*/
+    const pj_str_t pjsip_USER_STR;	         /**< "user" string constant.    */
+    const pj_str_t pjsip_METHOD_STR;	     /**< "method" string constant   */
+    const pj_str_t pjsip_TRANSPORT_STR;	     /**< "transport" string const.  */
+    const pj_str_t pjsip_MADDR_STR;	         /**< "maddr" string const.	*/
+    const pj_str_t pjsip_LR_STR;	         /**< "lr" string const.		*/
+    const pj_str_t pjsip_SIP_STR;	         /**< "sip" string constant.	*/
+    const pj_str_t pjsip_SIPS_STR;	         /**< "sips" string constant.    */
+    const pj_str_t pjsip_TEL_STR;	         /**< "tel" string constant.	*/
+    const pj_str_t pjsip_BRANCH_STR;	     /**< "branch" string constant.  */
+    const pj_str_t pjsip_TTL_STR;	         /**< "ttl" string constant.	*/
+    const pj_str_t pjsip_RECEIVED_STR;	     /**< "received" string const.   */
+    const pj_str_t pjsip_Q_STR;		         /**< "q" string constant.	*/
+    const pj_str_t pjsip_EXPIRES_STR;	     /**< "expires" string constant. */
+    const pj_str_t pjsip_TAG_STR;	         /**< "tag" string constant.	*/
+    const pj_str_t pjsip_RPORT_STR;	         /**< "rport" string const.	*/
+    const pj_str_t pjsip_INDEX_STR;	         /**< "index" string constant.	*/
 
-    pj_cis_t pjsip_HOST_SPEC;		/**< For scanning host part.	*/
-    pj_cis_t pjsip_DIGIT_SPEC;		/**< Decimal digits		*/
-    pj_cis_t pjsip_ALPHA_SPEC;		/**< Alpha (A-Z, a-z)		*/
-    pj_cis_t pjsip_ALNUM_SPEC;		/**< Decimal + Alpha.		*/
-    pj_cis_t pjsip_TOKEN_SPEC;		/**< Token.			*/
-    pj_cis_t pjsip_TOKEN_SPEC_ESC;	/**< Token without '%' character */
-    pj_cis_t pjsip_VIA_PARAM_SPEC;	/**< Via param is token + ":" for
-					     IPv6.			*/
-    pj_cis_t pjsip_VIA_PARAM_SPEC_ESC;	/**< .. as above without '%'	*/
-    pj_cis_t pjsip_HEX_SPEC;  		/**< Hexadecimal digits.	*/
-    pj_cis_t pjsip_PARAM_CHAR_SPEC;	/**< For scanning pname (or pvalue
-					     when it's  not quoted.) in URI */
-    pj_cis_t pjsip_PARAM_CHAR_SPEC_ESC;	/**< Variant without the escape ('%')
-					     char			*/
-    pj_cis_t pjsip_HDR_CHAR_SPEC;	/**< Chars in hname/havalue in URL. */
-    pj_cis_t pjsip_HDR_CHAR_SPEC_ESC;	/**< Variant without the escape ('%')
-					     char			*/
-    pj_cis_t pjsip_PROBE_USER_HOST_SPEC;/**< Hostname characters.	*/
-    pj_cis_t pjsip_PASSWD_SPEC;		/**< Password.			*/
-    pj_cis_t pjsip_PASSWD_SPEC_ESC;	/**< Variant without the escape ('%')
-					     char			*/
-    pj_cis_t pjsip_USER_SPEC;		/**< User */
-    pj_cis_t pjsip_USER_SPEC_ESC;	/**< Variant without the escape ('%')
-					     char			*/
-    pj_cis_t pjsip_USER_SPEC_LENIENT;	/**< User, with additional '#' char */
-    pj_cis_t pjsip_USER_SPEC_LENIENT_ESC;/**< pjsip_USER_SPEC_ESC with '#' */
-    pj_cis_t pjsip_NOT_NEWLINE;		/**< For eating up header, basically
-					     any chars except newlines or
-					     zero.			*/
-    pj_cis_t pjsip_NOT_COMMA_OR_NEWLINE;/**< Array elements.		*/
-    pj_cis_t pjsip_NOT_SEMICOLON_OR_NEWLINE;/**< Array elements for privacy header.       */
-    pj_cis_t pjsip_DISPLAY_SPEC;	/**< Used when searching for display
-					     name.			*/
-    pj_cis_t pjsip_OTHER_URI_CONTENT;	/**< Generic URI content.	*/
+    pj_cis_t pjsip_HOST_SPEC;		         /**< For scanning host part.	*/
+    pj_cis_t pjsip_DIGIT_SPEC;		         /**< Decimal digits		*/
+    pj_cis_t pjsip_ALPHA_SPEC;		         /**< Alpha (A-Z, a-z)		*/
+    pj_cis_t pjsip_ALNUM_SPEC;		         /**< Decimal + Alpha.		*/
+    pj_cis_t pjsip_TOKEN_SPEC;		         /**< Token.			*/
+    pj_cis_t pjsip_TOKEN_SPEC_ESC;	         /**< Token without '%' character */
+    pj_cis_t pjsip_VIA_PARAM_SPEC;	         /**< Via param is token + ":" for 
+                                                  IPv6. */
+    pj_cis_t pjsip_VIA_PARAM_SPEC_ESC;	     /**< .. as above without '%' */
+    pj_cis_t pjsip_HEX_SPEC;  		         /**< Hexadecimal digits.	*/
+    pj_cis_t pjsip_PARAM_CHAR_SPEC;	         /**< For scanning pname (or pvalue
+					                          when it's  not quoted.) in URI */
+    pj_cis_t pjsip_PARAM_CHAR_SPEC_ESC;	     /**< Variant without the escape 
+                                                  ('%') char */
+    pj_cis_t pjsip_HDR_CHAR_SPEC;	         /**< Chars in hname/havalue in URL. */
+    pj_cis_t pjsip_HDR_CHAR_SPEC_ESC;	     /**< Variant without the escape 
+                                                  ('%') char */
+    pj_cis_t pjsip_PROBE_USER_HOST_SPEC;     /**< Hostname characters.	*/
+    pj_cis_t pjsip_PASSWD_SPEC;		         /**< Password.	*/
+    pj_cis_t pjsip_PASSWD_SPEC_ESC;	         /**< Variant without the escape 
+                                                  ('%') char	*/
+    pj_cis_t pjsip_USER_SPEC;		         /**< User */
+    pj_cis_t pjsip_USER_SPEC_ESC;	         /**< Variant without the escape 
+                                                  ('%') char	*/
+    pj_cis_t pjsip_USER_SPEC_LENIENT;	     /**< User, with additional '#' 
+                                                  char */
+    pj_cis_t pjsip_USER_SPEC_LENIENT_ESC;    /**< pjsip_USER_SPEC_ESC with '#' */
+    pj_cis_t pjsip_NOT_NEWLINE;		         /**< For eating up header, basically
+					                              any chars except newlines or 
+                                                  zero. */
+    pj_cis_t pjsip_NOT_COMMA_OR_NEWLINE;     /**< Array elements.		*/
+    pj_cis_t pjsip_NOT_SEMICOLON_OR_NEWLINE; /**< Array elements for privacy header. */
+    pj_cis_t pjsip_DISPLAY_SPEC;	         /**< Used when searching for display name. */
+    pj_cis_t pjsip_OTHER_URI_CONTENT;	     /**< Generic URI content. */
 
 } pjsip_parser_const_t;
 
@@ -419,8 +419,9 @@ PJ_DECL(void) pjsip_parse_generic_array_hdr_imp(pjsip_generic_array_hdr *hdr,
 						pj_scanner *scanner);
 
 /* Parse generic array header with arbitrary delimiter */
-PJ_DECL(void) pjsip_parse_generic_delimited_array_hdr(pjsip_generic_array_hdr *hdr,
-                        pj_scanner *scanner,char delimiter, const pj_cis_t *not_delimiter_or_newline);
+PJ_DECL(void) pjsip_parse_delimited_array_hdr(pjsip_generic_array_hdr *hdr,
+                        pj_scanner *scanner, char delimiter,
+                        const pj_cis_t* const not_delimiter_or_newline);
 
 /* Parse name-addr in header */
 PJ_DECL(pjsip_name_addr*) pjsip_parse_name_addr_imp(pj_scanner *scanner,

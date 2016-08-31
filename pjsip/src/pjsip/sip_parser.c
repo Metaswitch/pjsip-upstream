@@ -116,7 +116,7 @@ static pjsip_parser_const_t pconst =
     { "expires", 7 },	/* pjsip_EXPIRES_STR	*/
     { "tag", 3 },	/* pjsip_TAG_STR	*/
     { "rport", 5},	/* pjsip_RPORT_STR	*/
-    { "index", 5}	/* pjsip_INDEX_STR	*/
+    { "index", 5},	/* pjsip_INDEX_STR	*/
 };
 
 /* Character Input Specification buffer. */
@@ -1751,9 +1751,9 @@ PJ_DEF(void) pjsip_parse_end_hdr_imp( pj_scanner *scanner )
 }
 
 /* Parse generic array with an arbitrary delimiter. */
-void pjsip_parse_generic_delimited_array_hdr(
+void pjsip_parse_delimited_array_hdr(
 				pjsip_generic_array_hdr *hdr, pj_scanner *scanner,
-				char delimiter, const pj_cis_t *not_delimiter_or_newline)
+				char delimiter, const pj_cis_t* const not_delimiter_or_newline)
 {
     /* Some header fields allow empty elements in the value:
      *   Accept, Allow, Supported
@@ -1792,7 +1792,7 @@ end:
 static void parse_generic_array_hdr( pjsip_generic_array_hdr *hdr,
 				     pj_scanner *scanner)
 {
-    pjsip_parse_generic_delimited_array_hdr(hdr, scanner, ',', &pconst.pjsip_NOT_COMMA_OR_NEWLINE);
+    pjsip_parse_delimited_array_hdr(hdr, scanner, ',', &pconst.pjsip_NOT_COMMA_OR_NEWLINE);
 }
 
 /* Parse generic array header. */
