@@ -918,10 +918,6 @@ int pjsip_delimited_array_hdr_print( pjsip_generic_array_hdr *hdr,
  * Generic array header.
  */
 static int pjsip_generic_array_hdr_print( pjsip_generic_array_hdr *hdr, char *buf, pj_size_t size);
-static pjsip_generic_array_hdr* pjsip_generic_array_hdr_clone( pj_pool_t *pool,
-						 const pjsip_generic_array_hdr *hdr);
-static pjsip_generic_array_hdr* pjsip_generic_array_hdr_shallow_clone( pj_pool_t *pool,
-						 const pjsip_generic_array_hdr *hdr);
 
 static pjsip_hdr_vptr generic_array_hdr_vptr =
 {
@@ -962,7 +958,7 @@ static int pjsip_generic_array_hdr_print( pjsip_generic_array_hdr *hdr,
     return pjsip_delimited_array_hdr_print(hdr, buf, size, &comma_delimiter);
 }
 
-static pjsip_generic_array_hdr* pjsip_generic_array_hdr_clone( pj_pool_t *pool,
+pjsip_generic_array_hdr* pjsip_generic_array_hdr_clone( pj_pool_t *pool,
 						 const pjsip_generic_array_hdr *rhs)
 {
     unsigned i;
@@ -981,7 +977,7 @@ static pjsip_generic_array_hdr* pjsip_generic_array_hdr_clone( pj_pool_t *pool,
 }
 
 
-static pjsip_generic_array_hdr* pjsip_generic_array_hdr_shallow_clone( pj_pool_t *pool,
+pjsip_generic_array_hdr* pjsip_generic_array_hdr_shallow_clone( pj_pool_t *pool,
 						 const pjsip_generic_array_hdr *rhs)
 {
     pjsip_generic_array_hdr *hdr = PJ_POOL_ALLOC_T(pool, pjsip_generic_array_hdr);

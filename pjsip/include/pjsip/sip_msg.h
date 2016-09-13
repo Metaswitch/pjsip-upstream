@@ -1143,6 +1143,28 @@ PJ_DECL(pjsip_generic_array_hdr*) pjsip_generic_array_hdr_create(pj_pool_t *pool
 							     const pj_str_t *hname);
 
 /**
+ * Clone a generic array header
+ *
+ * @param pool	    Pool to allocate memory from.
+ * @param hdr	      Header to clone.
+ *
+ * @return Cloned array header
+ */
+pjsip_generic_array_hdr* pjsip_generic_array_hdr_clone( pj_pool_t *pool,
+						 const pjsip_generic_array_hdr *hdr);
+
+/**
+ * Shallow clone a generic array header
+ *
+ * @param pool	    Pool to allocate memory from.
+ * @param hdr	      Header to clone.
+ *
+ * @return Cloned array header
+ */
+pjsip_generic_array_hdr* pjsip_generic_array_hdr_shallow_clone( pj_pool_t *pool,
+						 const pjsip_generic_array_hdr *hdr);
+
+/**
  * Initialize a preallocated memory with the header structure. This function
  * should only be called when application uses its own memory allocation to
  * allocate memory block for the specified header (e.g. in C++, when the
