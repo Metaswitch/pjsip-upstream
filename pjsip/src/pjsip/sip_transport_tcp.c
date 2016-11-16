@@ -1,5 +1,5 @@
 /* $Id: sip_transport_tcp.c 4294 2012-11-06 05:02:10Z nanang $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  * Copyright (C) 2013  Metaswitch Networks Ltd
@@ -159,6 +159,7 @@ static pj_status_t tcp_create(struct tcp_listener *listener,
 			      pj_sock_t sock, pj_bool_t is_server,
 			      const pj_sockaddr *local,
 			      const pj_sockaddr *remote,
+			      const pjsip_host_port *local_name,
 			      struct tcp_transport **p_tcp);
 
 
@@ -289,7 +290,7 @@ PJ_DEF(pj_status_t) pjsip_tcp_transport_start3(
 						     PJSIP_TRANSPORT_TCP6;
     listener->factory.type_name = (char*)
 		pjsip_transport_get_type_name(listener->factory.type);
-    listener->factory.flag = 
+    listener->factory.flag =
 	pjsip_transport_get_flag_from_type(listener->factory.type);
     listener->qos_type = cfg->qos_type;
     pj_memcpy(&listener->qos_params, &cfg->qos_params,
@@ -366,8 +367,8 @@ PJ_DEF(pj_status_t) pjsip_tcp_transport_start3(
 	}
 
 	/* Save the address name */
-	sockaddr_to_host_port(listener->factory.pool, 
-			      &listener->factory.addr_name, 
+	sockaddr_to_host_port(listener->factory.pool,
+			      &listener->factory.addr_name,
 			      listener_addr);
     }
 
@@ -586,6 +587,7 @@ static pj_status_t tcp_create( struct tcp_listener *listener,
 			       pj_sock_t sock, pj_bool_t is_server,
 			       const pj_sockaddr *local,
 			       const pj_sockaddr *remote,
+			       const pjsip_host_port *local_name,
 			       struct tcp_transport **p_tcp)
 {
     struct tcp_transport *tcp;
@@ -644,9 +646,19 @@ static pj_status_t tcp_create( struct tcp_listener *listener,
 
     tcp->base.addr_len = pj_sockaddr_get_len(remote);
     pj_sockaddr_cp(&tcp->base.local_addr, local);
-    sockaddr_to_host_port(pool, &tcp->base.local_name, local);
+    if (local_name)
+    {
+        pj_strdup(pool, &tcp->base.local_name.host, &local_name->host);
+        tcp->base.local_name.port = local_name->port;
+    }
+    else
+    {
+        sockaddr_to_host_port(pool, &tcp->base.local_name, local);
+    }
     sockaddr_to_host_port(pool, &tcp->base.remote_name, remote);
     tcp->base.dir = is_server? PJSIP_TP_DIR_INCOMING : PJSIP_TP_DIR_OUTGOING;
+    PJ_LOG(4, (tcp->base.obj_name, "tcp->base.local_name: %.*s",
+           tcp->base.local_name.host.slen, tcp->base.local_name.host.ptr));
 
     tcp->base.endpt = listener->endpt;
     tcp->base.tpmgr = listener->tpmgr;
@@ -1005,8 +1017,8 @@ static pj_status_t lis_create_transport(pjsip_tpfactory *factory,
     }
 
     /* Create the transport descriptor */
-    status = tcp_create(listener, NULL, sock, PJ_FALSE, &local_addr, 
-			rem_addr, &tcp);
+    status = tcp_create(listener, NULL, sock, PJ_FALSE, &local_addr,
+			rem_addr, &factory->addr_name, &tcp);
     if (status != PJ_SUCCESS)
 	return status;
 
@@ -1051,7 +1063,7 @@ static pj_status_t lis_create_transport(pjsip_tpfactory *factory,
 				      &local_addr);
 	    }
 	}
-	
+
 	PJ_LOG(4,(tcp->base.obj_name,
 		  "TCP transport %.*s:%d is connecting to %.*s:%d...",
 		  (int)tcp->base.local_name.host.slen,
@@ -1112,13 +1124,13 @@ static pj_bool_t on_accept_complete(pj_activesock_t *asock,
     pj_bzero(&tmp_src_addr, sizeof(tmp_src_addr));
     pj_sockaddr_cp(&tmp_src_addr, src_addr);
 
-    /* 
+    /*
      * Incoming connection!
      * Create TCP transport for the new socket.
      */
     status = tcp_create( listener, NULL, sock, PJ_TRUE,
 			 &listener->factory.local_addr,
-			 &tmp_src_addr, &tcp);
+			 &tmp_src_addr, &listener->factory.addr_name, &tcp);
     if (status == PJ_SUCCESS) {
 
         /* Add a reference to prevent the transport from being destroyed while
@@ -1262,7 +1274,7 @@ static pj_status_t tcp_send_msg(pjsip_transport *transport,
              * connect() is completed, the timeout value will be checked to
              * determine whether the transmit data needs to be sent.
 	     */
-	    delayed_tdata = PJ_POOL_ZALLOC_T(tdata->pool, 
+	    delayed_tdata = PJ_POOL_ZALLOC_T(tdata->pool,
 					     struct delayed_tdata);
 	    delayed_tdata->tdata_op_key = &tdata->op_key;
             if (tdata->msg && tdata->msg->type == PJSIP_REQUEST_MSG) {
@@ -1403,7 +1415,7 @@ static pj_bool_t on_data_read(pj_activesock_t *asock,
           /* There was a problem receiving the message.  This suggests the
            * data on the socket is corrupt.  Shutdown this connection.
            */
-          PJ_LOG(2,(THIS_FILE, 
+          PJ_LOG(2,(THIS_FILE,
                     "Receive failed (%d), closing TCP connection: %s",
                     size_eaten,
                     tcp->base.obj_name));
@@ -1478,7 +1490,7 @@ static pj_bool_t on_data_read(pj_activesock_t *asock,
 
 	/* Transport is closed */
 	PJ_LOG(4,(tcp->base.obj_name, "TCP connection closed"));
-	
+
 	tcp_init_shutdown(tcp, status);
 
 	return PJ_FALSE;
