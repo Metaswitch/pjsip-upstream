@@ -262,6 +262,21 @@ PJ_IDECL(pj_str_t*) pj_strdup2_with_null(pj_pool_t *pool,
 PJ_IDECL(pj_str_t) pj_strdup3(pj_pool_t *pool, const char *src);
 
 /**
+ * Duplicate string.
+ *
+ * @param pool	    The pool.
+ * @param dst	    The string result.
+ * @param src	    The string to duplicate.
+ * @param len	    The length of the string to duplicate.
+ *
+ * @return the string result.
+ */
+PJ_IDECL(pj_str_t*) pj_strdup4(pj_pool_t *pool,
+			       pj_str_t *dst,
+			       const char *src,
+			       pj_size_t len);
+
+/**
  * Return the length of the string.
  *
  * @param str	    The string.

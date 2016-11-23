@@ -91,6 +91,21 @@ PJ_IDEF(pj_str_t) pj_strdup3(pj_pool_t *pool, const char *src)
     return temp;
 }
 
+PJ_IDEF(pj_str_t*) pj_strdup4(pj_pool_t *pool,
+			      pj_str_t *dst,
+			      const char *src,
+			      pj_size_t len)
+{
+    dst->slen = len;
+    if (dst->slen) {
+	dst->ptr = (char*)pj_pool_alloc(pool, dst->slen);
+	pj_memcpy(dst->ptr, src, dst->slen);
+    } else {
+	dst->ptr = NULL;
+    }
+    return dst;
+}
+
 PJ_IDEF(pj_str_t*) pj_strassign( pj_str_t *dst, pj_str_t *src )
 {
     dst->ptr = src->ptr;
