@@ -173,6 +173,16 @@ static void tcp_perror(const char *sender, const char *title,
     PJ_LOG(1,(sender, "%s: %s [code=%d]", title, errmsg, status));
 }
 
+static void tcp_pwarning(const char *sender, const char *title,
+		         pj_status_t status)
+{
+    char errmsg[PJ_ERR_MSG_SIZE];
+
+    pj_strerror(status, errmsg, sizeof(errmsg));
+
+    PJ_LOG(2,(sender, "%s: %s [code=%d]", title, errmsg, status));
+}
+
 
 static void sockaddr_to_host_port( pj_pool_t *pool,
 				   pjsip_host_port *host_port,
@@ -1529,7 +1539,7 @@ static pj_bool_t on_connect_complete(pj_activesock_t *asock,
     /* Check connect() status */
     if (status != PJ_SUCCESS) {
 
-	tcp_perror(tcp->base.obj_name, "TCP connect() error", status);
+	tcp_pwarning(tcp->base.obj_name, "TCP connect() error", status);
 
 	/* Cancel all delayed transmits */
 	while (!pj_list_empty(&tcp->delayed_list)) {
