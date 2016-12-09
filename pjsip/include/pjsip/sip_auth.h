@@ -283,7 +283,7 @@ typedef struct pjsip_auth_lookup_cred_param
 {
     pj_str_t realm;	    /**< Realm to find the account.		*/
     pj_str_t acc_name;	    /**< Account name to look for.		*/
-    pjsip_rx_data *rdata;   /**< Incoming request to be authenticated.	*/
+    pjsip_msg *msg;	    /**< Incoming request to be authenticated.	*/
 
 } pjsip_auth_lookup_cred_param;
 
@@ -584,6 +584,34 @@ PJ_DECL(pj_status_t) pjsip_auth_srv_verify2( pjsip_auth_srv *auth_srv,
 					     int *status_code,
 					     void *lookup_data );
 
+/**
+ * Request the authorization server framework to verify the authorization
+ * information in the specified request in request.
+ *
+ * @param auth_srv	The server authentication structure.
+ * @param msg		Incoming request to be authenticated.
+ * @param pool		Pool associated with the incoming request.
+ * @param status_code	When not null, it will be filled with suitable
+ *			status code to be sent to the client.
+ * @param lookup_data	Arbitrary data to be passed to the lookup
+ *			function. May be NULL.
+ *
+ * @return		PJ_SUCCESS if request is successfully authenticated.
+ *			Otherwise the function may return one of the
+ *			following error codes:
+ *			- PJSIP_EAUTHNOAUTH
+ *			- PJSIP_EINVALIDAUTHSCHEME
+ *			- PJSIP_EAUTHACCNOTFOUND
+ *			- PJSIP_EAUTHACCDISABLED
+ *			- PJSIP_EAUTHINVALIDREALM
+ *			- PJSIP_EAUTHINVALIDDIGEST
+ */
+
+PJ_DECL(pj_status_t) pjsip_auth_srv_verify3( pjsip_auth_srv *auth_srv,
+					     pjsip_msg *msg,
+					     pj_pool_t *pool,
+					     int *status_code,
+					     void *lookup_data );
 
 /**
  * Add authentication challenge headers to the outgoing response in tdata. 
