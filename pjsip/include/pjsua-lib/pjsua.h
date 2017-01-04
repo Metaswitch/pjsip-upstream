@@ -5657,6 +5657,14 @@ struct pjsua_media_config
      * Default: PJ_FALSE
      */
     pj_bool_t no_smart_media_update;
+
+    /**
+     * Whether to bypass initialization of the PJSUA media subsystem, for
+     * example in applications that are interested only in signaling.
+     *
+     * Default: PJ_FALSE
+     */
+    pj_bool_t no_init_media;
 };
 
 

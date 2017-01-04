@@ -330,6 +330,7 @@ PJ_DEF(void) pjsua_media_config_default(pjsua_media_config *cfg)
 
     cfg->turn_conn_type = PJ_TURN_TP_UDP;
     cfg->vid_preview_enable_native = PJ_TRUE;
+    cfg->no_init_media = PJ_FALSE;
 }
 
 /*****************************************************************************
@@ -995,10 +996,12 @@ PJ_DEF(pj_status_t) pjsua_init( const pjsua_config *ua_cfg,
 	goto on_error;
     }
 
-    /* Initialize PJSUA media subsystem */
-    status = pjsua_media_subsys_init(media_cfg);
-    if (status != PJ_SUCCESS)
-	goto on_error;
+    if (!media_cfg->no_init_media) {
+        /* Initialize PJSUA media subsystem */
+        status = pjsua_media_subsys_init(media_cfg);
+        if (status != PJ_SUCCESS)
+            goto on_error;
+    }
 
 
     /* Init core SIMPLE module : */
