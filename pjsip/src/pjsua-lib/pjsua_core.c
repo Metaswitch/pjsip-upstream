@@ -1000,7 +1000,7 @@ PJ_DEF(pj_status_t) pjsua_init( const pjsua_config *ua_cfg,
         /* Initialize PJSUA media subsystem */
         status = pjsua_media_subsys_init(media_cfg);
         if (status != PJ_SUCCESS)
-    	goto on_error;
+            goto on_error;
     }
 
 
