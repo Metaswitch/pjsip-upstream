@@ -128,14 +128,25 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_verify( pjsip_auth_srv *auth_srv,
   pjsip_auth_srv_verify2(auth_srv, rdata, status_code, NULL);
 }
 
-
 PJ_DEF(pj_status_t) pjsip_auth_srv_verify2( pjsip_auth_srv *auth_srv,
 					    pjsip_rx_data *rdata,
 					    int *status_code,
 					    void *lookup_data)
 {
+  pjsip_auth_srv_verify3(auth_srv,
+			 rdata->msg_info.msg,
+			 rdata->tp_info.pool,
+			 status_code,
+			 lookup_data);
+}
+
+PJ_DEF(pj_status_t) pjsip_auth_srv_verify3( pjsip_auth_srv *auth_srv,
+					    pjsip_msg *msg,
+					    pj_pool_t *pool,
+					    int *status_code,
+					    void *lookup_data)
+{
     pjsip_authorization_hdr *h_auth;
-    pjsip_msg *msg = rdata->msg_info.msg;
     pjsip_hdr_e htype;
     pj_str_t realm;
     pj_str_t acc_name;
@@ -145,7 +156,7 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_verify2( pjsip_auth_srv *auth_srv,
     pj_bool_t succeeded = PJ_FALSE;
     pj_status_t status;
 
-    PJ_ASSERT_RETURN(auth_srv && rdata, PJ_EINVAL);
+    PJ_ASSERT_RETURN(auth_srv && msg, PJ_EINVAL);
     PJ_ASSERT_RETURN(msg->type == PJSIP_REQUEST_MSG, PJSIP_ENOTREQUESTMSG);
 
     htype = auth_srv->is_proxy ? PJSIP_H_PROXY_AUTHORIZATION : 
@@ -167,18 +178,18 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_verify2( pjsip_auth_srv *auth_srv,
 		    pj_bzero(&param, sizeof(param));
 		    param.realm = realm;
 		    param.acc_name = acc_name;
-		    param.rdata = rdata;
+		    param.msg = msg;
 
 		/* Find the credential information for the account. */
 		if (auth_srv->lookup3) {
-		    status = (*auth_srv->lookup3)(rdata->tp_info.pool, &param,
+		    status = (*auth_srv->lookup3)(pool, &param,
 						  &cred_info, lookup_data);
 		/* Find the credential information for the account. */
 		} else if (auth_srv->lookup2) {
-		    status = (*auth_srv->lookup2)(rdata->tp_info.pool, &param,
+		    status = (*auth_srv->lookup2)(pool, &param,
 						  &cred_info);
 		} else {
-		    status = (*auth_srv->lookup)(rdata->tp_info.pool, &realm,
+		    status = (*auth_srv->lookup)(pool, &realm,
 						 &acc_name, &cred_info);
 		}
 
