@@ -192,7 +192,7 @@ static void tcp_init_shutdown(struct tcp_transport *tcp, pj_status_t status)
     if (tcp->close_reason == PJ_SUCCESS)
 	tcp->close_reason = status;
 
-    if (tcp->base.is_shutdown)
+    if (tcp->base.is_shutdown || tcp->base.is_destroying)
 	return;
 
     /* Prevent immediate transport destroy by application, as transport
@@ -209,6 +209,12 @@ static void tcp_init_shutdown(struct tcp_transport *tcp, pj_status_t status)
 	pj_bzero(&state_info, sizeof(state_info));
 	state_info.status = tcp->close_reason;
 	(*state_cb)(&tcp->base, PJSIP_TP_STATE_DISCONNECTED, &state_info);
+    }
+
+    /* check again */
+    if (tcp->base.is_shutdown || tcp->base.is_destroying) {
+        pjsip_transport_dec_ref(&tcp->base);
+        return;
     }
 
     /* We can not destroy the transport since high level objects may
