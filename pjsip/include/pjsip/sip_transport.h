@@ -782,13 +782,13 @@ struct pjsip_transport
 {
     char		    obj_name[PJ_MAX_OBJ_NAME];	/**< Name. */
 
-    pj_pool_t		   *pool;			/**< Pool used by transport.		*/
-    pj_atomic_t		   *ref_cnt;		/**< Reference counter.				*/
-    pj_lock_t		   *lock;			/**< Lock object.					*/
-    pj_bool_t		    tracing;		/**< Tracing enabled?				*/
-    pj_bool_t		    is_shutdown;	/**< Being shutdown?				*/
-    pj_bool_t		    is_destroying;	/**< Destroy in progress?			*/
-    pj_bool_t		    is_failed;		/**< Failed with tranport error?	*/
+    pj_pool_t  	*pool;        	/**< Pool used by transport.    	*/
+    pj_atomic_t	*ref_cnt;     	/**< Reference counter.         	*/
+    pj_lock_t  	*lock;        	/**< Lock object.               	*/
+    pj_bool_t  	tracing;      	/**< Tracing enabled?           	*/
+    pj_bool_t  	is_shutdown;  	/**< Being shutdown?            	*/
+    pj_bool_t  	is_destroying;	/**< Destroy in progress?       	*/
+    pj_bool_t  	is_failed;    	/**< Failed with tranport error?	*/
 
     /** Key for indexing this transport in hash table. */
     pjsip_transport_key	    key;
