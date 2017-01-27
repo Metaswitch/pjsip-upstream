@@ -410,7 +410,7 @@ PJ_DEF(pj_status_t) pjsip_tcp_transport_start3(
 	asock_cfg.async_cnt = MAX_ASYNC_CNT;
     else
 	asock_cfg.async_cnt = cfg->async_cnt;
-	
+
     asock_cfg.concurrency = 1;
 
     pj_bzero(&listener_cb, sizeof(listener_cb));
@@ -1536,6 +1536,12 @@ static pj_bool_t on_connect_complete(pj_activesock_t *asock,
     if (status != PJ_SUCCESS) {
 
 	tcp_perror(tcp->base.obj_name, "TCP connect() error", status);
+
+  /* Mark the transport as failed, ahead of it being shutdown below.  This
+   * avoids it from being selected to send any further messages as a result
+   * of processing in the on_data_sent(), which happens before the transaction
+   * gets marked as shutdown. */
+  tcp->base.is_failed = PJ_TRUE;
 
 	/* Cancel all delayed transmits */
 	while (!pj_list_empty(&tcp->delayed_list)) {

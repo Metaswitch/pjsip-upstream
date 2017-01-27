@@ -1,5 +1,5 @@
 /* $Id: sip_transport.c 4295 2012-11-06 05:22:11Z nanang $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  * Copyright (C) 2013  Metaswitch Networks Ltd
@@ -1005,7 +1005,7 @@ PJ_DEF(pj_status_t) pjsip_transport_dec_ref( pjsip_transport *tp )
 	 */
 	if (pj_atomic_get(tp->ref_cnt) == 0 && !tp->is_destroying) {
 	    pj_time_val delay;
-	
+
 	    /* If transport is in graceful shutdown, then this is the
 	     * last user who uses the transport. Schedule to destroy the
 	     * transport immediately. Otherwise schedule idle timer.
@@ -1117,7 +1117,7 @@ static pj_status_t destroy_transport( pjsip_tpmgr *mgr,
 	pj_bzero(&state_info, sizeof(state_info));
 	(*state_cb)(tp, PJSIP_TP_STATE_DESTROYED, &state_info);
     }
-    
+
     /* Destroy. */
     return tp->destroy(tp);
 }
@@ -1534,7 +1534,7 @@ PJ_DEF(pj_status_t) pjsip_tpmgr_destroy( pjsip_tpmgr *mgr )
     while (itr != NULL) {
 	pj_hash_iterator_t *next;
 	pjsip_transport *transport;
-	
+
 	transport = (pjsip_transport*) pj_hash_this(mgr->table, itr);
 
 	next = pj_hash_next(mgr->table, itr);
@@ -1550,7 +1550,7 @@ PJ_DEF(pj_status_t) pjsip_tpmgr_destroy( pjsip_tpmgr *mgr )
     factory = mgr->factory_list.next;
     while (factory != &mgr->factory_list) {
 	pjsip_tpfactory *next = factory->next;
-	
+
 	factory->destroy(factory);
 
 	factory = next;
@@ -1654,13 +1654,13 @@ PJ_DEF(pj_ssize_t) pjsip_tpmgr_receive_packet( pjsip_tpmgr *mgr,
 		    /* Exhaust all data. */
 		    return rdata->pkt_info.len;
      		} else if (msg_status == PJSIP_EMISSINGHDR) {
-                    /* pjsip_find_msg will only return this if it has received 
+                    /* pjsip_find_msg will only return this if it has received
                      * the blank line denoting end of headers but cannot find a
                      * Content-Length header.
                      *
                      * This is not allowed for TCP according to RFC3261 (20.14)
                      */
-                    PJ_LOG(3,(THIS_FILE, 
+                    PJ_LOG(3,(THIS_FILE,
                               "No content-length header in TCP packet"));
                     return -PJSIP_EMISSINGHDR;
 		} else {
@@ -1945,7 +1945,7 @@ PJ_DEF(pj_status_t) pjsip_tpmgr_acquire_transport2(pjsip_tpmgr *mgr,
 	    }
 	}
 
-	if (transport!=NULL && !transport->is_shutdown) {
+	if (transport!=NULL && !transport->is_shutdown && !transport->is_failed) {
 	    /*
 	     * Transport found!
 	     */
