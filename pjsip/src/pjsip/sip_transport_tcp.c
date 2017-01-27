@@ -1537,11 +1537,11 @@ static pj_bool_t on_connect_complete(pj_activesock_t *asock,
 
 	tcp_perror(tcp->base.obj_name, "TCP connect() error", status);
 
-  /* Mark the transport as failed, ahead of it being shutdown below.  This
-   * avoids it from being selected to send any further messages as a result
-   * of processing in the on_data_sent(), which happens before the transaction
-   * gets marked as shutdown. */
-  tcp->base.is_failed = PJ_TRUE;
+	/* Mark the transport as failed, ahead of it being shutdown below.  This
+	 * avoids it from being selected to send any further messages as a result
+	 * of processing in the on_data_sent(), which happens before the
+	 * transaction gets marked as shutdown. */
+	tcp->base.is_failed = PJ_TRUE;
 
 	/* Cancel all delayed transmits */
 	while (!pj_list_empty(&tcp->delayed_list)) {
