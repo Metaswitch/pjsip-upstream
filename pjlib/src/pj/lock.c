@@ -359,11 +359,10 @@ static pj_status_t grp_lock_destroy(LOCK_OBJ *p)
     }
 
     /* Call callbacks */
-    cb = glock->destroy_list.next;
-    while (cb != &glock->destroy_list) {
-	grp_destroy_callback *next = cb->next;
+    while (glock->destroy_list.next != &glock->destroy_list) {
+	cb = glock->destroy_list.next;
+	glock->destroy_list.next = cb->next;
 	cb->handler(cb->comp);
-	cb = next;
     }
 
     pj_lock_destroy(glock->own_lock);
