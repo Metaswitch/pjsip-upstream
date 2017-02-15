@@ -650,20 +650,47 @@ PJ_DEF(pjsip_transaction*) pjsip_tsx_layer_find_tsx( const pj_str_t *key,
     tsx = (pjsip_transaction*)
     	  pj_hash_get_lower( mod_tsx_layer.htable, key->ptr, key->slen,
                              &hval );
+
+    if (tsx && lock) {
+	/* Increment the transaction group lock reference count so that it
+	 * can't be destroyed after we release the transaction layer mutex.
+	 * We'll decrement it after we take the group lock below.
+	 */
+	pj_grp_lock_add_ref(tsx->grp_lock);
+    }
+
     pj_mutex_unlock(mod_tsx_layer.mutex);
 
     TSX_TRACE_((THIS_FILE, 
 		"Finding tsx with hkey=0x%p and key=%.*s: found %p",
 		hval, key->slen, key->ptr, tsx));
 
+    if (tsx && lock) {
+	pj_grp_lock_acquire(tsx->grp_lock);
+
+	/* Now we're holding the transaction group lock, decrement its
+	 * reference count.  The transaction can't be destroyed while we
+	 * hold the lock.
+	 */
+	pj_grp_lock_dec_ref(tsx->grp_lock);
+
+	/* Although the transaction can't have been destroyed, it could have
+	 * been terminated.  If it is, pretend that we never found the
+	 * transaction - release the lock (which will complete destruction)
+	 * and simply return NULL.
+	 */
+	if (tsx->state == PJSIP_TSX_STATE_TERMINATED) {
+	    pj_grp_lock_release(tsx->grp_lock);
+	    tsx = NULL;
+	}
+    }
+
     /* Race condition!
-     * Transaction may gets deleted before we have chance to lock it.
+     * If lock is not set, transaction is not protected, and may be deleted
+     * while the caller is accessing it.
      */
     PJ_TODO(FIX_RACE_CONDITION_HERE);
     PJ_RACE_ME(5);
-
-    if (tsx && lock)
-	pj_grp_lock_acquire(tsx->grp_lock);
 
     return tsx;
 }
@@ -799,18 +826,17 @@ static pj_bool_t mod_tsx_layer_on_rx_request(pjsip_rx_data *rdata)
 	return PJ_FALSE;
     }
 
+    /* Increment the transaction group lock reference count so that it can't
+     * be destroyed after we release the transaction layer mutex.  We'll
+     * decrement it after we take the group lock in pjsip_tsx_recv_msg2.
+     */
+    pj_grp_lock_add_ref(tsx->grp_lock);
+
     /* Unlock hash table. */
     pj_mutex_unlock( mod_tsx_layer.mutex );
 
-    /* Race condition!
-     * Transaction may gets deleted before we have chance to lock it
-     * in pjsip_tsx_recv_msg().
-     */
-    PJ_TODO(FIX_RACE_CONDITION_HERE);
-    PJ_RACE_ME(5);
-
     /* Pass the message to the transaction. */
-    pjsip_tsx_recv_msg(tsx, rdata );
+    pjsip_tsx_recv_msg2(tsx, rdata, PJ_TRUE);
 
     return PJ_TRUE;
 }
@@ -839,7 +865,6 @@ static pj_bool_t mod_tsx_layer_on_rx_response(pjsip_rx_data *rdata)
 		"Finding tsx for response, hkey=0x%p and key=%.*s, found %p",
 		hval, key.slen, key.ptr, tsx));
 
-
     if (tsx == NULL || tsx->state == PJSIP_TSX_STATE_TERMINATED) {
 	/* Transaction not found.
 	 * Reject the request so that endpoint passes the request to
@@ -849,18 +874,17 @@ static pj_bool_t mod_tsx_layer_on_rx_response(pjsip_rx_data *rdata)
 	return PJ_FALSE;
     }
 
+    /* Increment the transaction group lock reference count so that it can't
+     * be destroyed after we release the transaction layer mutex.  We'll
+     * decrement it after we take the group lock in pjsip_tsx_recv_msg2.
+     */
+    pj_grp_lock_add_ref(tsx->grp_lock);
+
     /* Unlock hash table. */
     pj_mutex_unlock( mod_tsx_layer.mutex );
 
-    /* Race condition!
-     * Transaction may gets deleted before we have chance to lock it
-     * in pjsip_tsx_recv_msg().
-     */
-    PJ_TODO(FIX_RACE_CONDITION_HERE);
-    PJ_RACE_ME(5);
-
     /* Pass the message to the transaction. */
-    pjsip_tsx_recv_msg(tsx, rdata );
+    pjsip_tsx_recv_msg2(tsx, rdata, PJ_TRUE);
 
     return PJ_TRUE;
 }
@@ -1737,6 +1761,18 @@ PJ_DEF(pj_status_t) pjsip_tsx_send_msg( pjsip_transaction *tsx,
 PJ_DEF(void) pjsip_tsx_recv_msg( pjsip_transaction *tsx, 
 				 pjsip_rx_data *rdata)
 {
+    pjsip_tsx_recv_msg2(tsx, rdata, PJ_FALSE);
+}
+
+
+/*
+ * This function is called by endpoint when incoming message for the
+ * transaction is received.
+ */
+PJ_DEF(void) pjsip_tsx_recv_msg2( pjsip_transaction *tsx,
+				  pjsip_rx_data *rdata,
+				  pj_bool_t lock_ref )
+{
     pjsip_event event;
 
     PJ_LOG(5,(tsx->obj_name, "Incoming %s in state %s", 
@@ -1749,9 +1785,24 @@ PJ_DEF(void) pjsip_tsx_recv_msg( pjsip_transaction *tsx,
     /* Init event. */
     PJSIP_EVENT_INIT_RX_MSG(event, rdata);
 
-    /* Dispatch to transaction. */
+    /* We're now ready to dispatch to the transaction. First take the lock. */
     pj_grp_lock_acquire(tsx->grp_lock);
+
+    if (lock_ref) {
+	/* Now we're holding the transaction group lock, decrement its reference
+	 * count.  (We incremented in mod_tsx_layer_on_rx_request or
+	 * mod_tsx_layer_on_rx_response.)  The transaction can't be destroyed
+	 * while we hold the lock.
+	 */
+	pj_grp_lock_dec_ref(tsx->grp_lock);
+    }
+
+    /* Now dispatch the transaction.  There's a chance that it will have been
+     * terminated in the meantime, but in this case tsx->state_handler will be
+     * tsx_on_state_terminated, which is a no-op.
+     */
     (*tsx->state_handler)(tsx, &event);
+
     pj_grp_lock_release(tsx->grp_lock);
 
     pj_log_pop_indent();
