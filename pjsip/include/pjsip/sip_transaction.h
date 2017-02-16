@@ -312,6 +312,26 @@ PJ_DECL(void) pjsip_tsx_recv_msg( pjsip_transaction *tsx,
 				  pjsip_rx_data *rdata);
 
 /**
+ * Call this function to manually feed a message to the transaction.
+ * For UAS transaction, application MUST call this function after
+ * UAS transaction has been created.
+ *
+ * This function SHOULD only be called to pass initial request message
+ * to UAS transaction. Before this function returns, on_tsx_state()
+ * callback of the transaction user will be called. If response message
+ * is passed to this function, then on_rx_response() will also be called
+ * before on_tsx_state().
+ *
+ * @param tsx	    The transaction.
+ * @param rdata	    The message.
+ * @param lock_ref  Whether the group lock has been referenced and should
+ *                  be decremented after it has been taken.
+ */
+PJ_DECL(void) pjsip_tsx_recv_msg2( pjsip_transaction *tsx,
+				   pjsip_rx_data *rdata,
+				   pj_bool_t lock_ref);
+
+/**
  * Transmit message in tdata with this transaction. It is possible to
  * pass NULL in tdata for UAC transaction, which in this case the last 
  * message transmitted, or the request message which was specified when
