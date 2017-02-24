@@ -356,6 +356,10 @@ PJ_DECL(pj_status_t) pjsip_endpt_create_ack( pjsip_endpoint *endpt,
 					     const pjsip_tx_data *tdata,
 					     const pjsip_rx_data *rdata,
 					     pjsip_tx_data **ack);
+PJ_DECL(pj_status_t) pjsip_endpt_create_ack_from_msgs( pjsip_endpoint *endpt,
+					     const pjsip_msg *req,
+					     const pjsip_msg *rsp,
+					     pjsip_tx_data **ack);
 
 
 /**

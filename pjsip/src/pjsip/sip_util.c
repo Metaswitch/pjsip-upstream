@@ -600,6 +600,14 @@ PJ_DEF(pj_status_t) pjsip_endpt_create_ack( pjsip_endpoint *endpt,
 					    const pjsip_rx_data *rdata,
 					    pjsip_tx_data **ack_tdata)
 {
+  return pjsip_endpt_create_ack_from_msgs(endpt, tdata->msg, rdata->msg_info.msg, ack_tdata);
+}
+
+PJ_DEF(pj_status_t) pjsip_endpt_create_ack_from_msgs( pjsip_endpoint *endpt,
+					    const pjsip_msg *req,
+					    const pjsip_msg *rsp,
+					    pjsip_tx_data **ack_tdata)
+{
     pjsip_tx_data *ack = NULL;
     const pjsip_msg *invite_msg;
     const pjsip_from_hdr *from_hdr;
@@ -611,15 +619,15 @@ PJ_DEF(pj_status_t) pjsip_endpt_create_ack( pjsip_endpoint *endpt,
     pjsip_to_hdr *to;
     pj_status_t status;
 
-    /* rdata must be a non-2xx final response. */
-    pj_assert(rdata->msg_info.msg->type==PJSIP_RESPONSE_MSG &&
-	      rdata->msg_info.msg->line.status.code >= 300);
+    /* rsp must be a non-2xx final response. */
+    pj_assert(rsp->type==PJSIP_RESPONSE_MSG &&
+	      rsp->line.status.code >= 300);
 
     /* Initialize return value to NULL. */
     *ack_tdata = NULL;
 
     /* The original INVITE message. */
-    invite_msg = tdata->msg;
+    invite_msg = req;
 
     /* Get the headers from original INVITE request. */
 #   define FIND_HDR(m,HNAME) pjsip_msg_find_hdr(m, PJSIP_H_##HNAME, NULL)
@@ -641,7 +649,7 @@ PJ_DEF(pj_status_t) pjsip_endpt_create_ack( pjsip_endpoint *endpt,
     /* Create new request message from the headers. */
     status = pjsip_endpt_create_request_from_hdr(endpt, 
 						 pjsip_get_ack_method(),
-						 tdata->msg->line.req.uri,
+						 req->line.req.uri,
 						 from_hdr, to_hdr,
 						 NULL, cid_hdr,
 						 cseq_hdr->cseq, NULL,
@@ -652,7 +660,7 @@ PJ_DEF(pj_status_t) pjsip_endpt_create_ack( pjsip_endpoint *endpt,
 
     /* Update tag in To header with the one from the response (if any). */
     to = (pjsip_to_hdr*) pjsip_msg_find_hdr(ack->msg, PJSIP_H_TO, NULL);
-    pj_strdup(ack->pool, &to->tag, &rdata->msg_info.to->tag);
+    pj_strdup(ack->pool, &to->tag, &PJSIP_MSG_TO_HDR(rsp)->tag);
 
 
     /* Clear Via headers in the new request. */
