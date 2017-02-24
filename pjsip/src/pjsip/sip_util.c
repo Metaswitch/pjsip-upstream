@@ -616,6 +616,7 @@ PJ_DEF(pj_status_t) pjsip_endpt_create_ack_from_msgs( pjsip_endpoint *endpt,
     const pjsip_cseq_hdr *cseq_hdr;
     const pjsip_hdr *hdr;
     pjsip_hdr *via;
+    pjsip_hdr *mf;
     pjsip_to_hdr *to;
     pj_status_t status;
 
@@ -639,10 +640,10 @@ PJ_DEF(pj_status_t) pjsip_endpt_create_ack_from_msgs( pjsip_endpoint *endpt,
     PJ_ASSERT_ON_FAIL(to_hdr != NULL, goto on_missing_hdr);
 
     cid_hdr = (const pjsip_cid_hdr*) FIND_HDR(invite_msg, CALL_ID);
-    PJ_ASSERT_ON_FAIL(to_hdr != NULL, goto on_missing_hdr);
+    PJ_ASSERT_ON_FAIL(cid_hdr != NULL, goto on_missing_hdr);
 
     cseq_hdr = (const pjsip_cseq_hdr*) FIND_HDR(invite_msg, CSEQ);
-    PJ_ASSERT_ON_FAIL(to_hdr != NULL, goto on_missing_hdr);
+    PJ_ASSERT_ON_FAIL(cseq_hdr != NULL, goto on_missing_hdr);
 
 #   undef FIND_HDR
 
@@ -683,6 +684,17 @@ PJ_DEF(pj_status_t) pjsip_endpt_create_ack_from_msgs( pjsip_endpoint *endpt,
 	if (hdr == &invite_msg->hdr)
 	    break;
 	hdr = (pjsip_hdr*) pjsip_msg_find_hdr( invite_msg, PJSIP_H_ROUTE, hdr);
+    }
+
+    /* If the original INVITE has a Max-Forwards header, use the same one
+     * in the ACK.
+     */
+    hdr = (pjsip_hdr*) pjsip_msg_find_hdr( invite_msg, PJSIP_H_MAX_FORWARDS, NULL);
+    if (hdr != NULL) {
+	if ((mf=(pjsip_hdr*)pjsip_msg_find_hdr(ack->msg, PJSIP_H_MAX_FORWARDS, NULL)) != NULL)
+	  pj_list_erase(mf);
+	pjsip_msg_add_hdr( ack->msg,
+			   (pjsip_hdr*) pjsip_hdr_clone(ack->pool, hdr) );
     }
 
     /* We're done.
