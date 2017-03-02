@@ -1769,9 +1769,11 @@ void pjsip_parse_delimited_array_hdr(
 	return;
     }
 
-    pj_scan_get( scanner, not_delimiter_or_newline,
-		 &hdr->values[hdr->count]);
-    hdr->count++;
+    if (*scanner->curptr != delimiter) {
+      pj_scan_get( scanner, not_delimiter_or_newline,
+	  	           &hdr->values[hdr->count]);
+      hdr->count++;
+    }
 
     while (*scanner->curptr == delimiter) {
 	pj_scan_get_char(scanner);
@@ -1785,9 +1787,11 @@ void pjsip_parse_delimited_array_hdr(
       break;
     }
 
-	pj_scan_get( scanner, not_delimiter_or_newline,
-		     &hdr->values[hdr->count]);
-	hdr->count++;
+    if (*scanner->curptr != delimiter) {
+	  pj_scan_get( scanner, not_delimiter_or_newline,
+	  	           &hdr->values[hdr->count]);
+	    hdr->count++;
+    }
 
 	if (hdr->count >= PJSIP_GENERIC_ARRAY_MAX_COUNT)
 	    break;
