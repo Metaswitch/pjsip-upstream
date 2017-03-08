@@ -1758,9 +1758,8 @@ void pjsip_parse_delimited_array_hdr(
     /* Some header fields allow empty elements in the value:
      *   Accept, Allow, Supported
      */
-    if (pj_scan_is_eof(scanner) ||
-	*scanner->curptr == '\r' || *scanner->curptr == '\n')
-    {
+    if (pj_scan_is_eof(scanner) || IS_NEWLINE(*scanner->curptr))
+	{
 	goto end;
     }
 
@@ -1770,15 +1769,29 @@ void pjsip_parse_delimited_array_hdr(
 	return;
     }
 
-    pj_scan_get( scanner, not_delimiter_or_newline,
-		 &hdr->values[hdr->count]);
-    hdr->count++;
+    if (*scanner->curptr != delimiter) {
+      pj_scan_get( scanner, not_delimiter_or_newline,
+	  	           &hdr->values[hdr->count]);
+      hdr->count++;
+    }
 
     while (*scanner->curptr == delimiter) {
 	pj_scan_get_char(scanner);
-	pj_scan_get( scanner, not_delimiter_or_newline,
-		     &hdr->values[hdr->count]);
-	hdr->count++;
+
+    /* Allow a trailing delimiter with no following value as we have
+     * seen this in the field. This mirrors the allowance of 
+     * completely empty fields above.
+     */
+    if (pj_scan_is_eof(scanner) || IS_NEWLINE(*scanner->curptr))
+    {
+      break;
+    }
+
+    if (*scanner->curptr != delimiter) {
+	  pj_scan_get( scanner, not_delimiter_or_newline,
+	  	           &hdr->values[hdr->count]);
+	    hdr->count++;
+    }
 
 	if (hdr->count >= PJSIP_GENERIC_ARRAY_MAX_COUNT)
 	    break;
