@@ -36,7 +36,7 @@
 #define VISUAL_SEP	    "-.()"
 #define PHONE_DIGITS	    DIGITS VISUAL_SEP
 #define GLOBAL_DIGITS	    "+" PHONE_DIGITS
-#define LOCAL_DIGITS       HEX_DIGITS "*#" VISUAL_SEP
+#define LOCAL_DIGITS        HEX_DIGITS "*#" VISUAL_SEP
 #define PHONE_CONTEXT	    ALPHA GLOBAL_DIGITS
 //#define RESERVED	    ";/?:@&=+$,"
 #define RESERVED	    "/:@&$,+"
