@@ -36,13 +36,13 @@
 #define VISUAL_SEP	    "-.()"
 #define PHONE_DIGITS	    DIGITS VISUAL_SEP
 #define GLOBAL_DIGITS	    "+" PHONE_DIGITS
-#define LOCAL_DIGITS	    HEX_DIGITS "*#" VISUAL_SEP
-#define NUMBER_SPEC	    LOCAL_DIGITS GLOBAL_DIGITS
+#define LOCAL_DIGITS        HEX_DIGITS "*#" VISUAL_SEP
 #define PHONE_CONTEXT	    ALPHA GLOBAL_DIGITS
 //#define RESERVED	    ";/?:@&=+$,"
 #define RESERVED	    "/:@&$,+"
 #define MARK		    "-_.!~*'()"
 #define UNRESERVED	    ALPHA DIGITS MARK
+#define NUMBER_SPEC         LOCAL_DIGITS GLOBAL_DIGITS UNRESERVED
 #define ESCAPED		    "%"
 #define URIC		    RESERVED UNRESERVED ESCAPED "[]+"
 #define PARAM_UNRESERVED    "[]/:&+$"
