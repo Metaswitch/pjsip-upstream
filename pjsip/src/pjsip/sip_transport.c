@@ -412,6 +412,14 @@ PJ_DEF(pj_status_t) pjsip_tx_data_create( pjsip_tpmgr *mgr,
 	pjsip_endpt_release_pool( mgr->endpt, tdata->pool );
 	return status;
     }
+    pj_list_init(&tdata->ref_dbg);
+    status = pj_lock_create_simple_mutex(pool, "tdta%prd", &tdata->ref_dbg_lock);
+    if (status != PJ_SUCCESS) {
+	pjsip_endpt_release_pool( mgr->endpt, tdata->pool );
+	return status;
+    }
+
+    pjsip_tx_data_ref_add(tdata, __FILE__, __LINE__, "### TXDATA REF MARKER ### CREATE ###", PJ_FALSE);
 
     //status = pj_lock_create_simple_mutex(pool, "tdta%p", &tdata->lock);
     status = pj_lock_create_null_mutex(pool, "tdta%p", &tdata->lock);
@@ -430,25 +438,53 @@ PJ_DEF(pj_status_t) pjsip_tx_data_create( pjsip_tpmgr *mgr,
     return PJ_SUCCESS;
 }
 
+/* Add element to ref count list */
+void pjsip_tx_data_ref_add(pjsip_tx_data *tdata, char* file, int line,
+                           char* note,
+                           pj_bool_t inc)
+{
+
+    pjsip_ref_count_dbg_t *elem = pj_pool_calloc(tdata->pool,
+						 1,
+             sizeof(pjsip_ref_count_dbg_t));
+    elem->header = pj_strdup3(tdata->pool, note);
+    elem->file = pj_strdup3(tdata->pool, file);
+    elem->line = line;
+    elem->inc = inc;
+    elem->count = pj_atomic_get(tdata->ref_cnt);
+    pj_lock_acquire(tdata->ref_dbg_lock);
+    pj_list_push_back(&tdata->ref_dbg, elem);
+    pj_lock_release(tdata->ref_dbg_lock);
+}
 
 /*
  * Add reference to tx buffer.
  */
-PJ_DEF(void) pjsip_tx_data_add_ref( pjsip_tx_data *tdata )
+PJ_DEF(void) __pjsip_tx_data_add_ref( pjsip_tx_data *tdata,
+				      char* file,
+				      int line)
 {
-    pj_atomic_inc(tdata->ref_cnt);
+  pjsip_tx_data_ref_add(tdata, file, line, "### TXDATA REF MARKER ### ADD ###", PJ_TRUE);
+
+  pj_atomic_inc(tdata->ref_cnt);
 }
 
 /*
  * Decrease transport data reference, destroy it when the reference count
  * reaches zero.
  */
-PJ_DEF(pj_status_t) pjsip_tx_data_dec_ref( pjsip_tx_data *tdata )
+PJ_DEF(pj_status_t) __pjsip_tx_data_dec_ref( pjsip_tx_data *tdata,
+					     char* file,
+					     int line )
 {
+  pjsip_tx_data_ref_add(tdata, file, line, "### TXDATA REF MARKER ### DEC ###", PJ_FALSE);
+
     pj_assert( pj_atomic_get(tdata->ref_cnt) > 0);
     if (pj_atomic_dec_and_get(tdata->ref_cnt) <= 0) {
 	PJ_LOG(5,(tdata->obj_name, "Destroying txdata %s",
 		  pjsip_tx_data_get_info(tdata)));
+  pjsip_tx_data_ref_add(tdata, file, line, "### TXDATA REF MARKER ### DESTROY ###", PJ_TRUE);
+
 	pjsip_tpselector_dec_ref(&tdata->tp_sel);
 #if defined(PJ_DEBUG) && PJ_DEBUG!=0
 	pj_atomic_dec( tdata->mgr->tdata_counter );

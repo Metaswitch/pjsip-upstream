@@ -495,6 +495,15 @@ typedef struct pjsip_tx_data_op_key
     void		  (*callback)(pjsip_transport*,void*,pj_ssize_t);
 } pjsip_tx_data_op_key;
 
+typedef struct pjsip_ref_count_dbg
+{
+	PJ_DECL_LIST_MEMBER(struct pjsip_ref_count_dbg);
+  pj_str_t header;
+	pj_str_t file;
+	int line;
+	pj_bool_t inc;
+  int count;
+} pjsip_ref_count_dbg_t;
 
 /**
  * Data structure for sending outgoing message. Application normally creates
@@ -561,6 +570,10 @@ struct pjsip_tx_data
 
     /** Reference counter. */
     pj_atomic_t		*ref_cnt;
+
+    /** Reference counter debug list */
+    struct pjsip_ref_count_dbg ref_dbg;
+    pj_lock_t		*ref_dbg_lock;
 
     /** Being processed by transport? */
     int			 is_pending;
@@ -657,7 +670,9 @@ PJ_DECL(pj_status_t) pjsip_tx_data_create( pjsip_tpmgr *mgr,
  *
  * @param tdata	    The transmit buffer.
  */
-PJ_DECL(void) pjsip_tx_data_add_ref( pjsip_tx_data *tdata );
+#define pjsip_tx_data_add_ref(tdata) __pjsip_tx_data_add_ref(tdata, __FILE__, __LINE__)
+
+PJ_DECL(void) __pjsip_tx_data_add_ref( pjsip_tx_data *tdata, char* file, int line );
 
 /**
  * Decrement reference counter of the transmit buffer.
@@ -669,7 +684,9 @@ PJ_DECL(void) pjsip_tx_data_add_ref( pjsip_tx_data *tdata );
  *		    status is non-zero. A status PJSIP_EBUFDESTROYED will be
  *		    returned to inform that buffer is destroyed.
  */
-PJ_DECL(pj_status_t) pjsip_tx_data_dec_ref( pjsip_tx_data *tdata );
+#define pjsip_tx_data_dec_ref(tdata) __pjsip_tx_data_dec_ref(tdata, __FILE__, __LINE__)
+
+PJ_DECL(pj_status_t) __pjsip_tx_data_dec_ref( pjsip_tx_data *tdata, char* file, int line );
 
 /**
  * Print the SIP message to transmit data buffer's internal buffer. This
