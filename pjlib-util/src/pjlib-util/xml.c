@@ -294,7 +294,8 @@ PJ_DEF(int) pj_xml_print(const pj_xml_node *node, char *buf, pj_size_t len,
 			 pj_bool_t include_prolog)
 {
     int prolog_len = 0;
-    int printed;
+    int xml_total_len;
+    int xml_print_node_len;
 
     if (!node || !buf || !len)
 	return 0;
@@ -307,11 +308,17 @@ PJ_DEF(int) pj_xml_print(const pj_xml_node *node, char *buf, pj_size_t len,
 	prolog_len = prolog.slen;
     }
 
-    printed = xml_print_node(node, 0, buf+prolog_len, len-prolog_len) + prolog_len;
-    if (printed > 0 && len-printed >= 1) {
-	buf[printed++] = '\n';
+    xml_print_node_len = xml_print_node(node, 0, 
+                                        buf + prolog_len, len - prolog_len);
+    if (xml_print_node_len < 0) {
+      return -1;
     }
-    return printed;
+
+    xml_total_len = xml_print_node_len + prolog_len;
+    if (xml_total_len > 0 && len-xml_total_len >= 1) {
+	buf[xml_total_len++] = '\n';
+    }
+    return xml_total_len;
 }
 
 PJ_DEF(pj_xml_node*) pj_xml_node_new(pj_pool_t *pool, const pj_str_t *name)
