@@ -55,15 +55,15 @@ $(BINDIR)/%$(HOST_EXE): $(OBJDIR)/%$(OBJEXT) $(PJ_LIB_FILES)
 	    $(_LDFLAGS)
 
 $(OBJDIR)/%$(OBJEXT): $(SRCDIR)/%.c
-	$(CC) $(_CFLAGS) \
+	$(CC) -c $(_CFLAGS) \
 	  $(CC_OUT)$(subst /,$(HOST_PSEP),$@) \
-	  $(subst /,$(HOST_PSEP),$<) 
+	  $(subst /,$(HOST_PSEP),$<)
 
 $(OBJDIR):
-	$(subst @@,$(subst /,$(HOST_PSEP),$@),$(HOST_MKDIR)) 
+	$(subst @@,$(subst /,$(HOST_PSEP),$@),$(HOST_MKDIR))
 
 $(BINDIR):
-	$(subst @@,$(subst /,$(HOST_PSEP),$@),$(HOST_MKDIR)) 
+	$(subst @@,$(subst /,$(HOST_PSEP),$@),$(HOST_MKDIR))
 
 depend:
 
