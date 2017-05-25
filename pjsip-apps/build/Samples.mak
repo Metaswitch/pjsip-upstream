@@ -5,7 +5,7 @@ include ../../build/common.mak
 ###############################################################################
 # Gather all flags.
 #
-export _CFLAGS 	:= $(PJ_CFLAGS) $(CFLAGS)
+export _CFLAGS 	:= $(PJ_CFLAGS) $(_CFLAGS)
 export _CXXFLAGS:= $(PJ_CXXFLAGS)
 export _LDFLAGS := $(PJ_LDFLAGS) $(PJ_LDLIBS) $(LDFLAGS)
 
@@ -57,13 +57,13 @@ $(BINDIR)/%$(HOST_EXE): $(OBJDIR)/%$(OBJEXT) $(PJ_LIB_FILES)
 $(OBJDIR)/%$(OBJEXT): $(SRCDIR)/%.c
 	$(CC) $(_CFLAGS) \
 	  $(CC_OUT)$(subst /,$(HOST_PSEP),$@) \
-	  $(subst /,$(HOST_PSEP),$<) 
+	  $(subst /,$(HOST_PSEP),$<)
 
 $(OBJDIR):
-	$(subst @@,$(subst /,$(HOST_PSEP),$@),$(HOST_MKDIR)) 
+	$(subst @@,$(subst /,$(HOST_PSEP),$@),$(HOST_MKDIR))
 
 $(BINDIR):
-	$(subst @@,$(subst /,$(HOST_PSEP),$@),$(HOST_MKDIR)) 
+	$(subst @@,$(subst /,$(HOST_PSEP),$@),$(HOST_MKDIR))
 
 depend:
 

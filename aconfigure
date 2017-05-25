@@ -3551,7 +3551,7 @@ if test "$CC_DEF" = ""; then CC_DEF="-D"; fi
 
 if test "$CC_OPTIMIZE" = ""; then CC_OPTIMIZE="-O2"; fi
 
-if test "$CC_CFLAGS" = ""; then CC_CFLAGS="-Wall"; fi
+if test "$CC_CFLAGS" = ""; then CC_CFLAGS="-Wall -c"; fi
 
 
 

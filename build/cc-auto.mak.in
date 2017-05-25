@@ -1,8 +1,8 @@
-export CC = @CC@ -c
-export CXX = @CXX@ -c
+export CC = @CC@
+export CXX = @CXX@
 export AR = @AR@
 export LD = @LD@
-export LDOUT = -o 
+export LDOUT = -o
 export RANLIB = @RANLIB@
 
 export OBJEXT := .@OBJEXT@
