@@ -1060,16 +1060,16 @@ parse_headers:
 	     * Ref: PROTOS #2412
 	     */
 	    hname.slen = 0;
-	
+
 	    /* Get hname. */
 	    pj_scan_get( scanner, &pconst.pjsip_TOKEN_SPEC, &hname);
 	    if (pj_scan_get_char( scanner ) != ':') {
 		PJ_THROW(PJSIP_SYN_ERR_EXCEPTION);
 	    }
-	
+
 	    /* Find handler. */
 	    handler = find_handler(&hname);
-	
+
 	    /* Call the handler if found.
 	     * If no handler is found, then treat the header as generic
 	     * hname/hvalue pair.
@@ -1095,8 +1095,8 @@ parse_headers:
 		hdr = parse_hdr_generic_string(ctx);
 		hdr->name = hdr->sname = hname;
 	    }
-	
-	
+
+
 	    /* Single parse of header line can produce multiple headers.
 	     * For example, if one Contact: header contains Contact list
 	     * separated by comma, then these Contacts will be split into
@@ -1105,7 +1105,7 @@ parse_headers:
 	     */
 	    if (hdr)
 		pj_list_insert_nodes_before(&msg->hdr, hdr);
-	
+
 	    /* Parse until EOF or an empty line is found. */
 	} while (!pj_scan_is_eof(scanner) && !IS_NEWLINE(*scanner->curptr));
     parse_body:
@@ -1153,7 +1153,7 @@ parse_headers:
 	 */
 	if (err_list) {
 	    pjsip_parser_err_report *err_info;
-	
+
 	    err_info = PJ_POOL_ALLOC_T(pool, pjsip_parser_err_report);
 	    err_info->except_code = PJ_GET_EXCEPTION();
 	    err_info->line = scanner->line;
@@ -1167,10 +1167,10 @@ parse_headers:
 		err_info->hname = pj_str("Status Line");
 	    else
 		err_info->hname.slen = 0;
-	
+
 	    pj_list_insert_before(err_list, err_info);
 	}
-	
+
 	if (parsing_headers) {
 	    if (!pj_scan_is_eof(scanner)) {
 		/* Skip until next line.
@@ -1187,9 +1187,9 @@ parse_headers:
 	    /* Continue parsing next header, if any - otherwise,
 	     * start parsing the body. */
 	    if (!pj_scan_is_eof(scanner) && !IS_NEWLINE(*scanner->curptr)) {
-		goto retry_parse;   
+		goto retry_parse;
 	    } else {
-		goto parse_body;                
+		goto parse_body;
 	    }
 	}
 
@@ -1380,7 +1380,7 @@ static int int_is_next_user(pj_scanner *scanner)
 
 /* Parse user:pass tokens in an URI. */
 static void int_parse_user_pass( pj_scanner *scanner, pj_pool_t *pool,
-				 pj_str_t *user, pj_str_t *pass, 
+				 pj_str_t *user, pj_str_t *pass,
                                  pjsip_param *userinfo_param)
 {
     parser_get_and_unescape(scanner, pool, &pconst.pjsip_USER_SPEC_LENIENT,
@@ -1666,6 +1666,7 @@ static void* int_parse_other_uri(pj_scanner *scanner,
 
     pj_scan_get(scanner, &pc->pjsip_OTHER_URI_CONTENT, &uri->content);
     scanner->skip_ws = skip_ws;
+    pj_scan_skip_whitespace(scanner);
 
     return uri;
 }
@@ -1779,7 +1780,7 @@ void pjsip_parse_delimited_array_hdr(
 	pj_scan_get_char(scanner);
 
     /* Allow a trailing delimiter with no following value as we have
-     * seen this in the field. This mirrors the allowance of 
+     * seen this in the field. This mirrors the allowance of
      * completely empty fields above.
      */
     if (pj_scan_is_eof(scanner) || IS_NEWLINE(*scanner->curptr))
@@ -2051,7 +2052,7 @@ static void parse_hdr_fromto( pj_scanner *scanner,
 
 	if (!parser_stricmp(pname, pconst.pjsip_TAG_STR)) {
 	    hdr->tag = pvalue;
-	
+
 	} else {
 	    pjsip_param *p = PJ_POOL_ALLOC_T(pool, pjsip_param);
 	    p->name = pname;
@@ -2240,7 +2241,7 @@ static void int_parse_via_param( pjsip_via_hdr *hdr, pj_scanner *scanner,
 
 	} else if (!parser_stricmp(pname, pconst.pjsip_TTL_STR) && pvalue.slen) {
 	    hdr->ttl_param = pj_strtoul(&pvalue);
-	
+
 	} else if (!parser_stricmp(pname, pconst.pjsip_MADDR_STR) && pvalue.slen) {
 	    hdr->maddr_param = pvalue;
 
@@ -2381,7 +2382,7 @@ static pjsip_hdr* parse_hdr_via( pjsip_parse_ctx *ctx )
 	    pj_scan_get(scanner, &pconst.pjsip_DIGIT_SPEC, &digit);
 	    hdr->sent_by.port = pj_strtoul(&digit);
 	}
-	
+
 	int_parse_via_param(hdr, scanner, ctx->pool);
 
 	if (*scanner->curptr == '(') {
