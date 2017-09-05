@@ -1,5 +1,5 @@
 /* $Id: sip_uri.h 4370 2013-02-26 05:30:00Z nanang $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  *
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #ifndef __PJSIP_SIP_URI_H__
 #define __PJSIP_SIP_URI_H__
@@ -86,7 +86,7 @@ PJ_INLINE(pjsip_param*) pjsip_param_cfind(const pjsip_param *param_list,
  * @param param_list2    Second parameter list.
  * @param ig_nf          If set to 1, do not compare parameters that only
  *                       appear in one of the list.
- * @param case_sensitive If set to 1, the comparison of the parameters 
+ * @param case_sensitive If set to 1, the comparison of the parameters
  *                       is case sensitive.
  *
  * @return               Zero if the parameter list are equal, non-zero
@@ -114,7 +114,7 @@ PJ_DECL(void) pjsip_param_clone(pj_pool_t *pool, pjsip_param *dst_list,
  * @param dst_list	Destination list.
  * @param src_list	Source list.
  */
-PJ_DECL(void) pjsip_param_shallow_clone(pj_pool_t *pool, 
+PJ_DECL(void) pjsip_param_shallow_clone(pj_pool_t *pool,
 					pjsip_param *dst_list,
 					const pjsip_param *src_list);
 
@@ -164,14 +164,14 @@ typedef enum pjsip_uri_context_e
 
 /**
  * URI 'virtual' function table.
- * All types of URI in this library (such as sip:, sips:, tel:, and name-addr) 
+ * All types of URI in this library (such as sip:, sips:, tel:, and name-addr)
  * will have pointer to this table as their first struct member. This table
  * provides polimorphic behaviour to the URI.
  */
 typedef struct pjsip_uri_vptr
 {
-    /** 
-     * Get URI scheme. 
+    /**
+     * Get URI scheme.
      * @param uri the URI (self).
      * @return the URI scheme.
      */
@@ -185,7 +185,7 @@ typedef struct pjsip_uri_vptr
     void* (*p_get_uri)(void *uri);
 
     /**
-     * Print URI components to the buffer, following the rule of which 
+     * Print URI components to the buffer, following the rule of which
      * components are allowed for the context.
      * @param context the context where the URI will be placed.
      * @param uri the URI (self).
@@ -194,10 +194,10 @@ typedef struct pjsip_uri_vptr
      * @return the length printed.
      */
     pj_ssize_t (*p_print)(pjsip_uri_context_e context,
-			  const void *uri, 
+			  const void *uri,
 		          char *buf, pj_size_t size);
 
-    /** 
+    /**
      * Compare two URIs according to the context.
      * @param context the context.
      * @param uri1 the first URI (self).
@@ -205,11 +205,11 @@ typedef struct pjsip_uri_vptr
      * @return PJ_SUCCESS if equal, or otherwise the error status which
      *		    should point to the mismatch part.
      */
-    pj_status_t	(*p_compare)(pjsip_uri_context_e context, 
+    pj_status_t	(*p_compare)(pjsip_uri_context_e context,
 			     const void *uri1, const void *uri2);
 
-    /** 
-     * Clone URI. 
+    /**
+     * Clone URI.
      * @param pool the pool.
      * @param the URI to clone (self).
      * @return new URI.
@@ -252,6 +252,13 @@ struct pjsip_uri
 #define PJSIP_URI_SCHEME_IS_TEL(url)	\
     (pj_stricmp2(pjsip_uri_get_scheme(url), "tel")==0)
 
+/**
+ * This macro checks that the URL is a "urn:" URL.
+ * @param url The URL (pointer to)
+ * @return non-zero if TRUE.
+ */
+#define PJSIP_URI_SCHEME_IS_URN(url)	\
+    (pj_stricmp2(pjsip_uri_get_scheme(url), "urn")==0)
 
 /**
  * Generic function to get the URI scheme.
@@ -264,7 +271,7 @@ PJ_INLINE(const pj_str_t*) pjsip_uri_get_scheme(const void *uri)
 }
 
 /**
- * Generic function to get the URI object contained by this URI, or the URI 
+ * Generic function to get the URI object contained by this URI, or the URI
  * itself if it doesn't contain another URI.
  *
  * @param uri	    the URI.
@@ -284,7 +291,7 @@ PJ_INLINE(void*) pjsip_uri_get_uri(const void *uri)
  * @return	    PJ_SUCCESS if equal, or otherwise the error status which
  *		    should point to the mismatch part.
  */
-PJ_INLINE(pj_status_t) pjsip_uri_cmp(pjsip_uri_context_e context, 
+PJ_INLINE(pj_status_t) pjsip_uri_cmp(pjsip_uri_context_e context,
 				     const void *uri1, const void *uri2)
 {
     return (*((const pjsip_uri*)uri1)->vptr->p_compare)(context, uri1, uri2);
@@ -378,7 +385,7 @@ typedef struct pjsip_name_addr
  * @param secure    Flag to indicate whether secure transport should be used.
  * @return SIP URL.
  */
-PJ_DECL(pjsip_sip_uri*) pjsip_sip_uri_create( pj_pool_t *pool, 
+PJ_DECL(pjsip_sip_uri*) pjsip_sip_uri_create( pj_pool_t *pool,
 					      pj_bool_t secure );
 
 /**
@@ -387,7 +394,7 @@ PJ_DECL(pjsip_sip_uri*) pjsip_sip_uri_create( pj_pool_t *pool,
  * @param uri	    The URI
  * @param secure    Non-zero if sips is wanted.
  */
-PJ_DECL(void) pjsip_sip_uri_set_secure( pjsip_sip_uri *uri, 
+PJ_DECL(void) pjsip_sip_uri_set_secure( pjsip_sip_uri *uri,
 				        pj_bool_t secure );
 
 /**
@@ -403,7 +410,7 @@ PJ_DECL(void)  pjsip_sip_uri_init(pjsip_sip_uri *url, pj_bool_t secure);
  * @param url	    Destination URL.
  * @param rhs	    The source URL.
  */
-PJ_DECL(void)  pjsip_sip_uri_assign(pj_pool_t *pool, pjsip_sip_uri *url, 
+PJ_DECL(void)  pjsip_sip_uri_assign(pj_pool_t *pool, pjsip_sip_uri *url,
 				    const pjsip_sip_uri *rhs);
 
 /**
@@ -426,8 +433,8 @@ PJ_DECL(void) pjsip_name_addr_init(pjsip_name_addr *name_addr);
  * @param addr	    The destination name address.
  * @param rhs	    The source name address.
  */
-PJ_DECL(void)  pjsip_name_addr_assign(pj_pool_t *pool, 
-				      pjsip_name_addr *addr, 
+PJ_DECL(void)  pjsip_name_addr_assign(pj_pool_t *pool,
+				      pjsip_name_addr *addr,
 				      const pjsip_name_addr *rhs);
 
 /**
@@ -444,7 +451,7 @@ PJ_DECL(void)  pjsip_name_addr_assign(pj_pool_t *pool,
 /**
  * Generic URI container for non SIP/tel URI scheme.
  */
-typedef struct pjsip_other_uri 
+typedef struct pjsip_other_uri
 {
     pjsip_uri_vptr *vptr;	/**< Pointer to virtual function table.	*/
     pj_str_t scheme;		/**< The URI scheme (e.g. "mailto")	*/
