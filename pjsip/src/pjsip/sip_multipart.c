@@ -112,7 +112,7 @@ static int multipart_print_body(struct pjsip_msg_body *msg_body,
 		}
 
 		/* Add Content-Type header. */
-		if ( SIZE_LEFT() < 24 + media->type.slen + media->subtype.slen) {
+		if (SIZE_LEFT() < (24 + media->type.slen + media->subtype.slen)) {
 			return -1;
 		}
 		pj_memcpy(p, ctype_hdr.ptr, ctype_hdr.slen);
