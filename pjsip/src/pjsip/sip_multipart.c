@@ -78,17 +78,48 @@ static int multipart_print_body(struct pjsip_msg_body *msg_body,
 	p += m_data->boundary.slen;
 	*p++ = 13; *p++ = 10;
 
+	/* Determine whether we're going to add an explicit Content-Type
+	 * to the bodypart
+	 */
+	pj_bool_t insert_ct = (part->body && part->body->content_type.type.slen);
+
 	/* Print optional headers */
 	hdr = part->hdr.next;
 	while (hdr != &part->hdr) {
-	    int printed = pjsip_hdr_print_on((pjsip_hdr*)hdr, p,
+		/* Don't print header if we're about to override it */
+		if (!insert_ct || (hdr->type != PJSIP_H_CONTENT_TYPE)) {
+			int printed = pjsip_hdr_print_on((pjsip_hdr*)hdr, p,
 	                                     SIZE_LEFT()-2);
-	    if (printed < 0)
-		return -1;
-	    p += printed;
-	    *p++ = '\r';
-	    *p++ = '\n';
-	    hdr = hdr->next;
+			if (printed < 0)
+				return -1;
+			p += printed;
+			*p++ = '\r';
+			*p++ = '\n';
+		}
+		hdr = hdr->next;
+	}
+
+	/* Automatically add Content-Type header, only
+	 * if content_type is set in the message body.
+	 */
+	if (insert_ct) {
+		pj_str_t ctype_hdr = { "Content-Type: ", 14};
+		const pjsip_media_type *media = &part->body->content_type;
+
+		if (pjsip_use_compact_form) {
+			ctype_hdr.ptr = "c: ";
+			ctype_hdr.slen = 3;
+		}
+
+		/* Add Content-Type header. */
+		if (SIZE_LEFT() < (24 + media->type.slen + media->subtype.slen)) {
+			return -1;
+		}
+		pj_memcpy(p, ctype_hdr.ptr, ctype_hdr.slen);
+		p += ctype_hdr.slen;
+		p += pjsip_media_type_print(p, SIZE_LEFT(), media);
+		*p++ = '\r';
+		*p++ = '\n';
 	}
 
 	/* Empty newline */
