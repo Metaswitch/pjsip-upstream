@@ -679,7 +679,8 @@ PJ_DEF(int) pj_ioqueue_poll( pj_ioqueue_t *ioqueue, const pj_time_val *timeout)
     struct queue queue[PJ_IOQUEUE_MAX_EVENTS_IN_SINGLE_POLL];
     pj_timestamp t1, t2;
 
-    // Add timestamps to check each event doesn't take too long to handle.
+    // Add timestamps, which will be used to check how long each event takes to
+    // handle.
     pj_timestamp time_before_handling_event, time_after_handling_event;
     pj_uint32_t time_to_handle_event;
 
