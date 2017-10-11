@@ -807,9 +807,6 @@ PJ_DEF(int) pj_ioqueue_poll( pj_ioqueue_t *ioqueue, const pj_time_val *timeout)
 
     PJ_RACE_ME(5);
 
-    PJ_LOG(1, (THIS_FILE, "Going through ioqueue_epoll.c"));
-
-
     /* Now process the events. */
     for (i=0; i<processed; ++i) {
       pj_get_timestamp(&time_before_handling_event);
@@ -834,13 +831,11 @@ PJ_DEF(int) pj_ioqueue_poll( pj_ioqueue_t *ioqueue, const pj_time_val *timeout)
       // This time is in microseconds.
       time_to_handle_event = pj_elapsed_usec(&time_before_handling_event, &time_after_handling_event);
 
-      // If it has taken over 10,000 microseconds to handle an event then we are
-      // carrying out a blocking event on the transport thread, which we
-      // shouldn't do, so log a warning.
-      // Actually allow 11,000 microseconds for some leeway.
-      PJ_LOG(2, (THIS_FILE, "Time on transport thread: %d usec.", time_to_handle_event));
-      if (time_to_handle_event > 8000) {
-        PJ_LOG(2, (THIS_FILE, "A blocking task has been carried out on the transport thread."));
+      // As little work as possible should be carried out on the single transport
+      // thread, so log a warning if the transport thread spends over
+      // 2,000 microseconds handling an event.
+      if (time_to_handle_event > 2000) {
+        PJ_LOG(2, (THIS_FILE, "The transport thread spent %d microseconds processing an event.", time_to_handle_event));
       }
 
 #if PJ_IOQUEUE_HAS_SAFE_UNREG
