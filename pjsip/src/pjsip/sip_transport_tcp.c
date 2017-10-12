@@ -180,7 +180,7 @@ static void tcp_pwarning(const char *sender, const char *title,
 
     pj_strerror(status, errmsg, sizeof(errmsg));
 
-    PJ_LOG(2,(sender, "%s: %s [code=%d]", title, errmsg, status));
+    PJ_LOG(3,(sender, "%s: %s [code=%d]", title, errmsg, status));
 }
 
 
@@ -1546,7 +1546,7 @@ static pj_bool_t on_connect_complete(pj_activesock_t *asock,
     if (status != PJ_SUCCESS) {
 
 	tcp_pwarning(tcp->base.obj_name, "TCP connect() error", status);
-	PJ_LOG(2, (tcp->base.obj_name,
+	PJ_LOG(3, (tcp->base.obj_name,
 	           "Unable to connect to %.*s:%d",
 	           (int)tcp->base.remote_name.host.slen,
 	           tcp->base.remote_name.host.ptr,
