@@ -1,5 +1,5 @@
 /* $Id: ioqueue_epoll.c 4434 2013-03-11 05:27:23Z bennylp $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  * Copyright (C) 2013  Metaswitch Networks Ltd
@@ -40,6 +40,10 @@
 #include <pj/sock.h>
 #include <pj/compat/socket.h>
 #include <pj/rand.h>
+
+// The length of time (in usecs) that it is acceptable to spend processing an
+// event on the transport thread. (An arbitrary length of time was chosen.)
+#define ACCEPTABLE_EVENT_TIME_ON_TRANSPORT_THREAD  (2000)
 
 #if !defined(PJ_LINUX_KERNEL) || PJ_LINUX_KERNEL==0
     /*
@@ -431,8 +435,8 @@ PJ_DEF(pj_status_t) pj_ioqueue_register_sock2(pj_pool_t *pool,
 	rc = pj_get_os_error();
 	pj_lock_destroy(key->lock);
 	key = NULL;
-	TRACE_((THIS_FILE, 
-                "pj_ioqueue_register_sock error: os_epoll_ctl rc=%d", 
+	TRACE_((THIS_FILE,
+                "pj_ioqueue_register_sock error: os_epoll_ctl rc=%d",
                 status));
         goto on_return;
     }
@@ -679,6 +683,11 @@ PJ_DEF(int) pj_ioqueue_poll( pj_ioqueue_t *ioqueue, const pj_time_val *timeout)
     struct queue queue[PJ_IOQUEUE_MAX_EVENTS_IN_SINGLE_POLL];
     pj_timestamp t1, t2;
 
+    // Add timestamps, which will be used to check how long each event takes to
+    // handle.
+    pj_timestamp time_before_handling_event, time_after_handling_event;
+    pj_uint32_t time_to_handle_event;
+
     PJ_CHECK_STACK();
 
     msec = timeout ? PJ_TIME_VAL_MSEC(*timeout) : 9000;
@@ -805,23 +814,37 @@ PJ_DEF(int) pj_ioqueue_poll( pj_ioqueue_t *ioqueue, const pj_time_val *timeout)
 
     /* Now process the events. */
     for (i=0; i<processed; ++i) {
-        switch (queue[i].event_type) {
-        case READABLE_EVENT:
-            ioqueue_dispatch_read_event(ioqueue, queue[i].key);
-            break;
-        case WRITEABLE_EVENT:
-            ioqueue_dispatch_write_event(ioqueue, queue[i].key);
-            break;
-        case EXCEPTION_EVENT:
-            ioqueue_dispatch_exception_event(ioqueue, queue[i].key);
-            break;
-        case NO_EVENT:
-            pj_assert(!"Invalid event!");
-            break;
-        }
+      pj_get_timestamp(&time_before_handling_event);
+
+      switch (queue[i].event_type) {
+      case READABLE_EVENT:
+        ioqueue_dispatch_read_event(ioqueue, queue[i].key);
+        break;
+      case WRITEABLE_EVENT:
+        ioqueue_dispatch_write_event(ioqueue, queue[i].key);
+        break;
+      case EXCEPTION_EVENT:
+        ioqueue_dispatch_exception_event(ioqueue, queue[i].key);
+        break;
+      case NO_EVENT:
+        pj_assert(!"Invalid event!");
+        break;
+      }
+
+      pj_get_timestamp(&time_after_handling_event);
+
+      // This time is in microseconds.
+      time_to_handle_event = pj_elapsed_usec(&time_before_handling_event, &time_after_handling_event);
+
+      // As little work as possible should be carried out on the single transport
+      // thread, so log a warning if the transport thread spends over
+      // 2,000 microseconds handling an event.
+      if (time_to_handle_event > ACCEPTABLE_EVENT_TIME_ON_TRANSPORT_THREAD) {
+        PJ_LOG(2, (THIS_FILE, "The transport thread spent %d microseconds processing an event.", time_to_handle_event));
+      }
 
 #if PJ_IOQUEUE_HAS_SAFE_UNREG
-        decrement_counter(queue[i].key);
+      decrement_counter(queue[i].key);
 #endif
 
 	if (queue[i].key->grp_lock)
