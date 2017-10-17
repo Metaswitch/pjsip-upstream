@@ -47,6 +47,9 @@
 
 #define DEFAULT_MAX_TIMED_OUT_PER_POLL  (64)
 
+// The length of time (in usecs) that it is acceptable to spend processing a
+// callback on the transport thread. (An arbitrary length of time was chosen.)
+#define ACCEPTABLE_CB_TIME_ON_TRANSPORT_THREAD  (1000)
 
 /**
  * The implementation of timer heap.
@@ -658,7 +661,7 @@ PJ_DEF(unsigned) pj_timer_heap_poll( pj_timer_heap_t *ht,
     // As little work as possible should be carried out on the single transport
     // thread, so log a warning if the transport thread spent over
     // 1,000 microseconds handling this callback.
-    if (time_to_handle_callback > 1000) {
+    if (time_to_handle_callback > ACCEPTABLE_CB_TIME_ON_TRANSPORT_THREAD) {
       PJ_LOG(2, (THIS_FILE, "The transport thread spent %d microseconds processing a callback.", time_to_handle_callback));
     }
   }

@@ -41,6 +41,10 @@
 #include <pj/compat/socket.h>
 #include <pj/rand.h>
 
+// The length of time (in usecs) that it is acceptable to spend processing an
+// event on the transport thread. (An arbitrary length of time was chosen.)
+#define ACCEPTABLE_EVENT_TIME_ON_TRANSPORT_THREAD  (2000)
+
 #if !defined(PJ_LINUX_KERNEL) || PJ_LINUX_KERNEL==0
     /*
      * Linux user mode
@@ -835,7 +839,7 @@ PJ_DEF(int) pj_ioqueue_poll( pj_ioqueue_t *ioqueue, const pj_time_val *timeout)
       // As little work as possible should be carried out on the single transport
       // thread, so log a warning if the transport thread spends over
       // 2,000 microseconds handling an event.
-      if (time_to_handle_event > 2000) {
+      if (time_to_handle_event > ACCEPTABLE_EVENT_TIME_ON_TRANSPORT_THREAD) {
         PJ_LOG(2, (THIS_FILE, "The transport thread spent %d microseconds processing an event.", time_to_handle_event));
       }
 
