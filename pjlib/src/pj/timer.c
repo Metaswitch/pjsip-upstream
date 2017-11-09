@@ -659,10 +659,10 @@ PJ_DEF(unsigned) pj_timer_heap_poll( pj_timer_heap_t *ht,
     time_to_handle_callback = pj_elapsed_usec(&time_before_handling_callback, &time_after_handling_callback);
 
     // As little work as possible should be carried out on the single transport
-    // thread, so log a warning if the transport thread spent over
-    // 1,000 microseconds handling this callback.
+    // thread, so log if the transport thread spent too long handling this
+    // callback.
     if (time_to_handle_callback > ACCEPTABLE_CB_TIME_ON_TRANSPORT_THREAD) {
-      PJ_LOG(2, (THIS_FILE, "The transport thread spent %d microseconds processing a callback.", time_to_handle_callback));
+      PJ_LOG(3, (THIS_FILE, "The transport thread spent %d microseconds processing a callback.", time_to_handle_callback));
     }
   }
 
