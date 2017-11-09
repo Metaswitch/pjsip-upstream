@@ -917,8 +917,6 @@ int pjsip_delimited_array_hdr_print( pjsip_generic_array_hdr *hdr,
 /*
  * Generic array header.
  */
-static int pjsip_generic_array_hdr_print( pjsip_generic_array_hdr *hdr, char *buf, pj_size_t size);
-
 static pjsip_hdr_vptr generic_array_hdr_vptr =
 {
     (pjsip_hdr_clone_fptr) &pjsip_generic_array_hdr_clone,
@@ -951,7 +949,7 @@ PJ_DEF(pjsip_generic_array_hdr*) pjsip_generic_array_hdr_create( pj_pool_t *pool
 }
 
 
-static int pjsip_generic_array_hdr_print( pjsip_generic_array_hdr *hdr,
+int pjsip_generic_array_hdr_print( pjsip_generic_array_hdr *hdr,
 					  char *buf, pj_size_t size)
 {
     pj_str_t comma_delimiter = {", ", 2};

@@ -1165,6 +1165,18 @@ pjsip_generic_array_hdr* pjsip_generic_array_hdr_shallow_clone( pj_pool_t *pool,
 						 const pjsip_generic_array_hdr *hdr);
 
 /**
+ * Print a generic array header
+ *
+ * @param hdr	      Header to clone.
+ * @param buf	      The buffer.
+ * @param size>       The size of the buffer.
+ *
+ * @return	The size copied to buffer, or -1 if there's not enough space.
+ */
+int pjsip_generic_array_hdr_print( pjsip_generic_array_hdr *hdr,
+					  char *buf, pj_size_t size);
+
+/**
  * Initialize a preallocated memory with the header structure. This function
  * should only be called when application uses its own memory allocation to
  * allocate memory block for the specified header (e.g. in C++, when the
