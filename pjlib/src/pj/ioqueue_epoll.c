@@ -837,10 +837,9 @@ PJ_DEF(int) pj_ioqueue_poll( pj_ioqueue_t *ioqueue, const pj_time_val *timeout)
       time_to_handle_event = pj_elapsed_usec(&time_before_handling_event, &time_after_handling_event);
 
       // As little work as possible should be carried out on the single transport
-      // thread, so log a warning if the transport thread spends over
-      // 2,000 microseconds handling an event.
+      // thread, so log if the transport thread spends too long handling an event.
       if (time_to_handle_event > ACCEPTABLE_EVENT_TIME_ON_TRANSPORT_THREAD) {
-        PJ_LOG(2, (THIS_FILE, "The transport thread spent %d microseconds processing an event.", time_to_handle_event));
+        PJ_LOG(3, (THIS_FILE, "The transport thread spent %d microseconds processing an event.", time_to_handle_event));
       }
 
 #if PJ_IOQUEUE_HAS_SAFE_UNREG
