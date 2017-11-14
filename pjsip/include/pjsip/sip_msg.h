@@ -1169,7 +1169,7 @@ pjsip_generic_array_hdr* pjsip_generic_array_hdr_shallow_clone( pj_pool_t *pool,
  *
  * @param hdr	      Header to clone.
  * @param buf	      The buffer.
- * @param size>       The size of the buffer.
+ * @param size	      The size of the buffer.
  *
  * @return	The size copied to buffer, or -1 if there's not enough space.
  */
