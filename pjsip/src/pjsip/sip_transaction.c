@@ -549,7 +549,7 @@ static pj_status_t mod_tsx_layer_register_tsx( pjsip_transaction *tsx)
 		         NULL))
     {
 	pj_mutex_unlock(mod_tsx_layer.mutex);
-	PJ_LOG(2,(THIS_FILE,
+	PJ_LOG(3,(THIS_FILE,
 		  "Unable to register %.*s transaction (key exists)",
 		  (int)tsx->method.name.slen,
 		  tsx->method.name.ptr));
