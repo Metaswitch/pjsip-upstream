@@ -477,9 +477,9 @@ PJ_DEF(pj_status_t) __pjsip_tx_data_dec_ref( pjsip_tx_data *tdata,
 					     char* file,
 					     int line )
 {
+    pj_assert( pj_atomic_get(tdata->ref_cnt) > 0);
   pjsip_tx_data_ref_add(tdata, file, line, "### TXDATA REF MARKER ### DEC ###", PJ_FALSE);
 
-    pj_assert( pj_atomic_get(tdata->ref_cnt) > 0);
     if (pj_atomic_dec_and_get(tdata->ref_cnt) <= 0) {
 	PJ_LOG(5,(tdata->obj_name, "Destroying txdata %s",
 		  pjsip_tx_data_get_info(tdata)));
