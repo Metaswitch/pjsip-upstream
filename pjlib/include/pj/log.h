@@ -1,5 +1,5 @@
 /* $Id: log.h 3752 2011-09-18 14:38:46Z bennylp $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  *
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #ifndef __PJ_LOG_H__
 #define __PJ_LOG_H__
@@ -101,14 +101,14 @@ enum pj_log_decoration
 
 /**
  * Write log message.
- * This is the main macro used to write text to the logging backend. 
+ * This is the main macro used to write text to the logging backend.
  *
  * @param level	    The logging verbosity level. Lower number indicates higher
  *		    importance, with level zero indicates fatal error. Only
  *		    numeral argument is permitted (e.g. not variable).
- * @param arg	    Enclosed 'printf' like arguments, with the first 
- *		    argument is the sender, the second argument is format 
- *		    string and the following arguments are variable number of 
+ * @param arg	    Enclosed 'printf' like arguments, with the first
+ *		    argument is the sender, the second argument is format
+ *		    string and the following arguments are variable number of
  *		    arguments suitable for the format string.
  *
  * Sample:
@@ -173,7 +173,7 @@ PJ_DECL(pj_log_ram_cache*) pj_log_get_ram_cache_func(void);
 /**
  * Default RAM tracing callbacks used by front end logger function.
  */
-PJ_DECL(void) pj_log_ram_cache_dummy(int *trc_id, const char *module, int lineno, const char*fmt, ...);
+PJ_DECL(void) pj_log_ram_cache_dummy(const char *module, int lineno, const char*fmt, ...);
 PJ_DECL(void) pj_log_ram_trace_dummy(int trc_id, const char *fmt, ...);
 
 /**
@@ -194,12 +194,12 @@ PJ_DECL(pj_log_ram_trace*) pj_log_get_ram_trace_func(void);
  * @param format    Format.
  * @param marker    Marker.
  */
-PJ_DECL(void) pj_log(const char *sender, int level, 
+PJ_DECL(void) pj_log(const char *sender, int level,
 		     const char *format, va_list marker);
 
 /**
  * Change log output function. The front-end logging functions will call
- * this function to write the actual message to the desired device. 
+ * this function to write the actual message to the desired device.
  * By default, the front-end functions use pj_log_write() to write
  * the messages, unless it's changed by calling this function.
  *
@@ -216,7 +216,7 @@ PJ_DECL(void) pj_log_set_log_func( pj_log_func *func );
 PJ_DECL(pj_log_func*) pj_log_get_log_func(void);
 
 /**
- * Set maximum log level. Application can call this function to set 
+ * Set maximum log level. Application can call this function to set
  * the desired level of verbosity of the logging messages. The bigger the
  * value, the more verbose the logging messages will be printed. However,
  * the maximum level of verbosity can not exceed compile time value of
@@ -302,7 +302,7 @@ pj_status_t pj_log_init(void);
 
 /**
  * Change log output function. The front-end logging functions will call
- * this function to write the actual message to the desired device. 
+ * this function to write the actual message to the desired device.
  * By default, the front-end functions use pj_log_write() to write
  * the messages, unless it's changed by calling this function.
  *
@@ -312,7 +312,7 @@ pj_status_t pj_log_init(void);
 #  define pj_log_set_log_func(func)
 
 /**
- * Set maximum log level. Application can call this function to set 
+ * Set maximum log level. Application can call this function to set
  * the desired level of verbosity of the logging messages. The bigger the
  * value, the more verbose the logging messages will be printed. However,
  * the maximum level of verbosity can not exceed compile time value of
@@ -372,7 +372,7 @@ pj_status_t pj_log_init(void);
 
 #endif	/* #if PJ_LOG_MAX_LEVEL >= 1 */
 
-/** 
+/**
  * @}
  */
 
@@ -469,7 +469,7 @@ pj_status_t pj_log_init(void);
 #endif
 
 
-PJ_END_DECL 
+PJ_END_DECL
 
 #endif  /* __PJ_LOG_H__ */
 
