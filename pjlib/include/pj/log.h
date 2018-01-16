@@ -93,9 +93,9 @@ enum pj_log_decoration
 #define PJ_LOG_RAMTRACE(obj, ...)                                             \
 {                                                                             \
   static int trc_id = 0;                                                      \
-  pj_log_ram_cache *pj_log_ramtrace_cache = pj_log_get_ram_cache_func();      \
   pj_log_ram_trace *pj_log_ramtrace_trace = pj_log_get_ram_trace_func();      \
-	(*pj_log_ramtrace_cache)(&trc_id,__FILE__,__LINE__,__VA_ARGS__);            \
+  pj_log_ram_cache *pj_log_ramtrace_cache = pj_log_get_ram_cache_func();      \
+  (*pj_log_ramtrace_cache)(&trc_id,__FILE__,__LINE__,__VA_ARGS__);            \
   (*pj_log_ramtrace_trace)(trc_id,__VA_ARGS__);                               \
 }
 
