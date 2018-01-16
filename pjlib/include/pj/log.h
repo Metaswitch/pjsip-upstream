@@ -138,7 +138,7 @@ typedef void pj_log_func(int level, const char *data, int len);
  * Signature for RAM trace cache function to be registered to the logging subsystem to
  * cache the instance in the code of this log call
  */
-typedef void pj_log_ram_cache(int *trc_id, const char *module, int lineno, const char*fmt, ...);
+typedef int pj_log_ram_cache(const char *module, int lineno, const char*fmt, ...);
 
 /**
  * Signature for RAM trace function to be registered to the logging subsystem to
@@ -173,7 +173,7 @@ PJ_DECL(pj_log_ram_cache*) pj_log_get_ram_cache_func(void);
 /**
  * Default RAM tracing callbacks used by front end logger function.
  */
-PJ_DECL(void) pj_log_ram_cache_dummy(const char *module, int lineno, const char*fmt, ...);
+PJ_DECL(int) pj_log_ram_cache_dummy(const char *module, int lineno, const char*fmt, ...);
 PJ_DECL(void) pj_log_ram_trace_dummy(int trc_id, const char *fmt, ...);
 
 /**
