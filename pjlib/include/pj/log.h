@@ -118,9 +118,9 @@ enum pj_log_decoration
  * @hideinitializer
  */
 #define PJ_LOG(level,arg)	do { \
-                                    if (level <= 5) \
-                                        PJ_LOG_RAMTRACE arg; \
-				    if (level <= pj_log_get_level()) \
+//                                    if (level <= 5) \
+//                                        PJ_LOG_RAMTRACE arg; \
+				    if (level <= 5) \
 					pj_log_wrapper_##level(arg); \
 				} while (0)
 
