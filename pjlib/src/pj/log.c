@@ -23,8 +23,8 @@
 #include <pj/os.h>
 #include <pj/compat/stdarg.h>
 
-static pj_log_ram_cache *ram_cache = &pj_log_ram_cache_dummy;
-static pj_log_ram_trace *ram_trace = &pj_log_ram_trace_dummy;
+static pj_log_ram_cache *ram_cache = NULL;
+static pj_log_ram_trace *ram_trace = NULL;
 
 PJ_DEF(void) pj_log_set_ram_trace_funcs( pj_log_ram_cache *cache,  pj_log_ram_trace *trace )
 {
@@ -40,25 +40,6 @@ PJ_DEF(pj_log_ram_cache*) pj_log_get_ram_cache_func(void)
 PJ_DEF(pj_log_ram_trace*) pj_log_get_ram_trace_func(void)
 {
     return ram_trace;
-}
-
-// Dummy RAM trace caching function (no need for these unless the client code
-// needs RAM trace facility)
-PJ_DEF(void) pj_log_ram_cache_dummy(int *trc_id, const char *module, int lineno, const char*fmt, ...)
-{
-    PJ_UNUSED_ARG(trc_id);
-    PJ_UNUSED_ARG(module);
-    PJ_UNUSED_ARG(lineno);
-    PJ_UNUSED_ARG(fmt);
-    return 0;
-}
-
-// Dummy RAM trace function (no need for these unless the client code
-// needs RAM trace facility)
-PJ_DEF(void) pj_log_ram_trace_dummy(int trc_id, const char *fmt, ...)
-{
-    PJ_UNUSED_ARG(trc_id);
-    PJ_UNUSED_ARG(fmt);
 }
 
 #if PJ_LOG_MAX_LEVEL >= 1
