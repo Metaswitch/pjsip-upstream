@@ -40,13 +40,6 @@
 
 extern pj_bool_t pjsip_use_compact_form;
 
-/* Type of "data" in multipart pjsip_msg_body */
-struct multipart_data
-{
-    pj_str_t	    	  boundary;
-    pjsip_multipart_part  part_head;
-};
-
 
 static int multipart_print_body(struct pjsip_msg_body *msg_body,
 			        char *buf, pj_size_t size)
