@@ -59,6 +59,13 @@ typedef struct pjsip_multipart_part
 
 } pjsip_multipart_part;
 
+/* Type of "data" in multipart pjsip_msg_body */
+struct multipart_data
+{
+    pj_str_t	    	  boundary;
+    pjsip_multipart_part  part_head;
+};
+
 /**
  * Create an empty multipart body.
  *
