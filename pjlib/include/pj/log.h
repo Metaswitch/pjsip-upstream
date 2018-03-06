@@ -97,7 +97,6 @@ enum pj_log_decoration
   pj_log_ram_cache *pj_log_ramtrace_cache = pj_log_get_ram_cache_func();      \
   if (pj_log_ramtrace_cache != NULL)                                          \
   {                                                                           \
-    pj_assert(pj_log_ramtrace_trace != NULL);                                 \
     (*pj_log_ramtrace_cache)(&trc_id,__FILE__,__LINE__,__VA_ARGS__);          \
     (*pj_log_ramtrace_trace)(trc_id,__VA_ARGS__);                             \
   }                                                                           \
