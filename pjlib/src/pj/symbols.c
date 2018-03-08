@@ -124,8 +124,7 @@ PJ_EXPORT_SYMBOL(pj_list_search)
  * log.h
  */
 PJ_EXPORT_SYMBOL(pj_log_write)
-PJ_EXPORT_SYMBOL(pj_log_set_ram_trace_funcs)
-PJ_EXPORT_SYMBOL(pj_log_get_ram_cache)
+PJ_EXPORT_SYMBOL(pj_log_set_ram_trace_func)
 PJ_EXPORT_SYMBOL(pj_log_get_ram_trace)
 #if PJ_LOG_MAX_LEVEL >= 1
 PJ_EXPORT_SYMBOL(pj_log_set_log_func)

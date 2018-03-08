@@ -23,18 +23,11 @@
 #include <pj/os.h>
 #include <pj/compat/stdarg.h>
 
-static pj_log_ram_cache *ram_cache = NULL;
 static pj_log_ram_trace *ram_trace = NULL;
 
-PJ_DEF(void) pj_log_set_ram_trace_funcs( pj_log_ram_cache *cache,  pj_log_ram_trace *trace )
+PJ_DEF(void) pj_log_set_ram_trace_func( pj_log_ram_trace *trace)
 {
-    ram_cache = cache;
     ram_trace = trace;
-}
-
-PJ_DEF(pj_log_ram_cache*) pj_log_get_ram_cache_func(void)
-{
-    return ram_cache;
 }
 
 PJ_DEF(pj_log_ram_trace*) pj_log_get_ram_trace_func(void)

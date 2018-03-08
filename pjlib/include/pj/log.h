@@ -86,20 +86,15 @@ enum pj_log_decoration
     PJ_LOG_HAS_INDENT     =16384  /**< Indentation. Say yes! [yes]            */
 };
 
-// The following macro caches the details of the trace call being made and
-// stores the associated instance it (the "trace ID") in a static variable so
-// that subsequent calls to this trace line can be stored in the RAM trace
-// buffer with maximal efficiency.
-#define PJ_LOG_RAMTRACE(obj, ...)                                             \
-{                                                                             \
-  static int trc_id = 0;                                                      \
-  pj_log_ram_trace *pj_log_ramtrace_trace = pj_log_get_ram_trace_func();      \
-  pj_log_ram_cache *pj_log_ramtrace_cache = pj_log_get_ram_cache_func();      \
-  if (pj_log_ramtrace_cache != NULL)                                          \
-  {                                                                           \
-    (*pj_log_ramtrace_cache)(&trc_id,__FILE__,__LINE__,__VA_ARGS__);          \
-    (*pj_log_ramtrace_trace)(trc_id,__VA_ARGS__);                             \
-  }                                                                           \
+#define PJ_LOG_RAMTRACE(obj, format, ...)                                \
+{                                                                        \
+  pj_log_ram_trace *pj_log_ramtrace_trace = pj_log_get_ram_trace_func(); \
+  (*pj_log_ramtrace_trace)(_level,              \
+                           __FILE__,            \
+                           __LINE__,            \
+                           obj,                 \
+                           format,              \
+                           ##__VA_ARGS__);      \
 }
 
 /**
@@ -120,11 +115,15 @@ enum pj_log_decoration
    \endverbatim
  * @hideinitializer
  */
-#define PJ_LOG(level,arg)	do { \
-            if (level <= 5)      \
-          PJ_LOG_RAMTRACE arg   \
-				    if (level <= pj_log_get_level()) \
-					pj_log_wrapper_##level(arg); \
+#define PJ_LOG(level,arg)	do {                             \
+            if (level <= 5) {                              \
+              const int _level = level;                    \
+              PJ_LOG_RAMTRACE arg                          \
+            }                                              \
+				    if (level <= pj_log_get_level())               \
+					  {                                              \
+              pj_log_wrapper_##level(arg);                 \
+            }                                              \
 				} while (0)
 
 /**
@@ -138,16 +137,10 @@ enum pj_log_decoration
 typedef void pj_log_func(int level, const char *data, int len);
 
 /**
- * Signature for RAM trace cache function to be registered to the logging subsystem to
- * cache the instance in the code of this log call
- */
-typedef void pj_log_ram_cache(int *trc_id, const char *module, int lineno, const char*fmt, ...);
-
-/**
  * Signature for RAM trace function to be registered to the logging subsystem to
  * trace this log call in the "always on" RAM trace buffer
  */
-typedef void pj_log_ram_trace(int trc_id, const char *fmt, ...);
+typedef void pj_log_ram_trace(int level, const char* file, int line, char *obj, const char *fmt, ...);
 
 /**
  * Default logging writer function used by front end logger function.
@@ -164,19 +157,12 @@ PJ_DECL(void) pj_log_write(int level, const char *buffer, int len);
 /**
  * Set RAM trace output functions
  */
-PJ_DECL(void) pj_log_set_ram_trace_funcs( pj_log_ram_cache *cache,  pj_log_ram_trace *trace );
-
-/**
- * Get the current RAM trace cache function that is used to cache log instances.
- *
- * @return	    Current RAM trace cache function.
- */
-PJ_DECL(pj_log_ram_cache*) pj_log_get_ram_cache_func(void);
+PJ_DECL(void) pj_log_set_ram_trace_func(pj_log_ram_trace *trace);
 
 /**
  * Get the current RAM trace function that is used to trace log instances to a RAM buffer.
  *
- * @return	    Current RAM trace unction.
+ * @return	    Current RAM trace function.
  */
 PJ_DECL(pj_log_ram_trace*) pj_log_get_ram_trace_func(void);
 
