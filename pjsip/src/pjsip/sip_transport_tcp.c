@@ -1,3 +1,8 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+*/
+
 /* $Id: sip_transport_tcp.c 4294 2012-11-06 05:02:10Z nanang $ */
 /*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
@@ -1707,4 +1712,3 @@ static void tcp_keep_alive_timer(pj_timer_heap_t *th, pj_timer_entry *e)
 
 
 #endif	/* PJ_HAS_TCP */
-
