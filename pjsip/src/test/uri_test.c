@@ -1,5 +1,10 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+ */
+
 /* $Id: uri_test.c 4210 2012-07-19 01:00:07Z ming $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  *
@@ -15,7 +20,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "test.h"
 #include <pjsip.h>
@@ -96,7 +101,7 @@ struct uri_test
     pjsip_uri	    *(*creator)(pj_pool_t *pool);
     const char	    *printed;
     pj_size_t	     len;
-} uri_test_array[] = 
+} uri_test_array[] =
 {
     {
 	PJ_SUCCESS,
@@ -183,7 +188,7 @@ struct uri_test
     },
     {
 	/* Exercise strange character sets allowed in display, user, password,
-	 * host, and port. 
+	 * host, and port.
 	 */
 	PJ_SUCCESS,
 	"This is -. !% *_+`'~ me <sip:a19A&=+$,?/%2c:%40a&Zz=+$,@"
@@ -197,7 +202,7 @@ struct uri_test
 	&create_uri15,
     },
     {
-	/* Another excercise to the allowed character sets to the username 
+	/* Another excercise to the allowed character sets to the username
 	 * and password.
 	 */
 	PJ_SUCCESS,
@@ -438,7 +443,7 @@ static pjsip_uri *create_uri4(pj_pool_t *pool)
 static pjsip_uri *create_uri5(pj_pool_t *pool)
 {
     /* "sip:localhost;pickup=hurry;user=phone;message=I%20am%20sorry"
-       "?Subject=Hello%20There&Server=SIP%20Server" 
+       "?Subject=Hello%20There&Server=SIP%20Server"
      */
     pjsip_sip_uri *url = pjsip_sip_uri_create(pool, 0);
 
@@ -658,7 +663,7 @@ static pjsip_uri *create_uri29(pj_pool_t *pool)
     pjsip_tel_uri *uri = pjsip_tel_uri_create(pool);
 
     uri->number = pj_str("(44).1234-*#+Deaf");
-    return (pjsip_uri*)uri;    
+    return (pjsip_uri*)uri;
 }
 
 /* "tel:+1;isub=/:@&$,-_.!~*'()[]/:&$aA1%21+=" */
@@ -668,7 +673,7 @@ static pjsip_uri *create_uri30(pj_pool_t *pool)
 
     uri->number = pj_str("+1");
     uri->isub_param = pj_str("/:@&$,-_.!~*'()[]/:&$aA1!+=");
-    return (pjsip_uri*)uri;    
+    return (pjsip_uri*)uri;
 }
 
 /* "tel:+1;ext=+123" */
@@ -678,7 +683,7 @@ static pjsip_uri *create_uri31(pj_pool_t *pool)
 
     uri->number = pj_str("+1");
     uri->ext_param = pj_str("+123");
-    return (pjsip_uri*)uri;    
+    return (pjsip_uri*)uri;
 }
 
 /* "tel:911;phone-context=+1-911" */
@@ -688,7 +693,7 @@ static pjsip_uri *create_uri32(pj_pool_t *pool)
 
     uri->number = pj_str("911");
     uri->context = pj_str("+1-911");
-    return (pjsip_uri*)uri;    
+    return (pjsip_uri*)uri;
 }
 
 /* "tel:911;phone-context=emergency.example.com" */
@@ -698,7 +703,7 @@ static pjsip_uri *create_uri33(pj_pool_t *pool)
 
     uri->number = pj_str("911");
     uri->context = pj_str("EMERGENCY.EXAMPLE.COM");
-    return (pjsip_uri*)uri;    
+    return (pjsip_uri*)uri;
 }
 
 /* "tel:911;p1=p1;p2=p2" */
@@ -708,12 +713,12 @@ static pjsip_uri *create_uri34(pj_pool_t *pool)
     pjsip_param *p;
 
     uri->number = pj_str("911");
-    
+
     p = PJ_POOL_ALLOC_T(pool, pjsip_param);
     p->name = p->value = pj_str("p1");
     pj_list_insert_before(&uri->other_param, p);
 
-    return (pjsip_uri*)uri;    
+    return (pjsip_uri*)uri;
 }
 
 /* "sip:user@[::1];maddr=[::01]" */
@@ -749,7 +754,7 @@ static pjsip_uri *create_uri37( pj_pool_t *pool )
 
     url = pjsip_sip_uri_create(pool, 0);
     url->host = pj_str("localhost");
-    
+
     name->uri = (pjsip_uri*)url;
 
     return (pjsip_uri*)name;
@@ -767,7 +772,7 @@ static pjsip_uri *create_uri38( pj_pool_t *pool )
 
     url = pjsip_sip_uri_create(pool, 0);
     url->host = pj_str("localhost");
-    
+
     name->uri = (pjsip_uri*)url;
 
     return (pjsip_uri*)name;
@@ -1000,8 +1005,8 @@ static int uri_benchmark(unsigned *p_parse, unsigned *p_print, unsigned *p_cmp)
         avg_parse = 1;
     avg_parse = 1000000 / avg_parse;
 
-    PJ_LOG(3,(THIS_FILE, 
-	      "    %u.%u MB of urls parsed in %d.%03ds (avg=%d urls/sec)", 
+    PJ_LOG(3,(THIS_FILE,
+	      "    %u.%u MB of urls parsed in %d.%03ds (avg=%d urls/sec)",
 	      (unsigned)(var.parse_len/1000000), (unsigned)kbytes,
 	      elapsed.sec, elapsed.msec,
 	      (unsigned)avg_parse));
@@ -1019,8 +1024,8 @@ static int uri_benchmark(unsigned *p_parse, unsigned *p_print, unsigned *p_cmp)
         avg_print = 1;
     avg_print = 1000000 / avg_print;
 
-    PJ_LOG(3,(THIS_FILE, 
-	      "    %u.%u MB of urls printed in %d.%03ds (avg=%d urls/sec)", 
+    PJ_LOG(3,(THIS_FILE,
+	      "    %u.%u MB of urls printed in %d.%03ds (avg=%d urls/sec)",
 	      (unsigned)(var.print_len/1000000), (unsigned)kbytes,
 	      elapsed.sec, elapsed.msec,
 	      (unsigned)avg_print));
@@ -1038,8 +1043,8 @@ static int uri_benchmark(unsigned *p_parse, unsigned *p_print, unsigned *p_cmp)
         avg_cmp = 1;
     avg_cmp = 1000000 / avg_cmp;
 
-    PJ_LOG(3,(THIS_FILE, 
-	      "    %u.%u MB of urls compared in %d.%03ds (avg=%d urls/sec)", 
+    PJ_LOG(3,(THIS_FILE,
+	      "    %u.%u MB of urls compared in %d.%03ds (avg=%d urls/sec)",
 	      (unsigned)(var.cmp_len/1000000), (unsigned)kbytes,
 	      elapsed.sec, elapsed.msec,
 	      (unsigned)avg_cmp));
@@ -1084,8 +1089,8 @@ int uri_test(void)
     avg_len /= PJ_ARRAY_SIZE(uri_test_array);
 
 
-    /* 
-     * Print maximum parse/sec 
+    /*
+     * Print maximum parse/sec
      */
     for (i=0, max=0; i<COUNT; ++i)
 	if (run[i].parse > max) max = run[i].parse;
