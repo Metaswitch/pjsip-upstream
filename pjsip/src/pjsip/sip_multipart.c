@@ -1,3 +1,8 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+ */
+
 /* $Id: sip_multipart.c 3841 2011-10-24 09:28:13Z ming $ */
 /*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
@@ -250,7 +255,7 @@ PJ_DEF(pjsip_msg_body*) pjsip_multipart_create( pj_pool_t *pool,
     pj_memcpy(quoted_boundary.ptr + 1, mp_data->boundary.ptr, mp_data->boundary.slen);
     quoted_boundary_char[mp_data->boundary.slen + 1] = '"';
 
-    pj_strdup(pool, &ctype_param->value, &quoted_boundary);	
+    pj_strdup(pool, &ctype_param->value, &quoted_boundary);
 
     /* function pointers */
     body->print_body = &multipart_print_body;

@@ -1,3 +1,8 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+*/
+
 /* $Id: sip_auth_server.c 4214 2012-07-25 14:29:28Z nanang $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
@@ -294,4 +299,3 @@ PJ_DEF(pj_status_t) pjsip_auth_srv_challenge(  pjsip_auth_srv *auth_srv,
 
     return PJ_SUCCESS;
 }
-

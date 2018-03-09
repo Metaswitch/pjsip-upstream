@@ -1,3 +1,8 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+*/
+
 /* $Id: sip_auth_parser.c 3553 2011-05-05 06:14:19Z nanang $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
@@ -312,4 +317,3 @@ PJ_DEF(pj_status_t) pjsip_auth_init_parser()
 PJ_DEF(void) pjsip_auth_deinit_parser()
 {
 }
-

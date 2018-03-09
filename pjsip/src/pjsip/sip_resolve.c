@@ -1,3 +1,8 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+*/
+
 /* $Id: sip_resolve.c 4108 2012-04-27 01:32:12Z bennylp $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
@@ -516,4 +521,3 @@ static void srv_resolver_cb(void *user_data,
 }
 
 #endif	/* PJSIP_HAS_RESOLVER */
-

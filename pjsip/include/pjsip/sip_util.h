@@ -1,3 +1,8 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+*/
+
 /* $Id: sip_util.h 4347 2013-02-13 10:19:25Z nanang $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
@@ -42,7 +47,7 @@ PJ_BEGIN_DECL
  * response, or one target returns global error/6xx response, or all targets
  * are exhausted.
  *
- * This module is currently used by the \ref PJSIP_INV.
+ * This module is currently used by the ef PJSIP_INV.
  */
 
 /**
@@ -869,4 +874,3 @@ PJ_DECL(pj_str_t) pjsip_calculate_branch_id( pjsip_rx_data *rdata );
 PJ_END_DECL
 
 #endif	/* __PJSIP_SIP_MISC_H__ */
-
