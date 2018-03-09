@@ -1,4 +1,6 @@
- This version of pjsip has been forked off [r4448](http://svn.pjsip.org/repos/pjproject/trunk/), and modified slightly by Metaswitch.
+ This version of pjsip has been forked off r4448, found at
+ http://svn.pjsip.org/repos/pjproject/trunk/, and modified slightly by
+ Metaswitch.
 
  Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
