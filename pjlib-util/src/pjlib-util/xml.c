@@ -1,5 +1,10 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+ */
+
 /* $Id: xml.c 3999 2012-03-30 07:10:13Z bennylp $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  *
@@ -15,7 +20,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include <pjlib-util/xml.h>
 #include <pjlib-util/scanner.h>
@@ -105,7 +110,7 @@ static pj_xml_node *xml_parse_node( pj_pool_t *pool, pj_scanner *scanner)
     /* Get attributes. */
     while (*scanner->curptr != '>' && *scanner->curptr != '/') {
 	pj_xml_attr *attr = alloc_attr(pool);
-	
+
 	pj_scan_get_until_chr( scanner, "=> \t\r\n", &attr->name);
 	if (*scanner->curptr == '=') {
 	    pj_scan_get_char( scanner );
@@ -114,7 +119,7 @@ static pj_xml_node *xml_parse_node( pj_pool_t *pool, pj_scanner *scanner)
 	    ++attr->value.ptr;
 	    attr->value.slen -= 2;
 	}
-	
+
 	pj_list_push_back( &node->attr_head, attr );
     }
 
@@ -166,8 +171,8 @@ PJ_DEF(pj_xml_node*) pj_xml_parse( pj_pool_t *pool, char *msg, pj_size_t len)
     if (!msg || !len || !pool)
 	return NULL;
 
-    pj_scan_init( &scanner, msg, len, 
-		  PJ_SCAN_AUTOSKIP_WS|PJ_SCAN_AUTOSKIP_NEWLINE, 
+    pj_scan_init( &scanner, msg, len,
+		  PJ_SCAN_AUTOSKIP_WS|PJ_SCAN_AUTOSKIP_NEWLINE,
 		  &on_syntax_error);
     PJ_TRY {
 	node =  xml_parse_node(pool, &scanner);
@@ -182,7 +187,7 @@ PJ_DEF(pj_xml_node*) pj_xml_parse( pj_pool_t *pool, char *msg, pj_size_t len)
 }
 
 /* This is a recursive function. */
-static int xml_print_node( const pj_xml_node *node, int indent, 
+static int xml_print_node( const pj_xml_node *node, int indent,
 			   char *buf, pj_size_t len )
 {
     int i;
@@ -308,7 +313,7 @@ PJ_DEF(int) pj_xml_print(const pj_xml_node *node, char *buf, pj_size_t len,
 	prolog_len = prolog.slen;
     }
 
-    xml_print_node_len = xml_print_node(node, 0, 
+    xml_print_node_len = xml_print_node(node, 0,
                                         buf + prolog_len, len - prolog_len);
     if (xml_print_node_len < 0) {
       return -1;
@@ -347,7 +352,7 @@ PJ_DEF(void) pj_xml_add_attr( pj_xml_node *node, pj_xml_attr *attr )
     pj_list_push_back(&node->attr_head, attr);
 }
 
-PJ_DEF(pj_xml_node*) pj_xml_find_node(const pj_xml_node *parent, 
+PJ_DEF(pj_xml_node*) pj_xml_find_node(const pj_xml_node *parent,
 				      const pj_str_t *name)
 {
     const pj_xml_node *node = parent->node_head.next;
@@ -362,7 +367,7 @@ PJ_DEF(pj_xml_node*) pj_xml_find_node(const pj_xml_node *parent,
     return NULL;
 }
 
-PJ_DEF(pj_xml_node*) pj_xml_find_node_rec(const pj_xml_node *parent, 
+PJ_DEF(pj_xml_node*) pj_xml_find_node_rec(const pj_xml_node *parent,
 					  const pj_str_t *name)
 {
     const pj_xml_node *node = parent->node_head.next;
@@ -381,7 +386,7 @@ PJ_DEF(pj_xml_node*) pj_xml_find_node_rec(const pj_xml_node *parent,
     return NULL;
 }
 
-PJ_DEF(pj_xml_node*) pj_xml_find_next_node( const pj_xml_node *parent, 
+PJ_DEF(pj_xml_node*) pj_xml_find_next_node( const pj_xml_node *parent,
 					    const pj_xml_node *node,
 					    const pj_str_t *name)
 {
@@ -397,7 +402,7 @@ PJ_DEF(pj_xml_node*) pj_xml_find_next_node( const pj_xml_node *parent,
 }
 
 
-PJ_DEF(pj_xml_attr*) pj_xml_find_attr( const pj_xml_node *node, 
+PJ_DEF(pj_xml_attr*) pj_xml_find_attr( const pj_xml_node *node,
 				       const pj_str_t *name,
 				       const pj_str_t *value)
 {
@@ -418,10 +423,10 @@ PJ_DEF(pj_xml_attr*) pj_xml_find_attr( const pj_xml_node *node,
 
 
 
-PJ_DEF(pj_xml_node*) pj_xml_find( const pj_xml_node *parent, 
+PJ_DEF(pj_xml_node*) pj_xml_find( const pj_xml_node *parent,
 				  const pj_str_t *name,
-				  const void *data, 
-				  pj_bool_t (*match)(const pj_xml_node *, 
+				  const void *data,
+				  pj_bool_t (*match)(const pj_xml_node *,
 						     const void*))
 {
     const pj_xml_node *node = (const pj_xml_node *)parent->node_head.next;
@@ -448,10 +453,10 @@ PJ_DEF(pj_xml_node*) pj_xml_find( const pj_xml_node *parent,
     return NULL;
 }
 
-PJ_DEF(pj_xml_node*) pj_xml_find_rec( const pj_xml_node *parent, 
+PJ_DEF(pj_xml_node*) pj_xml_find_rec( const pj_xml_node *parent,
 				      const pj_str_t *name,
-				      const void *data, 
-				      pj_bool_t (*match)(const pj_xml_node*, 
+				      const void *data,
+				      pj_bool_t (*match)(const pj_xml_node*,
 							 const void*))
 {
     const pj_xml_node *node = (const pj_xml_node *)parent->node_head.next;

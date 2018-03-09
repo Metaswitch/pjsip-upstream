@@ -1,3 +1,8 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+*/
+
 /* $Id: string.h 4440 2013-03-14 07:18:13Z riza $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
@@ -715,4 +720,3 @@ PJ_INLINE(void*) pj_memchr(const void *buf, int c, pj_size_t size)
 PJ_END_DECL
 
 #endif	/* __PJ_STRING_H__ */
-

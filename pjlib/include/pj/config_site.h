@@ -1,4 +1,9 @@
 /**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+*/
+
+/**
  * @file config_site.h
  *
  * Project Clearwater - IMS in the Cloud
@@ -83,4 +88,3 @@ extern void pj_log_1(const char *src, const char *format, ...);
                            __FILE__, __LINE__, #expr); \
               } \
           }
-

@@ -1,3 +1,8 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+ */
+
 /* $Id: sip_msg.h 3553 2011-05-05 06:14:19Z nanang $ */
 /*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
@@ -720,7 +725,7 @@ PJ_DECL(void*) pjsip_clone_text_data( pj_pool_t *pool, const void *data,
 PJ_DECL(pj_status_t) pjsip_msg_body_copy( pj_pool_t *pool,
 					  pjsip_msg_body *dst_body,
 					  const pjsip_msg_body *src_body );
-					
+
 
 /**
  * Create cloned message body. This will duplicate the contents of the message
@@ -733,7 +738,7 @@ PJ_DECL(pj_status_t) pjsip_msg_body_copy( pj_pool_t *pool,
  */
 PJ_DECL(pjsip_msg_body*) pjsip_msg_body_clone( pj_pool_t *pool,
 					       const pjsip_msg_body *body );
-					
+
 
 /**
  * Create a text message body. Use this function to create message body when
