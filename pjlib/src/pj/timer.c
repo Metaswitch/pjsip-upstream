@@ -1,3 +1,8 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+ */
+
 /* $Id: timer.c 4359 2013-02-21 11:18:36Z bennylp $ */
 /*
  * The PJLIB's timer heap is based (or more correctly, copied and modied)

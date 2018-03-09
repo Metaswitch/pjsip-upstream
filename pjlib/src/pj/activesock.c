@@ -1,3 +1,8 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+*/
+
 /* $Id: activesock.c 4359 2013-02-21 11:18:36Z bennylp $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
@@ -943,4 +948,3 @@ static void ioqueue_on_connect_complete(pj_ioqueue_key_t *key,
     }
 }
 #endif  /* PJ_HAS_TCP */
-

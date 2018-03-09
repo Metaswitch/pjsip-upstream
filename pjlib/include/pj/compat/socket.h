@@ -1,3 +1,8 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+*/
+
 /* $Id: socket.h 4435 2013-03-11 06:32:58Z nanang $ */
 /* 
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
@@ -241,4 +246,3 @@
 #endif
 
 #endif	/* __PJ_COMPAT_SOCKET_H__ */
-

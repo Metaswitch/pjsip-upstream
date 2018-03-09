@@ -1,5 +1,10 @@
+/**
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+ */
+
 /* $Id: string_i.h 3553 2011-05-05 06:14:19Z nanang $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  *
@@ -15,7 +20,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include <pj/pool.h>
@@ -129,7 +134,7 @@ PJ_IDEF(pj_str_t*) pj_strcpy2(pj_str_t *dst, const char *src)
     return dst;
 }
 
-PJ_IDEF(pj_str_t*) pj_strncpy( pj_str_t *dst, const pj_str_t *src, 
+PJ_IDEF(pj_str_t*) pj_strncpy( pj_str_t *dst, const pj_str_t *src,
 			       pj_ssize_t max)
 {
     if (max > src->slen) max = src->slen;
@@ -171,7 +176,7 @@ PJ_IDEF(int) pj_strcmp( const pj_str_t *str1, const pj_str_t *str2)
     }
 }
 
-PJ_IDEF(int) pj_strncmp( const pj_str_t *str1, const pj_str_t *str2, 
+PJ_IDEF(int) pj_strncmp( const pj_str_t *str1, const pj_str_t *str2,
 			 pj_size_t len)
 {
     pj_str_t copy1, copy2;
@@ -191,7 +196,7 @@ PJ_IDEF(int) pj_strncmp( const pj_str_t *str1, const pj_str_t *str2,
     return pj_strcmp(str1, str2);
 }
 
-PJ_IDEF(int) pj_strncmp2( const pj_str_t *str1, const char *str2, 
+PJ_IDEF(int) pj_strncmp2( const pj_str_t *str1, const char *str2,
 			  pj_size_t len)
 {
     pj_str_t copy2;
@@ -246,7 +251,7 @@ PJ_IDEF(int) strnicmp_alnum( const char *str1, const char *str2,
     if (len==0)
 	return 0;
     else {
-	register const pj_uint32_t *p1 = (pj_uint32_t*)str1, 
+	register const pj_uint32_t *p1 = (pj_uint32_t*)str1,
 		                   *p2 = (pj_uint32_t*)str2;
 	while (len > 3 && (*p1 & 0x5F5F5F5F)==(*p2 & 0x5F5F5F5F))
 	    ++p1, ++p2, len-=4;
@@ -268,7 +273,7 @@ PJ_IDEF(int) strnicmp_alnum( const char *str1, const char *str2,
 	else if (len==1)
 	    return ((*p1 & 0x5F000000)==(*p2 & 0x5F000000)) ? 0 : -1;
 #endif
-	else 
+	else
 	    return 0;
     }
 }
@@ -282,7 +287,7 @@ PJ_IDEF(int) pj_stricmp_alnum(const pj_str_t *str1, const pj_str_t *str2)
     } else if (len == 0) {
 	return 0;
     } else {
-	register const pj_uint32_t *p1 = (pj_uint32_t*)str1->ptr, 
+	register const pj_uint32_t *p1 = (pj_uint32_t*)str1->ptr,
 		                   *p2 = (pj_uint32_t*)str2->ptr;
 	while (len > 3 && (*p1 & 0x5F5F5F5F)==(*p2 & 0x5F5F5F5F))
 	    ++p1, ++p2, len-=4;
@@ -304,7 +309,7 @@ PJ_IDEF(int) pj_stricmp_alnum(const pj_str_t *str1, const pj_str_t *str2)
 	else if (len==1)
 	    return ((*p1 & 0x5F000000)==(*p2 & 0x5F000000)) ? 0 : -1;
 #endif
-	else 
+	else
 	    return 0;
     }
 }
@@ -325,7 +330,7 @@ PJ_IDEF(int) pj_stricmp2( const pj_str_t *str1, const char *str2)
     return pj_stricmp(str1, &copy2);
 }
 
-PJ_IDEF(int) pj_strnicmp( const pj_str_t *str1, const pj_str_t *str2, 
+PJ_IDEF(int) pj_strnicmp( const pj_str_t *str1, const pj_str_t *str2,
 			  pj_size_t len)
 {
     pj_str_t copy1, copy2;
@@ -345,7 +350,7 @@ PJ_IDEF(int) pj_strnicmp( const pj_str_t *str1, const pj_str_t *str2,
     return pj_stricmp(str1, str2);
 }
 
-PJ_IDEF(int) pj_strnicmp2( const pj_str_t *str1, const char *str2, 
+PJ_IDEF(int) pj_strnicmp2( const pj_str_t *str1, const char *str2,
 			   pj_size_t len)
 {
     pj_str_t copy2;
