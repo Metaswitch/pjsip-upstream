@@ -1,4 +1,4 @@
-/**
+/*
  * Some of the content of this file has been edited by Metaswitch, in the time
  * period from May 2013 to the present time.
  */

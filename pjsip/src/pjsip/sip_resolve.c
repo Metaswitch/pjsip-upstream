@@ -1,10 +1,10 @@
-/**
+/*
  * Some of the content of this file has been edited by Metaswitch, in the time
  * period from May 2013 to the present time.
-*/
+ */
 
 /* $Id: sip_resolve.c 4108 2012-04-27 01:32:12Z bennylp $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  *
@@ -20,7 +20,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include <pjsip/sip_resolve.h>
 #include <pjsip/sip_transport.h>
@@ -183,19 +183,19 @@ PJ_DEF(void) pjsip_resolve( pjsip_resolver_t *resolver,
     /* Is it IP address or hostname? And if it's an IP, which version? */
     ip_addr_ver = get_ip_addr_ver(&target->addr.host);
 
-    /* Set the transport type if not explicitly specified. 
+    /* Set the transport type if not explicitly specified.
      * RFC 3263 section 4.1 specify rules to set up this.
      */
     if (type == PJSIP_TRANSPORT_UNSPECIFIED) {
 	if (ip_addr_ver || (target->addr.port != 0)) {
 #if PJ_HAS_TCP
-	    if (target->flag & PJSIP_TRANSPORT_SECURE) 
+	    if (target->flag & PJSIP_TRANSPORT_SECURE)
 	    {
 		type = PJSIP_TRANSPORT_TLS;
-	    } else if (target->flag & PJSIP_TRANSPORT_RELIABLE) 
+	    } else if (target->flag & PJSIP_TRANSPORT_RELIABLE)
 	    {
 		type = PJSIP_TRANSPORT_TCP;
-	    } else 
+	    } else
 #endif
 	    {
 		type = PJSIP_TRANSPORT_UDP;
@@ -207,13 +207,13 @@ PJ_DEF(void) pjsip_resolve( pjsip_resolver_t *resolver,
 	     * But we don't support it (yet).
 	     */
 #if PJ_HAS_TCP
-	    if (target->flag & PJSIP_TRANSPORT_SECURE) 
+	    if (target->flag & PJSIP_TRANSPORT_SECURE)
 	    {
 		type = PJSIP_TRANSPORT_TLS;
-	    } else if (target->flag & PJSIP_TRANSPORT_RELIABLE) 
+	    } else if (target->flag & PJSIP_TRANSPORT_RELIABLE)
 	    {
 		type = PJSIP_TRANSPORT_TCP;
-	    } else 
+	    } else
 #endif
 	    {
 		type = PJSIP_TRANSPORT_UDP;
@@ -225,7 +225,7 @@ PJ_DEF(void) pjsip_resolve( pjsip_resolver_t *resolver,
     if (ip_addr_ver == 6)
 	type = (pjsip_transport_type_e)((int)type | PJSIP_TRANSPORT_IPV6);
 
-    /* If target is an IP address, or if resolver is not configured, 
+    /* If target is an IP address, or if resolver is not configured,
      * we can just finish the resolution now using pj_gethostbyname()
      */
     if (ip_addr_ver || resolver->res == NULL) {
@@ -235,12 +235,12 @@ PJ_DEF(void) pjsip_resolve( pjsip_resolver_t *resolver,
 	if (ip_addr_ver != 0) {
 	    /* Target is an IP address, no need to resolve */
 	    if (ip_addr_ver == 4) {
-		pj_sockaddr_init(pj_AF_INET(), &svr_addr.entry[0].addr, 
+		pj_sockaddr_init(pj_AF_INET(), &svr_addr.entry[0].addr,
 				 NULL, 0);
 		pj_inet_aton(&target->addr.host,
 			     &svr_addr.entry[0].addr.ipv4.sin_addr);
 	    } else {
-		pj_sockaddr_init(pj_AF_INET6(), &svr_addr.entry[0].addr, 
+		pj_sockaddr_init(pj_AF_INET6(), &svr_addr.entry[0].addr,
 				 NULL, 0);
 		pj_inet_pton(pj_AF_INET6(), &target->addr.host,
 			     &svr_addr.entry[0].addr.ipv6.sin6_addr);
@@ -291,7 +291,7 @@ PJ_DEF(void) pjsip_resolve( pjsip_resolver_t *resolver,
 	pj_sockaddr_set_port(&svr_addr.entry[0].addr, srv_port);
 
 	/* Call the callback. */
-	PJ_LOG(5,(THIS_FILE, 
+	PJ_LOG(5,(THIS_FILE,
 		  "Target '%.*s:%d' type=%s resolved to "
 		  "'%s' type=%s (%s)",
 		  (int)target->addr.host.slen,
@@ -354,12 +354,12 @@ PJ_DEF(void) pjsip_resolve( pjsip_resolver_t *resolver,
 	else {
 	    pj_assert(!"Unknown transport type");
 	    query->naptr[0].res_type = pj_str("_sip._udp.");
-	    
+
 	}
 
     } else {
-	/* Otherwise if port is specified, start with A (or AAAA) host 
-	 * resolution 
+	/* Otherwise if port is specified, start with A (or AAAA) host
+	 * resolution
 	 */
 	query->query_type = PJ_DNS_TYPE_A;
 	query->naptr[0].res_type.slen = 0;
@@ -367,7 +367,7 @@ PJ_DEF(void) pjsip_resolve( pjsip_resolver_t *resolver,
     }
 
     /* Start the asynchronous query */
-    PJ_LOG(5, (query->objname, 
+    PJ_LOG(5, (query->objname,
 	       "Starting async DNS %s query: target=%.*s%.*s, transport=%s, "
 	       "port=%d",
 	       pj_dns_get_type_name(query->query_type),
@@ -386,9 +386,9 @@ PJ_DEF(void) pjsip_resolve( pjsip_resolver_t *resolver,
 
     } else if (query->query_type == PJ_DNS_TYPE_A) {
 
-	status = pj_dns_resolver_start_query(resolver->res, 
+	status = pj_dns_resolver_start_query(resolver->res,
 					     &query->naptr[0].name,
-					     PJ_DNS_TYPE_A, 0, 
+					     PJ_DNS_TYPE_A, 0,
 					     &dns_a_callback,
     					     query, &query->object);
 
@@ -423,7 +423,7 @@ on_error:
 
 #if PJSIP_HAS_RESOLVER
 
-/* 
+/*
  * This callback is called when target is resolved with DNS A query.
  */
 static void dns_a_callback(void *user_data,
@@ -447,7 +447,7 @@ static void dns_a_callback(void *user_data,
 
 	/* Log error */
 	pj_strerror(status, errmsg, sizeof(errmsg));
-	PJ_LOG(4,(query->objname, "DNS A record resolution failed: %s", 
+	PJ_LOG(4,(query->objname, "DNS A record resolution failed: %s",
 		  errmsg));
 
 	/* Call the callback */
@@ -489,7 +489,7 @@ static void srv_resolver_cb(void *user_data,
 
 	/* Log error */
 	pj_strerror(status, errmsg, sizeof(errmsg));
-	PJ_LOG(4,(query->objname, "DNS A record resolution failed: %s", 
+	PJ_LOG(4,(query->objname, "DNS A record resolution failed: %s",
 		  errmsg));
 
 	/* Call the callback */
