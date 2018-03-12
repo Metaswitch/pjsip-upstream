@@ -1,7 +1,7 @@
-/**
+/*
  * Some of the content of this file has been edited by Metaswitch, in the time
  * period from May 2013 to the present time.
-*/
+ */
 
 /* $Id: sip_uri.h 4370 2013-02-26 05:30:00Z nanang $ */
 /*
