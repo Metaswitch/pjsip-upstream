@@ -1,3 +1,8 @@
+/*
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+ */
+
 /* $Id: sip_msg.c 3553 2011-05-05 06:14:19Z nanang $ */
 /*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
@@ -465,7 +470,7 @@ PJ_DEF(pj_ssize_t) pjsip_msg_print( const pjsip_msg *msg,
         if (hdr->type == PJSIP_H_CONTENT_LENGTH &&
             (!msg->body || msg->body->content_type.type.slen != 0)) {
             /* If there is no message body or a message body with content-type
-             * specified then we will calculate the Content-Length automatically 
+             * specified then we will calculate the Content-Length automatically
              * and add a Content-Length header, so ignore any existing header.
              */
             continue;
@@ -475,7 +480,7 @@ PJ_DEF(pj_ssize_t) pjsip_msg_print( const pjsip_msg *msg,
             msg->body &&
             msg->body->content_type.type.slen != 0) {
             /* If there is a message body with content-type specified then
-             * Content-Type header is added automatically, so ignore the 
+             * Content-Type header is added automatically, so ignore the
              * existing header.  (Note that it is legitimate to have a
              * Content-Type header with no body - see RFC3261 20.15.)
              */
@@ -529,7 +534,7 @@ PJ_DEF(pj_ssize_t) pjsip_msg_print( const pjsip_msg *msg,
 	    }
 	    pj_memcpy(p, clen_hdr.ptr, clen_hdr.slen);
 	    p += clen_hdr.slen;
-	
+
 	    /* Print blanks after "Content-Length:", this is where we'll put
 	     * the content length value after we know the length of the
 	     * body.
@@ -540,7 +545,7 @@ PJ_DEF(pj_ssize_t) pjsip_msg_print( const pjsip_msg *msg,
 	    *p++ = '\r';
 	    *p++ = '\n';
 	}
-	
+
 	/* Add blank newline. */
 	*p++ = '\r';
 	*p++ = '\n';

@@ -1,5 +1,10 @@
+/*
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+ */
+
 /* $Id: sock.h 4343 2013-02-07 09:35:34Z nanang $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  *
@@ -15,7 +20,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #ifndef __PJ_SOCK_H__
 #define __PJ_SOCK_H__
@@ -27,7 +32,7 @@
 
 #include <pj/types.h>
 
-PJ_BEGIN_DECL 
+PJ_BEGIN_DECL
 
 
 /**
@@ -56,7 +61,7 @@ PJ_BEGIN_DECL
 
 
 /**
- * Supported address families. 
+ * Supported address families.
  * APPLICATION MUST USE THESE VALUES INSTEAD OF NORMAL AF_*, BECAUSE
  * THE LIBRARY WILL DO TRANSLATION TO THE NATIVE VALUE.
  */
@@ -213,7 +218,7 @@ extern const pj_uint16_t PJ_SOL_IPV6;
 #endif
 
 
-/* IP_TOS 
+/* IP_TOS
  *
  * Note:
  *  TOS CURRENTLY DOES NOT WORK IN Windows 2000 and above!
@@ -277,7 +282,7 @@ extern const pj_uint16_t PJ_IPTOS_MINCOST;
 
 
 /**
- * Values to be specified as \c optname when calling #pj_sock_setsockopt() 
+ * Values to be specified as \c optname when calling #pj_sock_setsockopt()
  * or #pj_sock_getsockopt().
  */
 
@@ -311,7 +316,7 @@ extern const pj_uint16_t PJ_SO_PRIORITY;
 
 /** IP multicast interface. @see pj_IP_MULTICAST_IF() */
 extern const pj_uint16_t PJ_IP_MULTICAST_IF;
- 
+
 /** IP multicast ttl. @see pj_IP_MULTICAST_TTL() */
 extern const pj_uint16_t PJ_IP_MULTICAST_TTL;
 
@@ -466,9 +471,9 @@ typedef enum pj_socket_sd_type
 #define PJ_INADDR_BROADCAST ((pj_uint32_t)0xffffffff)
 
 
-/** 
+/**
  * Maximum length specifiable by #pj_sock_listen().
- * If the build system doesn't override this value, then the lowest 
+ * If the build system doesn't override this value, then the lowest
  * denominator (five, in Win32 systems) will be used.
  */
 #if !defined(PJ_SOMAXCONN)
@@ -679,7 +684,7 @@ PJ_DECL(char*) pj_inet_ntoa(pj_in_addr inaddr);
 /**
  * This function converts the Internet host address cp from the standard
  * numbers-and-dots notation into binary data and stores it in the structure
- * that inp points to. 
+ * that inp points to.
  *
  * @param cp	IP address in standard numbers-and-dots notation.
  * @param inp	Structure that holds the output of the conversion.
@@ -693,13 +698,13 @@ PJ_DECL(int) pj_inet_aton(const pj_str_t *cp, struct pj_in_addr *inp);
  * into its numeric binary form. It supports both IPv4 and IPv6 address
  * conversion.
  *
- * @param af	Specify the family of the address.  The PJ_AF_INET and 
- *		PJ_AF_INET6 address families shall be supported.  
- * @param src	Points to the string being passed in. 
- * @param dst	Points to a buffer into which the function stores the 
+ * @param af	Specify the family of the address.  The PJ_AF_INET and
+ *		PJ_AF_INET6 address families shall be supported.
+ * @param src	Points to the string being passed in.
+ * @param dst	Points to a buffer into which the function stores the
  *		numeric address; this shall be large enough to hold the
  *		numeric address (32 bits for PJ_AF_INET, 128 bits for
- *		PJ_AF_INET6).  
+ *		PJ_AF_INET6).
  *
  * @return	PJ_SUCCESS if conversion was successful.
  */
@@ -708,17 +713,17 @@ PJ_DECL(pj_status_t) pj_inet_pton(int af, const pj_str_t *src, void *dst);
 /**
  * This function converts a numeric address into a text string suitable
  * for presentation. It supports both IPv4 and IPv6 address
- * conversion. 
+ * conversion.
  * @see pj_sockaddr_print()
  *
  * @param af	Specify the family of the address. This can be PJ_AF_INET
  *		or PJ_AF_INET6.
  * @param src	Points to a buffer holding an IPv4 address if the af argument
  *		is PJ_AF_INET, or an IPv6 address if the af argument is
- *		PJ_AF_INET6; the address must be in network byte order.  
+ *		PJ_AF_INET6; the address must be in network byte order.
  * @param dst	Points to a buffer where the function stores the resulting
- *		text string; it shall not be NULL.  
- * @param size	Specifies the size of this buffer, which shall be large 
+ *		text string; it shall not be NULL.
+ * @param size	Specifies the size of this buffer, which shall be large
  *		enough to hold the text string (PJ_INET_ADDRSTRLEN characters
  *		for IPv4, PJ_INET6_ADDRSTRLEN characters for IPv6).
  *
@@ -735,10 +740,10 @@ PJ_DECL(pj_status_t) pj_inet_ntop(int af, const void *src,
  *		or PJ_AF_INET6.
  * @param src	Points to a buffer holding an IPv4 address if the af argument
  *		is PJ_AF_INET, or an IPv6 address if the af argument is
- *		PJ_AF_INET6; the address must be in network byte order.  
+ *		PJ_AF_INET6; the address must be in network byte order.
  * @param dst	Points to a buffer where the function stores the resulting
- *		text string; it shall not be NULL.  
- * @param size	Specifies the size of this buffer, which shall be large 
+ *		text string; it shall not be NULL.
+ * @param size	Specifies the size of this buffer, which shall be large
  *		enough to hold the text string (PJ_INET_ADDRSTRLEN characters
  *		for IPv4, PJ_INET6_ADDRSTRLEN characters for IPv6).
  *
@@ -765,7 +770,7 @@ PJ_DECL(char*) pj_sockaddr_print(const pj_sockaddr_t *addr,
 
 /**
  * Convert address string with numbers and dots to binary IP address.
- * 
+ *
  * @param cp	    The IP address in numbers and dots notation.
  * @return	    If success, the IP address is returned in network
  *		    byte order. If failed, PJ_INADDR_NONE will be
@@ -779,7 +784,7 @@ PJ_DECL(pj_in_addr) pj_inet_addr(const pj_str_t *cp);
 
 /**
  * Convert address string with numbers and dots to binary IP address.
- * 
+ *
  * @param cp	    The IP address in numbers and dots notation.
  * @return	    If success, the IP address is returned in network
  *		    byte order. If failed, PJ_INADDR_NONE will be
@@ -793,14 +798,14 @@ PJ_DECL(pj_in_addr) pj_inet_addr2(const char *cp);
 
 /**
  * Initialize IPv4 socket address based on the address and port info.
- * The string address may be in a standard numbers and dots notation or 
- * may be a hostname. If hostname is specified, then the function will 
+ * The string address may be in a standard numbers and dots notation or
+ * may be a hostname. If hostname is specified, then the function will
  * resolve the host into the IP address.
  *
  * @see pj_sockaddr_init()
  *
  * @param addr	    The IP socket address to be set.
- * @param cp	    The address string, which can be in a standard 
+ * @param cp	    The address string, which can be in a standard
  *		    dotted numbers or a hostname to be resolved.
  * @param port	    The port number, in host byte order.
  *
@@ -812,21 +817,21 @@ PJ_DECL(pj_status_t) pj_sockaddr_in_init( pj_sockaddr_in *addr,
 
 /**
  * Initialize IP socket address based on the address and port info.
- * The string address may be in a standard numbers and dots notation or 
- * may be a hostname. If hostname is specified, then the function will 
+ * The string address may be in a standard numbers and dots notation or
+ * may be a hostname. If hostname is specified, then the function will
  * resolve the host into the IP address.
  *
  * @see pj_sockaddr_in_init()
  *
  * @param af	    Internet address family.
  * @param addr	    The IP socket address to be set.
- * @param cp	    The address string, which can be in a standard 
+ * @param cp	    The address string, which can be in a standard
  *		    dotted numbers or a hostname to be resolved.
  * @param port	    The port number, in host byte order.
  *
  * @return	    Zero on success.
  */
-PJ_DECL(pj_status_t) pj_sockaddr_init(int af, 
+PJ_DECL(pj_status_t) pj_sockaddr_init(int af,
 				      pj_sockaddr *addr,
 				      const pj_str_t *cp,
 				      pj_uint16_t port);
@@ -845,7 +850,7 @@ PJ_DECL(int) pj_sockaddr_cmp(const pj_sockaddr_t *addr1,
 
 /**
  * Get pointer to the address part of a socket address.
- * 
+ *
  * @param addr	    Socket address.
  *
  * @return	    Pointer to address part (sin_addr or sin6_addr,
@@ -866,7 +871,7 @@ PJ_DECL(pj_bool_t) pj_sockaddr_has_addr(const pj_sockaddr_t *addr);
  * Get the address part length of a socket address, based on its address
  * family. For PJ_AF_INET, the length will be sizeof(pj_in_addr), and
  * for PJ_AF_INET6, the length will be sizeof(pj_in6_addr).
- * 
+ *
  * @param addr	    Socket address.
  *
  * @return	    Length in bytes.
@@ -877,14 +882,14 @@ PJ_DECL(unsigned) pj_sockaddr_get_addr_len(const pj_sockaddr_t *addr);
  * Get the socket address length, based on its address
  * family. For PJ_AF_INET, the length will be sizeof(pj_sockaddr_in), and
  * for PJ_AF_INET6, the length will be sizeof(pj_sockaddr_in6).
- * 
+ *
  * @param addr	    Socket address.
  *
  * @return	    Length in bytes.
  */
 PJ_DECL(unsigned) pj_sockaddr_get_len(const pj_sockaddr_t *addr);
 
-/** 
+/**
  * Copy only the address part (sin_addr/sin6_addr) of a socket address.
  *
  * @param dst	    Destination socket address.
@@ -924,7 +929,7 @@ PJ_DECL(void) pj_sockaddr_in_set_addr(pj_sockaddr_in *addr,
 				      pj_uint32_t hostaddr);
 
 /**
- * Set the IP address of an IP socket address from string address, 
+ * Set the IP address of an IP socket address from string address,
  * with resolving the host if necessary. The string address may be in a
  * standard numbers and dots notation or may be a hostname. If hostname
  * is specified, then the function will resolve the host into the IP
@@ -933,7 +938,7 @@ PJ_DECL(void) pj_sockaddr_in_set_addr(pj_sockaddr_in *addr,
  * @see pj_sockaddr_set_str_addr()
  *
  * @param addr	    The IP socket address to be set.
- * @param cp	    The address string, which can be in a standard 
+ * @param cp	    The address string, which can be in a standard
  *		    dotted numbers or a hostname to be resolved.
  *
  * @return	    PJ_SUCCESS on success.
@@ -950,7 +955,7 @@ PJ_DECL(pj_status_t) pj_sockaddr_in_set_str_addr( pj_sockaddr_in *addr,
  *
  * @param af	    Address family.
  * @param addr	    The IP socket address to be set.
- * @param cp	    The address string, which can be in a standard 
+ * @param cp	    The address string, which can be in a standard
  *		    IP numbers (IPv4 or IPv6) or a hostname to be resolved.
  *
  * @return	    PJ_SUCCESS on success.
@@ -960,9 +965,9 @@ PJ_DECL(pj_status_t) pj_sockaddr_set_str_addr(int af,
 					      const pj_str_t *cp);
 
 /**
- * Get the port number of a socket address, in host byte order. 
+ * Get the port number of a socket address, in host byte order.
  * This function can be used for both IPv4 and IPv6 socket address.
- * 
+ *
  * @param addr	    Socket address.
  *
  * @return	    Port number, in host byte order.
@@ -984,7 +989,7 @@ PJ_DECL(pj_uint16_t) pj_sockaddr_in_get_port(const pj_sockaddr_in *addr);
  * @param addr	    The socket address.
  * @param hostport  The port number, in host byte order.
  */
-PJ_DECL(pj_status_t) pj_sockaddr_set_port(pj_sockaddr *addr, 
+PJ_DECL(pj_status_t) pj_sockaddr_set_port(pj_sockaddr *addr,
 					  pj_uint16_t hostport);
 
 /**
@@ -995,7 +1000,7 @@ PJ_DECL(pj_status_t) pj_sockaddr_set_port(pj_sockaddr *addr,
  * @param addr	    The IP socket address.
  * @param hostport  The port number, in host byte order.
  */
-PJ_DECL(void) pj_sockaddr_in_set_port(pj_sockaddr_in *addr, 
+PJ_DECL(void) pj_sockaddr_in_set_port(pj_sockaddr_in *addr,
 				      pj_uint16_t hostport);
 
 /**
@@ -1030,8 +1035,8 @@ PJ_DECL(void) pj_sockaddr_in_set_port(pj_sockaddr_in *addr,
  *  - "[::]:80": address zero (::) and port 0
  *  - ":::80": address zero (::) and port 80
  *
- * Note: when the IPv6 socket address contains port number, the IP 
- * part of the socket address should be enclosed with square brackets, 
+ * Note: when the IPv6 socket address contains port number, the IP
+ * part of the socket address should be enclosed with square brackets,
  * otherwise the port number will be included as part of the IP address
  * (see "fec0::01:80" example above).
  *
@@ -1055,9 +1060,9 @@ PJ_DECL(pj_status_t) pj_sockaddr_parse(int af, unsigned options,
 /**
  * This function is similar to #pj_sockaddr_parse(), except that it will not
  * convert the hostpart into IP address (thus possibly resolving the hostname
- * into a #pj_sockaddr. 
+ * into a #pj_sockaddr.
  *
- * Unlike #pj_sockaddr_parse(), this function has a limitation that if port 
+ * Unlike #pj_sockaddr_parse(), this function has a limitation that if port
  * number is specified in an IPv6 input string, the IP part of the IPv6 socket
  * address MUST be enclosed in square brackets, otherwise the port number will
  * be considered as part of the IPv6 IP address.
@@ -1069,7 +1074,7 @@ PJ_DECL(pj_status_t) pj_sockaddr_parse(int af, unsigned options,
  * @param options   Additional options to assist the parsing, must be zero
  *		    for now.
  * @param str	    The input string to be parsed.
- * @param hostpart  Optional pointer to store the host part of the socket 
+ * @param hostpart  Optional pointer to store the host part of the socket
  *		    address, with any brackets removed.
  * @param port	    Optional pointer to store the port number. If port number
  *		    is not found, this will be set to zero upon return.
@@ -1123,18 +1128,18 @@ PJ_DECL(pj_in_addr) pj_gethostaddr(void);
  *
  * @param family    Specifies a communication domain; this selects the
  *		    protocol family which will be used for communication.
- * @param type	    The socket has the indicated type, which specifies the 
+ * @param type	    The socket has the indicated type, which specifies the
  *		    communication semantics.
  * @param protocol  Specifies  a  particular  protocol  to  be used with the
- *		    socket.  Normally only a single protocol exists to support 
- *		    a particular socket  type  within  a given protocol family, 
+ *		    socket.  Normally only a single protocol exists to support
+ *		    a particular socket  type  within  a given protocol family,
  *		    in which a case protocol can be specified as 0.
  * @param sock	    New socket descriptor, or PJ_INVALID_SOCKET on error.
  *
  * @return	    Zero on success.
  */
-PJ_DECL(pj_status_t) pj_sock_socket(int family, 
-				    int type, 
+PJ_DECL(pj_status_t) pj_sock_socket(int family,
+				    int type,
 				    int protocol,
 				    pj_sock_t *sock);
 
@@ -1160,7 +1165,7 @@ PJ_DECL(pj_status_t) pj_sock_close(pj_sock_t sockfd);
  *
  * @return	    Zero on success.
  */
-PJ_DECL(pj_status_t) pj_sock_bind( pj_sock_t sockfd, 
+PJ_DECL(pj_status_t) pj_sock_bind( pj_sock_t sockfd,
 				   const pj_sockaddr_t *my_addr,
 				   int addrlen);
 
@@ -1173,7 +1178,7 @@ PJ_DECL(pj_status_t) pj_sock_bind( pj_sock_t sockfd,
  *
  * @return	    Zero on success.
  */
-PJ_DECL(pj_status_t) pj_sock_bind_in( pj_sock_t sockfd, 
+PJ_DECL(pj_status_t) pj_sock_bind_in( pj_sock_t sockfd,
 				      pj_uint32_t addr,
 				      pj_uint16_t port);
 
@@ -1207,7 +1212,7 @@ PJ_DECL(pj_status_t) pj_sock_bind_random( pj_sock_t sockfd,
  *
  * @return		Zero on success.
  */
-PJ_DECL(pj_status_t) pj_sock_listen( pj_sock_t sockfd, 
+PJ_DECL(pj_status_t) pj_sock_listen( pj_sock_t sockfd,
 				     int backlog );
 
 /**
@@ -1298,8 +1303,8 @@ PJ_DECL(pj_status_t) pj_sock_getsockopt( pj_sock_t sockfd,
 					 void *optval,
 					 int *optlen);
 /**
- * Manipulate the options associated with a socket. Options may exist at 
- * multiple protocol levels; they are always present at the uppermost socket 
+ * Manipulate the options associated with a socket. Options may exist at
+ * multiple protocol levels; they are always present at the uppermost socket
  * level.
  *
  * @param sockfd	The socket descriptor.
@@ -1400,9 +1405,9 @@ PJ_DECL(pj_status_t) pj_sock_sendto(pj_sock_t sockfd,
  * socket associated with sockfd to be shut down.
  *
  * @param sockfd	The socket descriptor.
- * @param how		If how is PJ_SHUT_RD, further receptions will be 
+ * @param how		If how is PJ_SHUT_RD, further receptions will be
  *			disallowed. If how is PJ_SHUT_WR, further transmissions
- *			will be disallowed. If how is PJ_SHUT_RDWR, further 
+ *			will be disallowed. If how is PJ_SHUT_RDWR, further
  *			receptions andtransmissions will be disallowed.
  *
  * @return		Zero on success.

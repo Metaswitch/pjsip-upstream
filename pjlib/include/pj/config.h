@@ -1,5 +1,10 @@
+/*
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+ */
+
 /* $Id: config.h 4419 2013-03-05 11:23:52Z ming $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  * Copyright (C) 2013  Metaswitch Networks Ltd
@@ -270,7 +275,7 @@
 #   define PJ_HAS_PENTIUM	0
 #   define PJ_IS_LITTLE_ENDIAN	1
 #   define PJ_IS_BIG_ENDIAN	0
-		
+
 #else
 #   error "Please specify target machine."
 #endif

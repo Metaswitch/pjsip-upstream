@@ -1,5 +1,10 @@
+/*
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+ */
+
 /* $Id: sip_transport_tcp.h 3553 2011-05-05 06:14:19Z nanang $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  *
@@ -15,7 +20,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #ifndef __PJSIP_TRANSPORT_TCP_H__
 #define __PJSIP_TRANSPORT_TCP_H__
@@ -40,13 +45,13 @@ PJ_BEGIN_DECL
  * @ingroup PJSIP_TRANSPORT
  * @brief API to create and register TCP transport.
  * @{
- * The functions below are used to create TCP transport and register 
+ * The functions below are used to create TCP transport and register
  * the transport to the framework.
  */
 
 /**
- * Settings to be specified when creating the TCP transport. Application 
- * should initialize this structure with its default values by calling 
+ * Settings to be specified when creating the TCP transport. Application
+ * should initialize this structure with its default values by calling
  * pjsip_tcp_transport_cfg_default().
  */
 typedef struct pjsip_tcp_transport_cfg
@@ -58,21 +63,21 @@ typedef struct pjsip_tcp_transport_cfg
     int			af;
 
     /**
-     * Optional address to bind the socket to. Default is to bind to 
+     * Optional address to bind the socket to. Default is to bind to
      * PJ_INADDR_ANY and to any available port.
      */
     pj_sockaddr		bind_addr;
 
     /**
      * Optional published address, which is the address to be
-     * advertised as the address of this SIP transport. 
+     * advertised as the address of this SIP transport.
      * By default the bound address will be used as the published address.
      */
     pjsip_host_port	addr_name;
 
     /**
-     * Number of simultaneous asynchronous accept() operations to be 
-     * supported. It is recommended that the number here corresponds to 
+     * Number of simultaneous asynchronous accept() operations to be
+     * supported. It is recommended that the number here corresponds to
      * the number of processors in the system (or the number of SIP
      * worker threads).
      *
@@ -138,7 +143,7 @@ PJ_DECL(void) pjsip_tcp_transport_cfg_default(pjsip_tcp_transport_cfg *cfg,
  *
  * @param endpt		The SIP endpoint.
  * @param local		Optional local address to bind, or specify the
- *			address to bind the server socket to. Both IP 
+ *			address to bind the server socket to. Both IP
  *			interface address and port fields are optional.
  *			If IP interface address is not specified, socket
  *			will be bound to PJ_INADDR_ANY. If port is not
@@ -169,14 +174,14 @@ PJ_DECL(pj_status_t) pjsip_tcp_transport_start(pjsip_endpoint *endpt,
  *
  * @param endpt		The SIP endpoint.
  * @param local		Optional local address to bind, or specify the
- *			address to bind the server socket to. Both IP 
+ *			address to bind the server socket to. Both IP
  *			interface address and port fields are optional.
  *			If IP interface address is not specified, socket
  *			will be bound to PJ_INADDR_ANY. If port is not
  *			specified, socket will be bound to any port
  *			selected by the operating system.
  * @param a_name	Optional published address, which is the address to be
- *			advertised as the address of this SIP transport. 
+ *			advertised as the address of this SIP transport.
  *			If this argument is NULL, then the bound address
  *			will be used as the published address.
  * @param async_cnt	Number of simultaneous asynchronous accept()

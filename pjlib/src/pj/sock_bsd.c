@@ -1,5 +1,10 @@
+/*
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+ */
+
 /* $Id: sock_bsd.c 4233 2012-08-21 11:16:06Z ming $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  * Copyright (C) 2013  Metaswitch Networks Ltd
@@ -842,13 +847,13 @@ PJ_DEF(pj_status_t) pj_sock_accept( pj_sock_t serverfd,
     if (*newsock==PJ_INVALID_SOCKET)
 	return PJ_RETURN_OS_ERROR(pj_get_native_netos_error());
     else {
-	
+
 #if defined(PJ_SOCKADDR_HAS_LEN) && PJ_SOCKADDR_HAS_LEN!=0
 	if (addr) {
 	    PJ_SOCKADDR_RESET_LEN(addr);
 	}
 #endif
-	
+
 	return PJ_SUCCESS;
     }
 }

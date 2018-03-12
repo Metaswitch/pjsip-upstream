@@ -1,3 +1,8 @@
+/*
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+ */
+
 /* $Id: sip_uri.h 4370 2013-02-26 05:30:00Z nanang $ */
 /*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
@@ -476,4 +481,3 @@ PJ_DECL(pjsip_other_uri*) pjsip_other_uri_create(pj_pool_t *pool);
 PJ_END_DECL
 
 #endif	/* __PJSIP_URL_H__ */
-

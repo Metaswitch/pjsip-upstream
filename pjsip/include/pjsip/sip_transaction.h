@@ -1,5 +1,10 @@
+/*
+ * Some of the content of this file has been edited by Metaswitch, in the time
+ * period from May 2013 to the present time.
+ */
+
 /* $Id: sip_transaction.h 4420 2013-03-05 11:59:54Z bennylp $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  *
@@ -15,7 +20,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #ifndef __PJSIP_SIP_TRANSACTION_H__
 #define __PJSIP_SIP_TRANSACTION_H__
@@ -37,7 +42,7 @@ PJ_BEGIN_DECL
  * @brief Provides statefull message processing.
  *
  * This module provides stateful processing to incoming or outgoing SIP
- * messages. 
+ * messages.
  * Before performing any stateful operations, application must register the
  * transaction layer module by calling #pjsip_tsx_layer_init_module().
  *
@@ -191,9 +196,9 @@ PJ_DECL(pjsip_transaction*) pjsip_tsx_layer_find_tsx( const pj_str_t *key,
 						      pj_bool_t lock );
 
 /**
- * Create, initialize, and register a new transaction as UAC from the 
+ * Create, initialize, and register a new transaction as UAC from the
  * specified transmit data (\c tdata). The transmit data must have a valid
- * \c Request-Line and \c CSeq header. 
+ * \c Request-Line and \c CSeq header.
  *
  * If \c Via header does not exist, it will be created along with a unique
  * \c branch parameter. If it exists and contains branch parameter, then
@@ -281,7 +286,7 @@ PJ_DECL(pj_status_t) pjsip_tsx_create_uas2(pjsip_module *tsx_user,
 
 /**
  * Lock/bind transaction to a specific transport/listener. This is optional,
- * as normally transport will be selected automatically based on the 
+ * as normally transport will be selected automatically based on the
  * destination of the message upon resolver completion.
  *
  * @param tsx	    The transaction.
@@ -308,7 +313,7 @@ PJ_DECL(pj_status_t) pjsip_tsx_set_transport(pjsip_transaction *tsx,
  * @param tsx	    The transaction.
  * @param rdata	    The message.
  */
-PJ_DECL(void) pjsip_tsx_recv_msg( pjsip_transaction *tsx, 
+PJ_DECL(void) pjsip_tsx_recv_msg( pjsip_transaction *tsx,
 				  pjsip_rx_data *rdata);
 
 /**
@@ -333,7 +338,7 @@ PJ_DECL(void) pjsip_tsx_recv_msg2( pjsip_transaction *tsx,
 
 /**
  * Transmit message in tdata with this transaction. It is possible to
- * pass NULL in tdata for UAC transaction, which in this case the last 
+ * pass NULL in tdata for UAC transaction, which in this case the last
  * message transmitted, or the request message which was specified when
  * calling #pjsip_tsx_create_uac(), will be sent.
  *
@@ -342,7 +347,7 @@ PJ_DECL(void) pjsip_tsx_recv_msg2( pjsip_transaction *tsx,
  *
  * @param tsx       The transaction.
  * @param tdata     The outgoing message. If NULL is specified, then the
- *		    last message transmitted (or the message specified 
+ *		    last message transmitted (or the message specified
  *		    in UAC initialization) will be sent.
  *
  * @return	    PJ_SUCCESS if successfull.
@@ -359,7 +364,7 @@ PJ_DECL(pj_status_t) pjsip_tsx_send_msg( pjsip_transaction *tsx,
  *
  * @param tsx	    The transaction.
  * @param tdata     The outgoing message. If NULL is specified, then the
- *		    last message transmitted (or the message specified 
+ *		    last message transmitted (or the message specified
  *		    in UAC initialization) will be sent.
  *
  *
@@ -370,13 +375,13 @@ PJ_DECL(pj_status_t) pjsip_tsx_retransmit_no_state(pjsip_transaction *tsx,
 
 
 /**
- * Create transaction key, which is used to match incoming requests 
+ * Create transaction key, which is used to match incoming requests
  * or response (retransmissions) against transactions.
  *
  * @param pool      The pool
  * @param key       Output key.
  * @param role      The role of the transaction.
- * @param method    The method to be put as a key. 
+ * @param method    The method to be put as a key.
  * @param rdata     The received data to calculate.
  *
  * @return          PJ_SUCCESS or the appropriate error code.
@@ -418,10 +423,10 @@ PJ_DECL(pj_status_t) pjsip_tsx_stop_retransmit(pjsip_transaction *tsx);
  * has elapsed. This function is only valid for INVITE transaction,
  * and only before final response is received for the INVITE transaction.
  * It is normally called after the UAC has sent CANCEL for this
- * INVITE transaction. 
+ * INVITE transaction.
  *
- * The purpose of this function is to terminate the transaction if UAS 
- * does not send final response to this INVITE transaction even after 
+ * The purpose of this function is to terminate the transaction if UAS
+ * does not send final response to this INVITE transaction even after
  * it sends 200/OK to CANCEL (for example when the UAS complies to RFC
  * 2543).
  *
