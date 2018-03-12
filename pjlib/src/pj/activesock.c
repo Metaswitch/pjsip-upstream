@@ -1,10 +1,10 @@
-/**
+/*
  * Some of the content of this file has been edited by Metaswitch, in the time
  * period from May 2013 to the present time.
-*/
+ */
 
 /* $Id: activesock.c 4359 2013-02-21 11:18:36Z bennylp $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  * Copyright (C) 2013  Metaswitch Networks Ltd
@@ -483,9 +483,9 @@ static void ioqueue_on_read_complete(pj_ioqueue_key_t *key,
 	    pj_size_t remainder;
 	    pj_bool_t ret;
 
-	    /* Append this new data to existing data. If socket is stream 
-	     * oriented, user might have left some data in the buffer. 
-	     * Otherwise if socket is datagram there will be nothing in 
+	    /* Append this new data to existing data. If socket is stream
+	     * oriented, user might have left some data in the buffer.
+	     * Otherwise if socket is datagram there will be nothing in
 	     * existing packet hence the packet will contain only the new
 	     * packet.
 	     */
@@ -501,11 +501,11 @@ static void ioqueue_on_read_complete(pj_ioqueue_key_t *key,
 	    if (asock->read_type == TYPE_RECV && asock->cb.on_data_read) {
 		ret = (*asock->cb.on_data_read)(asock, r->pkt, r->size,
 						PJ_SUCCESS, &remainder);
-	    } else if (asock->read_type == TYPE_RECV_FROM && 
-		       asock->cb.on_data_recvfrom) 
+	    } else if (asock->read_type == TYPE_RECV_FROM &&
+		       asock->cb.on_data_recvfrom)
 	    {
 		ret = (*asock->cb.on_data_recvfrom)(asock, r->pkt, r->size,
-						    &r->src_addr, 
+						    &r->src_addr,
 						    r->src_addr_len,
 						    PJ_SUCCESS);
 	    }
@@ -523,15 +523,15 @@ static void ioqueue_on_read_complete(pj_ioqueue_key_t *key,
 
 	} else if (bytes_read <= 0 &&
 		   -bytes_read != PJ_STATUS_FROM_OS(OSERR_EWOULDBLOCK) &&
-		   -bytes_read != PJ_STATUS_FROM_OS(OSERR_EINPROGRESS) && 
+		   -bytes_read != PJ_STATUS_FROM_OS(OSERR_EINPROGRESS) &&
 		   (asock->stream_oriented ||
-		    -bytes_read != PJ_STATUS_FROM_OS(OSERR_ECONNRESET))) 
+		    -bytes_read != PJ_STATUS_FROM_OS(OSERR_ECONNRESET)))
 	{
 	    pj_size_t remainder;
 	    pj_bool_t ret;
 
 	    if (bytes_read == 0) {
-		/* For stream/connection oriented socket, this means the 
+		/* For stream/connection oriented socket, this means the
 		 * connection has been closed. For datagram sockets, it means
 		 * we've received datagram with zero length.
 		 */
@@ -555,14 +555,14 @@ static void ioqueue_on_read_complete(pj_ioqueue_key_t *key,
 
 	    /* Notify callback */
 	    if (asock->read_type == TYPE_RECV && asock->cb.on_data_read) {
-		/* For connection oriented socket, we still need to report 
-		 * the remainder data (if any) to the user to let user do 
+		/* For connection oriented socket, we still need to report
+		 * the remainder data (if any) to the user to let user do
 		 * processing with the remainder data before it closes the
 		 * connection.
 		 * If there is no remainder data, set the packet to NULL.
 		 */
 
-		/* Shouldn't set the packet to NULL, as there may be active 
+		/* Shouldn't set the packet to NULL, as there may be active
 		 * socket user, such as SSL socket, that needs to have access
 		 * to the read buffer packet.
 		 */
@@ -571,15 +571,15 @@ static void ioqueue_on_read_complete(pj_ioqueue_key_t *key,
 		ret = (*asock->cb.on_data_read)(asock, r->pkt, r->size,
 						status, &remainder);
 
-	    } else if (asock->read_type == TYPE_RECV_FROM && 
-		       asock->cb.on_data_recvfrom) 
+	    } else if (asock->read_type == TYPE_RECV_FROM &&
+		       asock->cb.on_data_recvfrom)
 	    {
-		/* This would always be datagram oriented hence there's 
+		/* This would always be datagram oriented hence there's
 		 * nothing in the packet. We can't be sure if there will be
 		 * anything useful in the source_addr, so just put NULL
 		 * there too.
 		 */
-		/* In some scenarios, status may be PJ_SUCCESS. The upper 
+		/* In some scenarios, status may be PJ_SUCCESS. The upper
 		 * layer application may not expect the callback to be called
 		 * with successful status and NULL data, so lets not call the
 		 * callback if the status is PJ_SUCCESS.
@@ -625,7 +625,7 @@ static void ioqueue_on_read_complete(pj_ioqueue_key_t *key,
 	    flags |= PJ_IOQUEUE_ALWAYS_ASYNC;
 
 	if (asock->read_type == TYPE_RECV) {
-	    status = pj_ioqueue_recv(key, op_key, r->pkt + r->size, 
+	    status = pj_ioqueue_recv(key, op_key, r->pkt + r->size,
 				     &bytes_read, flags);
 	} else {
 	    r->src_addr_len = sizeof(r->src_addr);

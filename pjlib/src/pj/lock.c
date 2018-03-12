@@ -1,7 +1,7 @@
-/**
+/*
  * Some of the content of this file has been edited by Metaswitch, in the time
  * period from May 2013 to the present time.
-*/
+ */
 
 /* $Id: lock.c 4412 2013-03-05 03:12:32Z riza $ */
 /*
