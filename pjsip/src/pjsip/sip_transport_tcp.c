@@ -1,7 +1,7 @@
-/**
+/*
  * Some of the content of this file has been edited by Metaswitch, in the time
  * period from May 2013 to the present time.
-*/
+ */
 
 /* $Id: sip_transport_tcp.c 4294 2012-11-06 05:02:10Z nanang $ */
 /*

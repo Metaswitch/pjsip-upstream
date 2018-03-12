@@ -1,7 +1,7 @@
-/**
+/*
  * Some of the content of this file has been edited by Metaswitch, in the time
  * period from May 2013 to the present time.
-*/
+ */
 
 /*
  * datatypes.c
@@ -13,26 +13,26 @@
  * Cisco Systems, Inc.
  */
 /*
- *	
+ *
  * Copyright (c) 2001-2006 Cisco Systems, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  *   Redistributions of source code must retain the above copyright
  *   notice, this list of conditions and the following disclaimer.
- * 
+ *
  *   Redistributions in binary form must reproduce the above
  *   copyright notice, this list of conditions and the following
  *   disclaimer in the documentation and/or other materials provided
  *   with the distribution.
- * 
+ *
  *   Neither the name of the Cisco Systems, Inc. nor the names of its
  *   contributors may be used to endorse or promote products derived
  *   from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -50,7 +50,7 @@
 
 #include "datatypes.h"
 
-int 
+int
 octet_weight[256] = {
   0, 1, 1, 2, 1, 2, 2, 3,
   1, 2, 2, 3, 2, 3, 3, 4,
@@ -91,7 +91,7 @@ octet_get_weight(uint8_t octet) {
   extern int octet_weight[256];
 
   return octet_weight[octet];
-}  
+}
 
 /*
  * bit_string is a buffer that is used to hold output strings, e.g.
@@ -113,14 +113,14 @@ char *
 octet_string_hex_string(const void *s, int length) {
   const uint8_t *str = (const uint8_t *)s;
   int i;
-  
+
   /* double length, since one octet takes two hex characters */
   length *= 2;
 
   /* truncate string if it would be too long */
   if (length > MAX_PRINT_STRING_LEN)
     length = MAX_PRINT_STRING_LEN-1;
-  
+
   for (i=0; i < length; i+=2) {
     bit_string[i]   = nibble_to_hex_char(*str >> 4);
     bit_string[i+1] = nibble_to_hex_char(*str++ & 0xF);
@@ -204,7 +204,7 @@ v128_hex_string(v128_t *x) {
     bit_string[j++]  = nibble_to_hex_char(x->v8[i] >> 4);
     bit_string[j++]  = nibble_to_hex_char(x->v8[i] & 0xF);
   }
-  
+
   bit_string[j] = 0; /* null terminate string */
   return bit_string;
 }
@@ -213,7 +213,7 @@ char *
 v128_bit_string(v128_t *x) {
   int j, index;
   uint32_t mask;
-  
+
   for (j=index=0; j < 4; j++) {
     for (mask=0x80000000; mask > 0; mask >>= 1) {
       if (x->v32[j] & mask)
@@ -252,7 +252,7 @@ v128_copy_octet_string(v128_t *x, const uint8_t s[16]) {
 	  x->v8[15] = s[15];
   }
 #ifdef ALIGNMENT_32BIT_REQUIRED
-  else 
+  else
   {
 	  v128_t *v = (v128_t *) &s[0];
 
@@ -276,7 +276,7 @@ v128_copy(v128_t *x, const v128_t *y) {
 void
 v128_xor(v128_t *z, v128_t *x, v128_t *y) {
   _v128_xor(z, x, y);
-} 
+}
 
 void
 v128_and(v128_t *z, v128_t *x, v128_t *y) {
@@ -311,12 +311,12 @@ v128_get_bit(const v128_t *x, int i) {
 void
 v128_set_bit(v128_t *x, int i) {
   _v128_set_bit(x, i);
-}     
+}
 
 void
 v128_clear_bit(v128_t *x, int i){
   _v128_clear_bit(x, i);
-}    
+}
 
 void
 v128_set_bit_to(v128_t *x, int i, int y){
@@ -332,7 +332,7 @@ v128_right_shift(v128_t *x, int index) {
   const int bit_index = index & 31;
   int i, from;
   uint32_t b;
-    
+
   if (index > 127) {
     v128_set_to_zero(x);
     return;
@@ -342,11 +342,11 @@ v128_right_shift(v128_t *x, int index) {
 
     /* copy each word from left size to right side */
     x->v32[4-1] = x->v32[4-1-base_index];
-    for (i=4-1; i > base_index; i--) 
+    for (i=4-1; i > base_index; i--)
       x->v32[i-1] = x->v32[i-1-base_index];
 
   } else {
-    
+
     /* set each word to the "or" of the two bit-shifted words */
     for (i = 4; i > base_index; i--) {
       from = i-1 - base_index;
@@ -355,13 +355,13 @@ v128_right_shift(v128_t *x, int index) {
         b |= x->v32[from-1] >> (32-bit_index);
       x->v32[i-1] = b;
     }
-    
+
   }
 
   /* now wrap up the final portion */
-  for (i=0; i < base_index; i++) 
+  for (i=0; i < base_index; i++)
     x->v32[i] = 0;
-  
+
 }
 
 void
@@ -373,8 +373,8 @@ v128_left_shift(v128_t *x, int index) {
   if (index > 127) {
     v128_set_to_zero(x);
     return;
-  } 
-  
+  }
+
   if (bit_index == 0) {
     for (i=0; i < 4 - base_index; i++)
       x->v32[i] = x->v32[i+base_index];
@@ -386,7 +386,7 @@ v128_left_shift(v128_t *x, int index) {
   }
 
   /* now wrap up the final portion */
-  for (i = 4 - base_index; i < 4; i++) 
+  for (i = 4 - base_index; i < 4; i++)
     x->v32[i] = 0;
 
 }
@@ -408,7 +408,7 @@ octet_string_set_to_zero(uint8_t *s, int len) {
   do {
     *s = 0;
   } while (++s < end);
-  
+
 }
 
 
