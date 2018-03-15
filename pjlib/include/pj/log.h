@@ -140,7 +140,7 @@ typedef void pj_log_func(int level, const char *data, int len);
  * Signature for RAM trace function to be registered to the logging subsystem to
  * trace this log call in the "always on" RAM trace buffer
  */
-typedef void pj_log_ram_trace(int level, const char* file, int line, char *obj, const char *fmt, ...);
+typedef void pj_log_ram_trace(int level, const char* file, int line, const char *obj, const char *fmt, ...);
 
 /**
  * Default logging writer function used by front end logger function.
