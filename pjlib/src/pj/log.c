@@ -1,5 +1,5 @@
 /* $Id: log.c 3752 2011-09-18 14:38:46Z bennylp $ */
-/* 
+/*
  * Copyright (C) 2008-2011 Teluu Inc. (http://www.teluu.com)
  * Copyright (C) 2003-2008 Benny Prijono <benny@prijono.org>
  *
@@ -15,13 +15,25 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include <pj/types.h>
 #include <pj/log.h>
 #include <pj/string.h>
 #include <pj/os.h>
 #include <pj/compat/stdarg.h>
+
+static pj_log_ram_trace *ram_trace = NULL;
+
+PJ_DEF(void) pj_log_set_ram_trace_func( pj_log_ram_trace *trace)
+{
+    ram_trace = trace;
+}
+
+PJ_DEF(pj_log_ram_trace*) pj_log_get_ram_trace_func(void)
+{
+    return ram_trace;
+}
 
 #if PJ_LOG_MAX_LEVEL >= 1
 
@@ -56,25 +68,25 @@ static unsigned log_decor = PJ_LOG_HAS_TIME | PJ_LOG_HAS_MICRO_SEC |
 
 static pj_color_t PJ_LOG_COLOR_0 = PJ_TERM_COLOR_BRIGHT | PJ_TERM_COLOR_R;
 static pj_color_t PJ_LOG_COLOR_1 = PJ_TERM_COLOR_BRIGHT | PJ_TERM_COLOR_R;
-static pj_color_t PJ_LOG_COLOR_2 = PJ_TERM_COLOR_BRIGHT | 
-				   PJ_TERM_COLOR_R | 
+static pj_color_t PJ_LOG_COLOR_2 = PJ_TERM_COLOR_BRIGHT |
+				   PJ_TERM_COLOR_R |
 				   PJ_TERM_COLOR_G;
-static pj_color_t PJ_LOG_COLOR_3 = PJ_TERM_COLOR_BRIGHT | 
-				   PJ_TERM_COLOR_R | 
-				   PJ_TERM_COLOR_G | 
+static pj_color_t PJ_LOG_COLOR_3 = PJ_TERM_COLOR_BRIGHT |
+				   PJ_TERM_COLOR_R |
+				   PJ_TERM_COLOR_G |
 				   PJ_TERM_COLOR_B;
-static pj_color_t PJ_LOG_COLOR_4 = PJ_TERM_COLOR_R | 
-				   PJ_TERM_COLOR_G | 
+static pj_color_t PJ_LOG_COLOR_4 = PJ_TERM_COLOR_R |
+				   PJ_TERM_COLOR_G |
 				   PJ_TERM_COLOR_B;
-static pj_color_t PJ_LOG_COLOR_5 = PJ_TERM_COLOR_R | 
-				   PJ_TERM_COLOR_G | 
+static pj_color_t PJ_LOG_COLOR_5 = PJ_TERM_COLOR_R |
+				   PJ_TERM_COLOR_G |
 				   PJ_TERM_COLOR_B;
-static pj_color_t PJ_LOG_COLOR_6 = PJ_TERM_COLOR_R | 
-				   PJ_TERM_COLOR_G | 
+static pj_color_t PJ_LOG_COLOR_6 = PJ_TERM_COLOR_R |
+				   PJ_TERM_COLOR_G |
 				   PJ_TERM_COLOR_B;
 /* Default terminal color */
-static pj_color_t PJ_LOG_COLOR_77 = PJ_TERM_COLOR_R | 
-				    PJ_TERM_COLOR_G | 
+static pj_color_t PJ_LOG_COLOR_77 = PJ_TERM_COLOR_R |
+				    PJ_TERM_COLOR_G |
 				    PJ_TERM_COLOR_B;
 
 #if PJ_LOG_USE_STACK_BUFFER==0
@@ -181,24 +193,24 @@ PJ_DEF(unsigned) pj_log_get_decor(void)
 
 PJ_DEF(void) pj_log_set_color(int level, pj_color_t color)
 {
-    switch (level) 
+    switch (level)
     {
-	case 0: PJ_LOG_COLOR_0 = color; 
+	case 0: PJ_LOG_COLOR_0 = color;
 	    break;
-	case 1: PJ_LOG_COLOR_1 = color; 
+	case 1: PJ_LOG_COLOR_1 = color;
 	    break;
-	case 2: PJ_LOG_COLOR_2 = color; 
+	case 2: PJ_LOG_COLOR_2 = color;
 	    break;
-	case 3: PJ_LOG_COLOR_3 = color; 
+	case 3: PJ_LOG_COLOR_3 = color;
 	    break;
-	case 4: PJ_LOG_COLOR_4 = color; 
+	case 4: PJ_LOG_COLOR_4 = color;
 	    break;
-	case 5: PJ_LOG_COLOR_5 = color; 
+	case 5: PJ_LOG_COLOR_5 = color;
 	    break;
-	case 6: PJ_LOG_COLOR_6 = color; 
+	case 6: PJ_LOG_COLOR_6 = color;
 	    break;
 	/* Default terminal color */
-	case 77: PJ_LOG_COLOR_77 = color; 
+	case 77: PJ_LOG_COLOR_77 = color;
 	    break;
 	default:
 	    /* Do nothing */
@@ -265,10 +277,10 @@ static void suspend_logging(int *saved_level)
 	*saved_level = pj_log_max_level;
 
 #if PJ_HAS_THREADS
-    if (thread_suspended_tls_id != -1) 
+    if (thread_suspended_tls_id != -1)
     {
 	pj_thread_local_set(thread_suspended_tls_id, (void*)PJ_TRUE);
-    } 
+    }
     else
 #endif
     {
@@ -280,7 +292,7 @@ static void suspend_logging(int *saved_level)
 static void resume_logging(int *saved_level)
 {
 #if PJ_HAS_THREADS
-    if (thread_suspended_tls_id != -1) 
+    if (thread_suspended_tls_id != -1)
     {
 	pj_thread_local_set(thread_suspended_tls_id, (void*)PJ_FALSE);
     }
@@ -299,7 +311,7 @@ static void resume_logging(int *saved_level)
 static pj_bool_t is_logging_suspended(void)
 {
 #if PJ_HAS_THREADS
-    if (thread_suspended_tls_id != -1) 
+    if (thread_suspended_tls_id != -1)
     {
 	return pj_thread_local_get(thread_suspended_tls_id) != NULL;
     }
@@ -310,7 +322,7 @@ static pj_bool_t is_logging_suspended(void)
     }
 }
 
-PJ_DEF(void) pj_log( const char *sender, int level, 
+PJ_DEF(void) pj_log( const char *sender, int level,
 		     const char *format, va_list marker)
 {
     pj_time_val now;
@@ -330,7 +342,7 @@ PJ_DEF(void) pj_log( const char *sender, int level,
 	return;
 
     /* Temporarily disable logging for this thread. Some of PJLIB APIs that
-     * this function calls below will recursively call the logging function 
+     * this function calls below will recursively call the logging function
      * back, hence it will cause infinite recursive calls if we allow that.
      */
     suspend_logging(&saved_level);
@@ -341,7 +353,7 @@ PJ_DEF(void) pj_log( const char *sender, int level,
 
     pre = log_buffer;
     if (log_decor & PJ_LOG_HAS_LEVEL_TEXT) {
-	static const char *ltexts[] = { "FATAL:", "ERROR:", " WARN:", 
+	static const char *ltexts[] = { "FATAL:", "ERROR:", " WARN:",
 			      " INFO:", "DEBUG:", "TRACE:", "DETRC:"};
 	pj_ansi_strcpy(pre, ltexts[level]);
 	pre += 6;
@@ -436,11 +448,11 @@ PJ_DEF(void) pj_log( const char *sender, int level,
     len = pre - log_buffer;
 
     /* Print the whole message to the string log_buffer. */
-    print_len = pj_ansi_vsnprintf(pre, sizeof(log_buffer)-len, format, 
+    print_len = pj_ansi_vsnprintf(pre, sizeof(log_buffer)-len, format,
 				  marker);
     if (print_len < 0) {
 	level = 1;
-	print_len = pj_ansi_snprintf(pre, sizeof(log_buffer)-len, 
+	print_len = pj_ansi_snprintf(pre, sizeof(log_buffer)-len,
 				     "<logging error: msg too long>");
     }
     len = len + print_len;
