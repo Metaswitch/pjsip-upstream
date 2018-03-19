@@ -89,12 +89,14 @@ enum pj_log_decoration
 #define PJ_LOG_RAMTRACE(obj, format, ...)                                \
 {                                                                        \
   pj_log_ram_trace *pj_log_ramtrace_trace = pj_log_get_ram_trace_func(); \
-  (*pj_log_ramtrace_trace)(_level,              \
-                           __FILE__,            \
-                           __LINE__,            \
-                           obj,                 \
-                           format,              \
-                           ##__VA_ARGS__);      \
+  if (pj_log_ramtrace_trace){                   \
+    (*pj_log_ramtrace_trace)(_level,            \
+                             __FILE__,          \
+                             __LINE__,          \
+                             obj,               \
+                             format,            \
+                             ##__VA_ARGS__);    \
+  }                                             \
 }
 
 /**
