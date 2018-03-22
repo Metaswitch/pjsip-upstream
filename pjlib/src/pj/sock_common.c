@@ -874,6 +874,7 @@ PJ_DEF(pj_status_t) pj_gethostip(int af, pj_sockaddr *addr)
 		}
 
 		if (j == cand_cnt) {
+            printf("RKD: j is %d, i is %d, cand_cnt is %d, start_if is %d\n", j, i, cand_cnt, start_if);
 		    pj_sockaddr_copy_addr(&cand_addr[cand_cnt],
 					  &cand_addr[start_if+i]);
 		    cand_weight[cand_cnt] += WEIGHT_INTERFACE;
