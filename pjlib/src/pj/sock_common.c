@@ -794,6 +794,7 @@ PJ_DEF(pj_status_t) pj_gethostip(int af, pj_sockaddr *addr)
     PJ_GETHOSTIP_DISABLE_LOCAL_RESOLUTION == 0
     /* Get hostname's IP address */
     count = 1;
+    printf("RKD: PJ_GETHOSTIP_DISABLE_LOCAL_RESOLUTION is not set\n");
     status = pj_getaddrinfo(af, pj_gethostname(), &count, &ai);
     if (status == PJ_SUCCESS) {
     	pj_assert(ai.ai_addr.addr.sa_family == (pj_uint16_t)af);
@@ -804,8 +805,11 @@ PJ_DEF(pj_status_t) pj_gethostip(int af, pj_sockaddr *addr)
 
 	TRACE_((THIS_FILE, "hostname IP is %s",
 		pj_sockaddr_print(&ai.ai_addr, strip, sizeof(strip), 0)));
+	printf("RKD: hostname IP is %s\n",
+		pj_sockaddr_print(&ai.ai_addr, strip, sizeof(strip), 0));
     }
 #else
+    printf("RKD: PJ_GETHOSTIP_DISABLE_LOCAL_RESOLUTION is set\n");
     PJ_UNUSED_ARG(ai);
     PJ_UNUSED_ARG(count);
 #endif
@@ -816,6 +820,8 @@ PJ_DEF(pj_status_t) pj_gethostip(int af, pj_sockaddr *addr)
 	if (status == PJ_SUCCESS) {
 	    TRACE_((THIS_FILE, "default IP is %s",
 		    pj_sockaddr_print(addr, strip, sizeof(strip), 0)));
+	    printf("RKD:default IP is %s\n",
+		    pj_sockaddr_print(addr, strip, sizeof(strip), 0));
 
 	    pj_sockaddr_set_port(addr, 0);
 	    for (i=0; i<cand_cnt; ++i) {
@@ -825,6 +831,7 @@ PJ_DEF(pj_status_t) pj_gethostip(int af, pj_sockaddr *addr)
 
 	    cand_weight[i] += WEIGHT_DEF_ROUTE;
 	    if (i >= cand_cnt) {
+            printf("RKD: cand_addr[%d] is set to the default interface\n", i);
 		pj_sockaddr_copy_addr(&cand_addr[i], addr);
 		++cand_cnt;
 	    }
@@ -838,6 +845,7 @@ PJ_DEF(pj_status_t) pj_gethostip(int af, pj_sockaddr *addr)
 	unsigned count = PJ_ARRAY_SIZE(cand_addr) - start_if;
 
 	status = pj_enum_ip_interface(af, &count, &cand_addr[start_if]);
+            printf("RKD: enumerated %d IP interfaces\n", count);
 	if (status == PJ_SUCCESS && count) {
 	    /* Clear the port number */
 	    for (i=0; i<count; ++i)
@@ -858,8 +866,12 @@ PJ_DEF(pj_status_t) pj_gethostip(int af, pj_sockaddr *addr)
 
 		if (j == count) {
 		    /* Not found */
+	    printf("RKD: existing IP %s not found in interface list\n",
+		    pj_sockaddr_print(&cand_addr[i], strip, sizeof(strip), 0));
 		    cand_weight[i] -= WEIGHT_INTERFACE;
 		} else {
+	    printf("RKD: existing IP %s found in interface list\n",
+		    pj_sockaddr_print(&cand_addr[i], strip, sizeof(strip), 0));
 		    cand_weight[i] += WEIGHT_INTERFACE;
 		}
 	    }
@@ -867,9 +879,13 @@ PJ_DEF(pj_status_t) pj_gethostip(int af, pj_sockaddr *addr)
 	    /* Add remaining interface to candidate list. */
 	    for (i=0; i<count; ++i) {
 		unsigned j;
+	    printf("RKD: checking whether IP %s is in candidate list\n",
+		    pj_sockaddr_print(&cand_addr[start_if+i], strip, sizeof(strip), 0));
 		for (j=0; j<cand_cnt; ++j) {
-		    if (pj_sockaddr_cmp(&cand_addr[start_if+i],
-					&cand_addr[j])==0)
+		    int rc = pj_sockaddr_cmp(&cand_addr[start_if+i],
+					&cand_addr[j]);
+            printf("RKD: pj_sockaddr_cmp returned %d\n", rc);
+            if (rc == 0)
 			break;
 		}
 
